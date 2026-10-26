@@ -73,4 +73,9 @@ filter function; criterion: |MC − FF| ≤ 1.96·SE_MC + quadrature error + dis
 (measured by halving noise_dt).
 
 ## Deviations
-(none yet)
+* 2026-10-26 (lead): one plumbing smoke run of `scripts/run_benchmark.py` (n=4, mode both,
+  max_evals=40) evaluated on test seeds 9001–9005 before the main run. Output written to the
+  untracked scratch directory and deleted; no parameter, budget or rule was changed afterwards.
+  Disclosed here because it touched held-out seeds.
+* 2026-10-26 (lead): the integration-test seed choices (11, 31) are outside all pre-registered
+  seed sets.
