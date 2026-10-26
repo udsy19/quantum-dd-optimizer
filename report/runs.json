@@ -4,5 +4,6 @@
  "bench_a": "benchmark_scenario_a_20261026T232517Z_1bd28ade742a",
  "bench_b": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
  "spectroscopy": "spectroscopy_scenario_a_20261026T235246Z_8b272601c344",
- "bench_a_T4": "benchmark_scenario_a_T4us_20261026T235309Z_da0c18904bc7"
+ "bench_a_T4": "benchmark_scenario_a_T4us_20261026T235309Z_da0c18904bc7",
+ "convergence": "convergence_scenario_a_n8_20261026T235358Z_a8cb70bbe957"
 }
