@@ -297,6 +297,71 @@ def scen_b(run: dict) -> None:
     save(fig, "fig_robustness_b")
 
 
+def spectroscopy(run: dict) -> None:
+    p = run["payload"]
+    fg = p["figure"]
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.5))
+    ps = fg["psd"]
+    f = np.asarray(ps["omega"]) / (2 * np.pi)
+    ax = axes[0]
+    ax.fill_between(f, ps["lo"], ps["hi"], color=COLORS["free"], alpha=0.25, lw=0, label="fit 95% bootstrap band")
+    ax.loglog(f, ps["mle"], color=COLORS["free"], label="fit (full model, MLE)")
+    ax.loglog(f, ps["truth"], color="#1a1a19", ls="--", lw=1, label="truth")
+    ax.set_xlabel(r"$\omega/2\pi$ (Hz)")
+    ax.set_ylabel(r"two-sided $S_2(\omega)$ (rad$^2$/s)")
+    ax.legend(fontsize=6)
+    ax = axes[1]
+    cols = {"ramsey": COLORS["free"], "hahn": COLORS["cpmg"], "cpmg4": COLORS["xy4"], "cpmg16": COLORS["udd"]}
+    names = {"ramsey": "Ramsey", "hahn": "Hahn", "cpmg4": "CPMG-4", "cpmg16": "CPMG-16 (held-out n)"}
+    for k, c in fg["curves"].items():
+        T = np.asarray(c["T"]) * 1e6
+        ax.fill_between(T, c["lo"], c["hi"], color=cols[k], alpha=0.25, lw=0)
+        ax.plot(T, c["mle"], color=cols[k], label=names[k])
+        lab = k
+        pts = [d for d in fg["heldout"] if d["label"] == lab]
+        ax.scatter([d["T"] * 1e6 for d in pts], [d["p_hat"] for d in pts], s=8, color=cols[k], marker="o",
+                   facecolor="white", linewidth=0.8, zorder=3)
+    ax.set_xscale("log")
+    ax.set_xlabel(r"idle time $T$ ($\mu$s)")
+    ax.set_ylabel(r"measured $P(+)$ (with SPAM)")
+    ax.legend(fontsize=6, loc="lower left")
+    save(fig, "fig_spectroscopy")
+    rep = p["pipeline"]["repeats"][0]
+    rows = []
+    nice = {"reduced_alpha1": "reduced", "full_alpha1": "full ($\\alpha=1$)", "full_alpha_free": "full ($\\alpha$ free)"}
+    for tn, t in rep["truths"].items():
+        for k, fr in t["fits"].items():
+            h = fr["derived"]["heldout"]
+            floor_ = h.get("shot_noise_rmse")
+            t2 = fr["t2_vs_truth"]
+            def t2c(key):
+                v = t2[key]
+                return (f"{v['fit_s']*1e6:.2f} [{v['ci95_s'][0]*1e6:.2f}, {v['ci95_s'][1]*1e6:.2f}]"
+                        f"{'' if v['truth_in_ci'] else '$^\\ast$'}")
+            rows.append(f"{tn} & {nice[k]} & {h['rmse']/floor_:.2f} & {h['coverage95']:.3f} & {t2c('T2star')} & "
+                        f"{t2c('T2_hahn')} & {'yes' if fr['success'] else 'no'} \\\\")
+            tag = {"gaussian": "Gauss", "telegraph": "Tel"}[tn] + {"reduced_alpha1": "Red", "full_alpha1": "Full", "full_alpha_free": "FullAf"}[k]
+            macro(f"Spec{tag}RmseRatio", f"{h['rmse']/floor_:.2f}", f"spectroscopy {tn} truth, {k} fit: held-out RMSE / shot-noise floor", run, "Results", "5001/5002/5003")
+            macro(f"Spec{tag}Cov", f"{h['coverage95']:.3f}", f"spectroscopy {tn} truth, {k} fit: held-out 95% predictive coverage", run, "Results", "5001/5002/5003")
+    tt = rep["truths"]["gaussian"]["truth_T2"]
+    macro("SpecTruthTtwoStar", f"{tt['T2star']*1e6:.2f}", "truth T2* (Scenario A incl. T1)", run, "Results")
+    macro("SpecTruthTtwoHahn", f"{tt['T2_hahn']*1e6:.2f}", "truth T2 Hahn (Scenario A incl. T1)", run, "Results")
+    write("spectroscopy_table.tex", r"""\begin{table}[t]
+\centering\scriptsize
+\caption{Synthetic spectroscopy (gate G4): held-out RMSE of $P(+)$ relative to the shot-noise floor,
+95\%% predictive coverage on %d held-out points, and $1/e$ times (fit [95\%% bootstrap CI], $\mu$s;
+$^\ast$ = CI excludes truth). Truth: $T_2^\ast=%.2f\,\mu$s, $T_2^{\rm Hahn}=%.2f\,\mu$s.
+``telegraph'' = Lorentzian replaced by telegraph noise (misspecification control). Seeds
+5001/5002/5003, $n_{\rm boot}=%d$. Run \texttt{%s}.}
+\label{tab:spectroscopy}
+\begin{tabular}{@{}llccccc@{}}\toprule
+Truth & Fit model & RMSE/floor & Coverage & $T_2^\ast$ & $T_2^{\rm Hahn}$ & Success\\\midrule
+%s
+\bottomrule\end{tabular}\end{table}
+""" % (p["pipeline"]["design"]["n_heldout"], tt["T2star"] * 1e6, tt["T2_hahn"] * 1e6,
+       p["pipeline"]["fit_settings"]["n_boot"], run["run_id"].replace("_", r"\_"), "\n".join(rows)))
+
+
 def main() -> None:
     runs_map = json.loads((ROOT / "report" / "runs.json").read_text())
     runs = {k: load_run(ROOT / "results" / v) for k, v in runs_map.items() if not k.startswith("_")}
@@ -363,6 +428,8 @@ def main() -> None:
                 macro(f"{nice}{tag}Sel", e["selected"].upper(), f"{role} n={n} selected baseline", runs[role], "Results")
                 macro(f"{nice}{tag}SelEps", fmt(e["baselines"][e["selected"]]), f"{role} n={n} selected baseline eps", runs[role], "Results", "9001-9005")
                 ablation_rows.append((n, e))
+    if "spectroscopy" in runs:
+        spectroscopy(runs["spectroscopy"])
     if "convergence" in runs:
         convergence(runs["convergence"])
     # status macros
