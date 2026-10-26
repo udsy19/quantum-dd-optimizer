@@ -11,8 +11,8 @@ Owner: integration lead. Detailed derivations: `docs/PHYSICS.md` (Agent A).
 * **Noise statistics.** Gaussian stationary unless a `telegraph` component is present.
   Autocorrelation `C(τ) = ⟨δ(t+τ)δ(t)⟩`.
 * **PSD.** Two-sided `S2(ω) = ∫ C(τ) e^{-iωτ} dτ`, ω ∈ (−∞,∞), so
-  `C(0) = (1/2π) ∫ S2(ω) dω`. A one-sided PSD in Hz would be `S1(f) = 2·2π·S2(2πf)`-type
-  conversions — never mix; all code uses S2 in rad²/s.
+  `C(0) = (1/2π) ∫ S2(ω) dω`. A one-sided PSD in ordinary frequency f (Hz), normalised so `⟨δ²⟩ = ∫_0^∞ S1(f) df`, is
+  `S1(f) = 2·S2(2πf)` (corrected after Agent A review; an earlier draft had a spurious 2π) — never mix; all code uses S2 in rad²/s.
 * **Fourier / filter.** `Y(ω) = ∫_0^T y(t) e^{iωt} dt`, `F(ω) = |Y(ω)|²` (s²).
   Accumulated phase `ϕ = ∫ δ(t) y(t) dt`, `χ = Var ϕ = (1/2π)∫ S2(ω) F(ω) dω`.
 * **Switching function.** y(t) = toggling-frame z-component: ±1 between ideal π pulses,
