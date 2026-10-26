@@ -2,6 +2,11 @@
 
 The following established literature provides theoretical motivation; verify metadata, published versions and applicability before final submission.
 
+**Audit status (2026-10-26): all entries UNVERIFIED against primary sources.** arXiv,
+Crossref, doi.org and APS were unreachable from the audit environment (proxy 403). Secondary
+search-index corroboration and candidate corrections are recorded in
+[`docs/CITATION_AUDIT.md`](CITATION_AUDIT.md). The entries below are unchanged.
+
 - Viola, Knill, Lloyd (1999), Dynamical decoupling of open quantum systems, PRL 82 2417, https://arxiv.org/abs/quant-ph/9809071
 - Uhrig (2007), Keeping a quantum bit alive by optimized pi-pulse sequences, PRL 98 100504, https://arxiv.org/abs/quant-ph/0609203
 - Cywiński et al. (2008), How to enhance dephasing time in superconducting qubits, PRB 77 174509, https://arxiv.org/abs/0712.2225
