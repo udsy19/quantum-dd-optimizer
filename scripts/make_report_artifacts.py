@@ -365,6 +365,21 @@ def main() -> None:
                 ablation_rows.append((n, e))
     if "convergence" in runs:
         convergence(runs["convergence"])
+    # status macros
+    tests = runs.get("tests")
+    if tests:
+        c = tests["payload"]["counts"]
+        ts = (f"{c['passed']} passed, {c['failures']} failed, {c['errors']} errors, {c['skipped']} skipped "
+              f"(run \\texttt{{{tests['run_id'].replace('_', chr(92) + '_')}}}; skipped = QUA SDK not installed)")
+        macro("TestsPassed", str(c["passed"]), f"pytest: {c['passed']} passed, {c['failures']} failed, {c['skipped']} skipped", tests, "Methods")
+    else:
+        ts = "\\textbf{NOT RECORDED}"
+    rid = ", ".join("\\texttt{" + r["run_id"].replace("_", "\\_") + "}" for k, r in runs.items())
+    write("status.tex", "\\newcommand{\\GenIsStub}{false}\n"
+          f"\\newcommand{{\\GenBuildNote}}{{Generated from recorded runs at commit {GIT_SHA}}}\n"
+          f"\\newcommand{{\\GenTestSummary}}{{{ts}}}\n"
+          f"\\newcommand{{\\GenRunIDs}}{{{rid}}}\n"
+          f"\\newcommand{{\\GenCommitSHA}}{{{GIT_SHA}}}\n")
     write("numbers.tex", "".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in sorted(MACROS.items())))
     # claims
     cpath = ROOT / "report" / "claims.json"
