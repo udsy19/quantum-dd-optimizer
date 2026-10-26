@@ -690,6 +690,21 @@ def _fit_core(dataset_train: dict, spec: _Spec, *, n_boot: int, rng: np.random.G
         with np.errstate(invalid="ignore", divide="ignore"):
             corr = np.corrcoef(boot_x, rowvar=False) if np.all(sd > 0) else np.full((len(sd),) * 2, np.nan)
         corr = np.atleast_2d(corr)
+        # Flat-likelihood guard: bootstrap refits started at the MLE can stay put along a flat
+        # direction and produce spuriously narrow CIs. If moving one parameter to a bound (others at
+        # the MLE) raises the NLL by < chi2_1(0.95)/2 = 1.92, that bound lies inside the (conditional,
+        # hence also the profile) 95% likelihood region, so the CI is extended to the bound.
+        for i, n in enumerate(spec.names):
+            for side, bound in (("lower", lo[i]), ("upper", hi[i])):
+                xt = xhat.copy()
+                xt[i] = bound
+                if _nll(basis, xt, k) - best.fun < 1.92:
+                    if side == "lower":
+                        ci_lo_t[i] = lo[i]
+                    else:
+                        ci_hi_t[i] = hi[i]
+                    warnings_.append(f"likelihood flat toward the {side} bound of {n} (dNLL < 1.92 at the bound): "
+                                     "CI extended to the bound; parameter not constrained in that direction")
         ci_lo, ci_hi = nat(ci_lo_t).tolist(), nat(ci_hi_t).tolist()
         for i in range(len(spec.names)):
             for j in range(i + 1, len(spec.names)):
