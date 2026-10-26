@@ -1,0 +1,26 @@
+\section{Experiments and results}
+\label{sec:results}
+% ~1.25--1.75 pages once results exist. Only executed experiments may be reported, each with
+% run ID, seeds and a row in report/evidence_map.csv. Figures must be produced by scripts from
+% stored results; no hand-made or placeholder plots.
+
+\textbf{NOT RUN.} No experiment has been executed for this draft (claim PROV-02). The tables
+below are stubs from \texttt{report/generated/} and contain no values. Recorded run IDs:
+\GenRunIDs.
+
+\input{generated/feasibility_table.tex}
+\input{generated/benchmark_table.tex}
+
+\paragraph{Planned exhibits (all \notrun).}
+\begin{enumerate}
+  \item True versus fitted PSD with units and credible interval (RQ2).
+  \item Held-out Ramsey/Hahn/CPMG decay curves with uncertainty (RQ2).
+  \item Monte Carlo versus filter-function agreement across $\ge 3$ predetermined configurations
+    (RQ1, gate G3).
+  \item Equal-$n$, equal-$T$ benchmark with confidence intervals (Table~\ref{tab:benchmark}; RQ3).
+  \item Optimization training versus held-out convergence (RQ3).
+  \item Robustness to readout timing/amplitude, PSD misspecification and pulse imperfections
+    (RQ4, RQ5), including negative findings.
+\end{enumerate}
+Improvement factors, if any, will be reported as
+$\epsilon_{\mathrm{baseline}}/\epsilon_{\mathrm{optimized}}$ together with both raw infidelities.

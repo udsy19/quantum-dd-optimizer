@@ -1,0 +1,12 @@
+# LaTeX build products (the PDF is not committed until results exist and are reviewed)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz
+main.pdf
+build/

@@ -1,0 +1,16 @@
+claim_id,paper_section,exact_claim,provenance_type,artifact_path,command,commit_sha,run_id,seed,reviewer,verification_status
+LIT-01,Related work,"Dynamical decoupling of open quantum systems was introduced by Viola, Knill and Lloyd (1999). [bib key Viola1999]",literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-02,Related work,Uhrig (2007) proposed optimized pi-pulse sequences for keeping a qubit coherent. [bib key Uhrig2007],literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-03,Related work,Cywinski et al. (2008) analysed how to enhance dephasing times in superconducting qubits. [bib key Cywinski2008],literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-04,Related work,Biercuk et al. (2009) studied optimized dynamical decoupling in a model quantum memory. [bib key Biercuk2009],literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-05,Related work,Bylander et al. (2011) performed noise spectroscopy through dynamical decoupling with a superconducting flux qubit. [bib key Bylander2011],literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-06,Related work,Alvarez and Suter (2011) measured the spectrum of colored noise by dynamical decoupling. [bib key Alvarez2011],literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-07,Related work,"Souza, Alvarez and Suter (2011) studied robust dynamical decoupling for quantum computing and quantum memory. [bib key Souza2011]",literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-08,Related work,Ezzell et al. (2023) surveyed the performance of dynamical decoupling for superconducting qubits. [bib key Ezzell2023],literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-09,Related work,"Rahman, Egger and Arenz (2024) studied learning how to dynamically decouple. [bib key Rahman2024]",literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-10,Related work,"Tong, Zhang and Pokharel (2025) studied empirical learning of dynamical decoupling on quantum processors. [bib key Tong2025]",literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-11,Related work,Tong et al. (2026) studied learning error suppression strategies for dynamic quantum circuits. [bib key Tong2026],literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-12,Methods,"The optimizer is the CMA evolution strategy, described in the tutorial by Hansen (2016). [bib key Hansen2016]",literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+LIT-13,Introduction,The project motivation comes from a Quantum Machines/Columbia course project-ideas brief (2026) supplied by the team; it is not a public refereed source and is not evidence of this project's implementation or hardware access. [bib key QMBrief2026],literature,docs/REFERENCES.md;report/refs.bib,,,,,PENDING,PENDING
+PROV-01,Abstract; Discussion,No quantum-hardware (IQCC) execution has been performed for this report and no measured data are reported.,hardware,docs/PROGRESS.md,,,,,PENDING,PENDING
+PROV-02,Experiments and results,All simulation experiments are NOT RUN in this draft; no numerical result is reported.,model,report/sections/results.tex,,,,,PENDING,PENDING
