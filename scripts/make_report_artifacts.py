@@ -255,6 +255,7 @@ def convergence(run: dict) -> None:
     best = min(("xy4", "xy8"), key=lambda k: np.mean(p["baselines"][k]["val_per_seed"]))
     ax.axhline(np.mean(p["baselines"][best]["val_per_seed"]), color=COLORS[best], lw=1,
                label=f"{LABEL[best]} validation")
+    ax.axhline(p["baselines"][best]["train"], color=COLORS[best], lw=1, ls="--", label=f"{LABEL[best]} train")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel("CMA-ES objective evaluations")
