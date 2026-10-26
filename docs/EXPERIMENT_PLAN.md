@@ -79,3 +79,8 @@ filter function; criterion: |MC − FF| ≤ 1.96·SE_MC + quadrature error + dis
   Disclosed here because it touched held-out seeds.
 * 2026-10-26 (lead): the integration-test seed choices (11, 31) are outside all pre-registered
   seed sets.
+* 2026-10-26 (lead, after seeing partial Scenario A benchmark output): added EXPLORATORY
+  analyses that are NOT pre-registered and will be labelled as such: (i) ablation configs
+  `scenario_a_noamp` (no amplitude error) and `scenario_a_noT1` (no T1);
+  (ii) training-vs-validation convergence with validation seeds 8001–8002 (disjoint from test),
+  including timing-only optimisation started from XY4/XY8 phases.
