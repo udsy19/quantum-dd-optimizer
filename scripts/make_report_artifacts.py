@@ -294,6 +294,19 @@ def scen_b(run: dict) -> None:
         ax.set_xlabel(xlabel)
         ax.set_yscale("log")
     axes[0].set_ylabel(r"held-out $\epsilon$ (n=%d)" % n_show)
+    rob = rs[0]["scenario_b_robustness"]
+    def rng_(arm_prefix, key):
+        v = [rob[k]["summary"][a]["mean_over_seeds"] for k in rob if k.startswith(key) for a in rob[k]["summary"] if a.startswith(arm_prefix)]
+        return min(v), max(v)
+    for arm, nm_ in (("2", "Vz"), ("3", "DDVz"), ("4", "CMAVz")):
+        for key, kn in (("amp", "Amp"), ("shift", "Shift")):
+            lo, hi = rng_(arm, key)
+            macro(f"Rob{nm_}{kn}Lo", fmt(lo), f"Scenario B robustness n={n_show} (train run 1), arm {arm}, {key} sweep: min eps", run, "Results", "9001-9005")
+            macro(f"Rob{nm_}{kn}Hi", fmt(hi), f"Scenario B robustness n={n_show} (train run 1), arm {arm}, {key} sweep: max eps", run, "Results", "9001-9005")
+    arms = rs[0]["scenario_b_arms"]["summary"]
+    for a, v in arms.items():
+        nm_ = {"1": "NoDD", "2": "VzOnly", "3": "DDVz", "4": "CMAVz"}[a[0]]
+        macro(f"BArm{nm_}", fmt(v["mean_over_seeds"]), f"Scenario B n={n_show} arm {a}: held-out eps (nominal)", run, "Results", "9001-9005")
     axes[1].legend(fontsize=6, loc="upper left", bbox_to_anchor=(1.0, 1.0))
     save(fig, "fig_robustness_b")
 
@@ -478,8 +491,8 @@ def main() -> None:
                 ml = {"timing": "Timing", "phase": "Phase", "both": "Both"}[m]
                 macro(f"BenchB{tag}{ml}RatioLo", f"{min(x['ratio'] for x in rs):.3f}", f"Scenario B n={n} {m}: min ratio", runs["bench_b"], "Results", "9001-9005")
                 macro(f"BenchB{tag}{ml}RatioHi", f"{max(x['ratio'] for x in rs):.3f}", f"Scenario B n={n} {m}: max ratio", runs["bench_b"], "Results", "9001-9005")
-                macro(f"BenchB{tag}{ml}CILo", f"{min(x['ratio_ci'][0] for x in rs):.2f}", f"Scenario B n={n} {m}: lowest CI bound", runs["bench_b"], "Results", "9001-9005")
-                macro(f"BenchB{tag}{ml}CIHi", f"{max(x['ratio_ci'][1] for x in rs):.2f}", f"Scenario B n={n} {m}: highest CI bound", runs["bench_b"], "Results", "9001-9005")
+                macro(f"BenchB{tag}{ml}CILo", f"{min(x['ratio_ci'][0] for x in rs):.3f}", f"Scenario B n={n} {m}: lowest CI bound", runs["bench_b"], "Results", "9001-9005")
+                macro(f"BenchB{tag}{ml}CIHi", f"{max(x['ratio_ci'][1] for x in rs):.3f}", f"Scenario B n={n} {m}: highest CI bound", runs["bench_b"], "Results", "9001-9005")
     if summs:
         bench_figure(summs, floors, "fig_benchmark")
     for role, nice in (("abl_noamp", "AblNoAmp"), ("abl_noT1", "AblNoTone"), ("abl_colored", "AblColored"), ("bench_a_T4", "BenchATfour")):
