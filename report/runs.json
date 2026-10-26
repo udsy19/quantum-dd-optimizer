@@ -1,5 +1,6 @@
 {
  "_comment": "Pinned result runs consumed by scripts/make_report_artifacts.py (directory names under results/).",
  "g3": "g3_validation_20261026T231608Z_cbfe38b59354",
- "bench_a": "benchmark_scenario_a_20261026T232517Z_1bd28ade742a"
+ "bench_a": "benchmark_scenario_a_20261026T232517Z_1bd28ade742a",
+ "bench_b": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23"
 }

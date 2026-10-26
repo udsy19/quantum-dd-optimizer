@@ -288,7 +288,8 @@ def scen_b(run: dict) -> None:
         for arm in arms:
             ys = [rob[k]["summary"][arm]["mean_over_seeds"] for k in keys]
             col = {"1": COLORS["free"], "2": COLORS["cpmg"], "3": COLORS["xy4"], "4": COLORS["optimized"]}[arm[0]]
-            ax.plot([val(k) for k in keys], ys, marker="o", ms=3, color=col, label=arm.replace("_", " ")[2:])
+            ax.plot([val(k) for k in keys], ys, marker="o", ms=3, color=col, label={"1": "no DD, no frame correction", "2": "virtual-Z only", "3": "best canonical DD + virtual-Z",
+                                                        "4": "CMA-ES DD + virtual-Z"}[arm[0]])
         ax.set_xlabel(xlabel)
         ax.set_yscale("log")
     axes[0].set_ylabel(r"held-out $\epsilon$ (n=%d)" % n_show)
