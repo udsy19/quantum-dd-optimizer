@@ -1,0 +1,195 @@
+{
+  "artifacts": {
+    "payload.json": "b24f397e37f93c677d32f0c847b8fa57045031540a8e525c3bd62d1e297b6ad3"
+  },
+  "command": [
+    "scripts/run_benchmark.py",
+    "--scenario",
+    "scenario_b",
+    "--robustness"
+  ],
+  "command_str": "scripts/run_benchmark.py --scenario scenario_b --robustness",
+  "config": {
+    "calibration": {
+      "chi_1overf_FID_10us": 2.0,
+      "chi_1overf_FID_2us": 0.09214872940890509,
+      "chi_lorentzian_FID_2us": 0.023037182352226272,
+      "units": "chi dimensionless (rad^2)"
+    },
+    "description": "Scenario B: Scenario A + deterministic ac-Stark-like shift during neighbouring readout. ALL VALUES ARE SYNTHETIC ASSUMPTIONS; models a deterministic frequency shift only.",
+    "noise": {
+      "T1": 0.0001,
+      "components": [
+        {
+          "kind": "one_over_f",
+          "omega_high": 62831853.071795866,
+          "omega_low": 6.283185307179586,
+          "params": {
+            "A": 5928746911.177706,
+            "alpha": 1.0
+          }
+        },
+        {
+          "kind": "lorentzian",
+          "omega_high": "inf",
+          "omega_low": 0.0,
+          "params": {
+            "sigma": 123551.30895351955,
+            "tau_c": 5e-07
+          }
+        },
+        {
+          "kind": "white",
+          "omega_high": 628318530.7179586,
+          "omega_low": 0.0,
+          "params": {
+            "S0": 10000.0
+          }
+        }
+      ],
+      "detuning": {
+        "amplitude": 1256637.0614359172,
+        "kind": "smooth_rect",
+        "rise": 2e-08,
+        "t_off": 1.6e-06,
+        "t_on": 6e-07
+      }
+    },
+    "optimizer": {
+      "max_evals": 2000,
+      "modes": [
+        "timing",
+        "phase",
+        "both"
+      ],
+      "sigma0": 0.3
+    },
+    "overrides": {
+      "T": null,
+      "max_evals": 2000,
+      "modes": [
+        "timing",
+        "phase",
+        "both"
+      ],
+      "n": [
+        4,
+        8,
+        16
+      ],
+      "robustness": true
+    },
+    "produced_by": "python scripts/calibrate_scenario_a.py",
+    "robustness": {
+      "amplitude_scale": [
+        0.8,
+        0.9,
+        1.0,
+        1.1,
+        1.2
+      ],
+      "time_shift": [
+        -1e-07,
+        -5e-08,
+        0.0,
+        5e-08,
+        1e-07
+      ]
+    },
+    "seeds": {
+      "n_traj_test": 1024,
+      "n_traj_train": 256,
+      "optimizer": [
+        1,
+        2,
+        3
+      ],
+      "spectroscopy": {
+        "bootstrap": 5003,
+        "heldout": 5002,
+        "train": 5001
+      },
+      "test": [
+        9001,
+        9002,
+        9003,
+        9004,
+        9005
+      ],
+      "train": [
+        101,
+        102,
+        103
+      ]
+    },
+    "simulation": {
+      "control_errors": {
+        "amp_rel_bias": 0.0,
+        "amp_rel_std": 0.02,
+        "detuning_offset": 0.0,
+        "phase_std": 0.0
+      },
+      "include_T1": true,
+      "noise_dt": 1e-09,
+      "pulse_steps": 8
+    },
+    "window": {
+      "T": 2e-06,
+      "T_alt": 4e-06,
+      "dt_grid": 4e-09,
+      "guard": 4e-09,
+      "n_values": [
+        4,
+        8,
+        16
+      ],
+      "width": 3.2e-08
+    }
+  },
+  "config_hash": "ad7b16de1c231a9fb797113438370e4b910fc93171f64fcc2366074b78514eb8",
+  "cpu_count": 4,
+  "created_utc": "2026-10-26T23:45:45.105421Z",
+  "ddopt_version": "0.1.0",
+  "extra": {},
+  "git": {
+    "dirty": false,
+    "sha": "1222d72f7b3d3c01a62007a8b0710a143d887a81"
+  },
+  "manifest_schema_version": "0.1",
+  "packages": {
+    "cma": "4.5.0",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  },
+  "platform": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v153-x86_64-with-glibc2.39",
+    "release": "6.18.44-fc-v153",
+    "system": "Linux"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.13.17"
+  },
+  "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+  "seeds": {
+    "optimizer": [
+      1,
+      2,
+      3
+    ],
+    "test": [
+      9001,
+      9002,
+      9003,
+      9004,
+      9005
+    ],
+    "train": [
+      101,
+      102,
+      103
+    ]
+  }
+}
