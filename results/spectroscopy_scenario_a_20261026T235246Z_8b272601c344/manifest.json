@@ -1,0 +1,50 @@
+{
+  "artifacts": {
+    "payload.json": "e665f3c7a18b139dddf9937e266ae240d4037425b6f0dd12c46c8818d85dd4f8"
+  },
+  "command": [
+    "scripts/run_spectroscopy.py"
+  ],
+  "command_str": "scripts/run_spectroscopy.py",
+  "config": {
+    "n_boot": 200,
+    "scenario": "scenario_a",
+    "shots": 1000,
+    "spam_truth": [
+      0.05,
+      0.9
+    ]
+  },
+  "config_hash": "8b272601c3449ac2c108273fce7527768093cb20996c92e8e43e55c88f34cbda",
+  "cpu_count": 4,
+  "created_utc": "2026-10-26T23:52:46.941007Z",
+  "ddopt_version": "0.1.0",
+  "extra": {},
+  "git": {
+    "dirty": true,
+    "sha": "5a5a916739e808b441436a4bd63c1f6d7417a88b"
+  },
+  "manifest_schema_version": "0.1",
+  "packages": {
+    "cma": "4.5.0",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  },
+  "platform": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v165-x86_64-with-glibc2.39",
+    "release": "6.18.44-fc-v165",
+    "system": "Linux"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.13.17"
+  },
+  "run_id": "spectroscopy_scenario_a_20261026T235246Z_8b272601c344",
+  "seeds": {
+    "bootstrap": 5003,
+    "heldout": 5002,
+    "train": 5001
+  }
+}
