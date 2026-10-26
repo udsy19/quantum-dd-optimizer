@@ -1,0 +1,32 @@
+\section{Introduction and project bounds}
+\label{sec:intro}
+% ~0.75 page. Motivation (IQCC/Columbia), idle qubit during mid-circuit measurement (MCM),
+% metrics, hypotheses and scope.
+
+\paragraph{Motivation.} The project originates from a course project-ideas brief
+\citep{QMBrief2026} (claim LIT-13); that brief is not evidence that this implementation exists
+or that hardware access has been provisioned. Prospective use of IQCC hardware is
+\pending{authorization and access unconfirmed}.
+
+\paragraph{Problem.} An idle qubit accumulates phase errors from stochastic dephasing and, in
+dynamic circuits, from deterministic frequency shifts during neighbouring readout. We ask
+whether model-based optimization of DD sequences can reduce idle-window infidelity relative to
+strong canonical baselines under a fixed pulse budget and identical constraints.
+
+\paragraph{Research questions.}
+\begin{description}
+  \item[RQ1] Agreement of Monte Carlo coherence with analytic filter-function predictions under
+    matched PSD conventions.
+  \item[RQ2] Predictive (held-out) accuracy of noise parameters fitted from synthetic
+    Ramsey, Hahn and CPMG data.
+  \item[RQ3] Whether joint optimization of pulse timings and phases beats strong DD baselines in
+    Scenario~A (stochastic dephasing) on held-out noise.
+  \item[RQ4] Whether any gain over calibrated virtual-$Z$ and standard DD survives uncertainty
+    in readout-induced detuning (Scenario~B).
+  \item[RQ5] Robustness to pulse imperfections, drift, calibration error, PSD misspecification and
+    control quantization.
+\end{description}
+
+\paragraph{Scope.} Synthetic simulations only. A zero gain or regression is a valid outcome and
+will be reported as such. Metric: average gate infidelity against the corrected target
+(Sec.~\ref{sec:model}).

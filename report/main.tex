@@ -1,0 +1,47 @@
+% Midterm report skeleton -- quantum-dd-optimizer.
+% STATUS: SKELETON. Contains no results. Every numerical statement must come from
+% report/generated/*.tex (written by scripts from immutable results/<run_id>/ artifacts)
+% and must have a row in report/evidence_map.csv (scripts/make_evidence_map.py).
+% Build: scripts/build_report.sh   (latexmk -pdf -halt-on-error)
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+
+% --- status markers (use these; never write a number by hand) -----------------
+\newcommand{\notrun}{\textbf{NOT RUN}}
+\newcommand{\pending}[1]{\textbf{PENDING}\,(#1)}
+
+% --- auto-generated numbers / status (stubs until produced by scripts) --------
+\input{generated/status.tex}
+
+\title{Model-Based, Hardware-Aware Dynamical Decoupling\\for Idle Superconducting Qubits\\[0.5ex]
+  \large Midterm report --- DRAFT SKELETON (results \notrun)}
+\author{TEAM AUTHOR LIST --- PENDING CONFIRMATION\\
+  \small Columbia University (pending confirmation)}
+\date{\GenBuildNote}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract.tex}
+\end{abstract}
+
+\input{sections/introduction.tex}
+\input{sections/related_work.tex}
+\input{sections/model.tex}
+\input{sections/methods.tex}
+\input{sections/results.tex}
+\input{sections/discussion.tex}
+\input{sections/contributions.tex}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\end{document}

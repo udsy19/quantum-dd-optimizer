@@ -1,0 +1,32 @@
+\section{Methods (planned; implementation status pending)}
+\label{sec:methods}
+% ~1.0 page. Describe ONLY what the code actually implements once it exists; until then each
+% item is labelled with its status.
+
+\paragraph{Synthetic device and noise.} Gaussian PSD models (band-limited $1/f^\alpha$,
+Lorentzian, white) and a non-Gaussian telegraph process for misspecification tests.
+Status: \pending{ddopt.noise, Agent A}.
+
+\paragraph{Finite-pulse simulator.} Noise-averaged channel built from propagation through finite
+pulses and free intervals, graded against the corrected target. Status:
+\pending{ddopt.simulator, Agent B}.
+
+\paragraph{Spectroscopy and held-out fits.} Synthetic Ramsey/Hahn/CPMG data with shot noise and
+SPAM; fitted parameters are evaluated on disjoint held-out pulse counts and idle times.
+Status: \pending{ddopt.spectroscopy, Agent C}.
+
+\paragraph{Optimization and baselines.} CMA-ES \citep{Hansen2016} (LIT-12) over pulse timings
+and/or phases; comparison with free evolution, Hahn, CPMG, XY4, XY8, UDD and (Scenario~B)
+virtual-$Z$ at equal $n$, $T$, pulse width and correction privileges. The baseline is selected
+on training draws by a pre-registered rule; final scores use independent test seeds.
+Status: \pending{ddopt.optimizer / ddopt.evaluation, Agent D}.
+
+\paragraph{Reproducibility.} Each run writes an immutable directory
+\texttt{results/<run\_id>/} with a manifest (UTC time, git SHA and dirty flag, platform, Python
+and dependency versions, config hash, seeds, command) and SHA-256 checksums
+(\texttt{ddopt.provenance}). Tables and numbers in this report are generated from those files;
+the claim-to-artifact ledger is \texttt{report/evidence\_map.csv}. Test status:
+\GenTestSummary.
+
+\paragraph{Hardware plan.} A QUA adapter is prepared as a template only; no hardware execution
+is authorized or claimed. Status: \pending{docs/HARDWARE\_PROTOCOL.md, Agent E}.
