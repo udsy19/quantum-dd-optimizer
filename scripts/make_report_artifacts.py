@@ -362,6 +362,72 @@ Truth & Fit model & RMSE/floor & Coverage & $T_2^\ast$ & $T_2^{\rm Hahn}$ & Succ
        p["pipeline"]["fit_settings"]["n_boot"], run["run_id"].replace("_", r"\_"), "\n".join(rows)))
 
 
+def ablation_table(runs: dict) -> None:
+    variants = [("bench_a", "A (pre-registered), $T=2\\,\\mu$s", "scenario_a", 2e-6),
+                ("bench_a_T4", "A, $T=4\\,\\mu$s (pre-registered)", "scenario_a", 4e-6),
+                ("abl_noamp", "A without amplitude error$^\\dagger$", "scenario_a_noamp", 2e-6),
+                ("abl_noT1", "A without $T_1$$^\\dagger$", "scenario_a_noT1", 2e-6),
+                ("abl_colored", "A, colored noise only$^\\dagger$", "scenario_a_colored", 2e-6)]
+    rows = []
+    for role, name, scen, T in variants:
+        if role not in runs:
+            continue
+        smm = bench_summary(runs[role])
+        fl = floor_infidelity(load_scenario(scen), T)
+        for n, e in sorted(smm.items()):
+            cells = []
+            for m in ("timing", "phase", "both"):
+                rs = e["modes"].get(m, [])
+                cells.append(f"{min(x['ratio'] for x in rs):.3f}--{max(x['ratio'] for x in rs):.3f}" if rs else "---")
+            rows.append(f"{name if n == min(smm) else ''} & {n} & {e['selected'].upper()} & ${fmt(e['baselines'][e['selected']])}$ & "
+                        f"${fmt(fl)}$ & " + " & ".join(cells) + r" \\")
+        rows.append(r"\addlinespace")
+    write("ablation_table.tex", r"""\begin{table}[t]
+\centering\scriptsize
+\caption{Held-out comparison across scenario variants (test seeds 9001--9005). Ratio
+$=\epsilon_{\rm selected}/\epsilon_{\rm CMA}$ (range over 3 training runs; $>1$ favours CMA-ES).
+Floor = analytic $T_1$ amplitude damping composed with white dephasing over $T$ (pulse-independent).
+$^\dagger$Post-hoc exploratory ablations added after seeing the pre-registered results.}
+\label{tab:ablation}
+\begin{tabular}{@{}lcccc ccc@{}}\toprule
+Variant & $n$ & Sel. & $\epsilon_{\rm sel}$ & Floor & timing-only & phase-only & timing+phase\\\midrule
+%s
+\bottomrule\end{tabular}\end{table}
+""" % "\n".join(rows[:-1]))
+
+
+def model_based(run: dict) -> None:
+    p = run["payload"]
+    rows = []
+    names = {"truth": "true model", "fitted_full_alpha1": "fitted full model", "fitted_reduced_alpha1": "fitted reduced model"}
+    by = {}
+    for r in p["rows"]:
+        by.setdefault((r["source"], r["n"]), []).append(r)
+    for (src, n), rs in sorted(by.items(), key=lambda kv: (kv[0][1], list(names).index(kv[0][0]))):
+        rat = [x["pooled"]["ratio"] for x in rs]
+        lo = min(x["pooled"]["ratio_ci"][0] for x in rs)
+        hi = max(x["pooled"]["ratio_ci"][1] for x in rs)
+        sel = {x["selected_baseline"] for x in rs}
+        rows.append(f"{names[src]} & {n} & {'/'.join(sorted(s.upper() for s in sel))} & ${fmt(float(np.mean([x['pooled']['eps_a'] for x in rs])))}$ & "
+                    f"${fmt(float(np.mean([x['pooled']['eps_b'] for x in rs])))}$ & {min(rat):.3f}--{max(rat):.3f} & [{lo:.3f}, {hi:.3f}] \\\\")
+        tag = {"truth": "Truth", "fitted_full_alpha1": "FitFull", "fitted_reduced_alpha1": "FitRed"}[src]
+        nn = {4: "Four", 8: "Eight", 16: "Sixteen"}[n]
+        macro(f"MB{tag}{nn}RatioLo", f"{min(rat):.3f}", f"model-based: trained on {src}, n={n}: min ratio on truth", run, "Results", "9001-9005")
+        macro(f"MB{tag}{nn}RatioHi", f"{max(rat):.3f}", f"model-based: trained on {src}, n={n}: max ratio on truth", run, "Results", "9001-9005")
+    write("model_based_table.tex", r"""\begin{table}[t]
+\centering\scriptsize
+\caption{Model-based pipeline: baseline selection and CMA-ES (timing+phase) trained on the noise
+model in column 1, all arms evaluated on the \emph{true} Scenario~A model (test seeds 9001--9005).
+Fitted models come from run \texttt{%s}. Ratio as in Table~\ref{tab:ablation}; CI = envelope of pooled
+paired-bootstrap 95\%% intervals over the 3 training runs. Run \texttt{%s}.}
+\label{tab:model_based}
+\begin{tabular}{@{}lcccccc@{}}\toprule
+Training model & $n$ & Sel. & $\epsilon_{\rm sel}$ & $\epsilon_{\rm CMA}$ & Ratio & CI envelope\\\midrule
+%s
+\bottomrule\end{tabular}\end{table}
+""" % (p["spectroscopy_run"].replace("_", r"\_"), run["run_id"].replace("_", r"\_"), "\n".join(rows)))
+
+
 def main() -> None:
     runs_map = json.loads((ROOT / "report" / "runs.json").read_text())
     runs = {k: load_run(ROOT / "results" / v) for k, v in runs_map.items() if not k.startswith("_")}
@@ -430,6 +496,9 @@ def main() -> None:
                 ablation_rows.append((n, e))
     if "spectroscopy" in runs:
         spectroscopy(runs["spectroscopy"])
+    ablation_table(runs)
+    if "model_based" in runs:
+        model_based(runs["model_based"])
     if "convergence" in runs:
         convergence(runs["convergence"])
     # status macros
