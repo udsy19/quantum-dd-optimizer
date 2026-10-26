@@ -13,12 +13,14 @@ __pycache__/
 build/
 dist/
 *.egg-info/
-results/*
-!results/.gitkeep
-figures/*
-!figures/.gitkeep
+# results/ and figures/ are committed: they are the evidence. Large scratch goes to results/_scratch/.
+results/_scratch/
 report/*.aux
 report/*.log
 report/*.out
 report/*.fls
 report/*.fdb_latexmk
+report/*.toc
+report/*.bbl
+report/*.blg
+report/*.synctex.gz
