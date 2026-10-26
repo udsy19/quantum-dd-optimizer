@@ -1,7 +1,8 @@
 """Derive post-hoc ablation configs from configs/scenario_a.json (EXPLORATORY, not pre-registered).
 
   scenario_a_noamp : Scenario A without the 2 % amplitude error (dephasing + T1 only)
-  scenario_a_noT1  : Scenario A without T1 (isolates the decouplable dephasing part)
+  scenario_a_noT1  : Scenario A without T1
+  scenario_a_colored: no T1 and no white floor (only decouplable colored dephasing + amp error)
 Usage: python scripts/make_ablation_configs.py
 """
 import json
@@ -22,4 +23,9 @@ b["noise"]["T1"] = "inf"
 b["simulation"]["include_T1"] = False
 b["produced_by"] = "python scripts/make_ablation_configs.py"
 (ROOT / "configs/scenario_a_noT1.json").write_text(json.dumps(b, indent=2) + "\n")
+c = json.loads(json.dumps(b))
+c["description"] = ("ABLATION (post-hoc, exploratory) of Scenario A: T1 and white floor removed, i.e. only "
+                    "colored (1/f + Lorentzian) dephasing + 2% amplitude error. SYNTHETIC ASSUMPTIONS.")
+c["noise"]["components"] = [x for x in c["noise"]["components"] if x["kind"] != "white"]
+(ROOT / "configs/scenario_a_colored.json").write_text(json.dumps(c, indent=2) + "\n")
 print("ok")

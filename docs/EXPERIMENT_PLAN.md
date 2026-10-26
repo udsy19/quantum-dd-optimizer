@@ -84,3 +84,7 @@ filter function; criterion: |MC − FF| ≤ 1.96·SE_MC + quadrature error + dis
   `scenario_a_noamp` (no amplitude error) and `scenario_a_noT1` (no T1);
   (ii) training-vs-validation convergence with validation seeds 8001–8002 (disjoint from test),
   including timing-only optimisation started from XY4/XY8 phases.
+* 2026-10-26 (lead, after the full Scenario A result): XY8/XY4 test infidelity (~1.00e-2) is
+  at the non-decouplable floor (T1 ≈ 6.6e-3 plus white-noise floor ≈ 3.3e-3), so Scenario A has
+  almost no headroom. Added EXPLORATORY ablation `scenario_a_colored` (no T1, no white floor).
+  The pre-registered Scenario A result stands as the primary result.
