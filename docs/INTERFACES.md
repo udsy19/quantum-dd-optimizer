@@ -80,6 +80,12 @@ def simulate(seq: PulseSequence, noise: NoiseModel, config: SimulationConfig,
              *, delta_traj: np.ndarray | None = None) -> SimulationResult
     # Noise-averaged channel average gate fidelity against the corrected target.
     # If delta_traj is given (frozen draws, CRN) it is used instead of sampling.
+    # v0.2 (merged Agent B): delta_traj is the STOCHASTIC part only; the deterministic profile
+    # and ControlErrors.detuning_offset are added inside. Extra keyword-only args:
+    # t_grid, amp_eps, phase_err, return_per_traj. Draw order from default_rng(seed):
+    # noise (if any stochastic component) -> amp_eps normals -> phase_err normals.
+    # To reproduce a run exactly pass all four outputs of frozen_draws.
+def time_grid(T, dt) -> np.ndarray   # ceil-based uniform grid covering [0, T]
 def frozen_draws(noise, T, config) -> dict   # {"t": grid, "delta": (n_traj, len), "amp_eps", "phase_err"}
 def virtual_z_angle(seq, noise, config) -> float
 ```
