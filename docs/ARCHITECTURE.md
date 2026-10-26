@@ -1,0 +1,3 @@
+# Architecture decision record (initial)
+
+Python 3.11+; NumPy/SciPy for baseline numerical methods; dataclasses with explicit units; optional QuTiP for cross-checks; CMA library or documented equivalent, with pinned versions. Avoid forcing an unnecessary framework. Implement in numerical layers (analytical filter, finite pulse propagation, optional channels), then identification, optimization and independent evaluation. Use QUA only in isolated optional adapter after authorization. All results store machine-readable manifests. Formal API to be finalized after initial physics derivations; see master prompt contracts.
