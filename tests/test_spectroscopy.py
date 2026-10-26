@@ -251,3 +251,19 @@ def test_run_pipeline_smoke():
         f = t["fits"]["reduced_alpha1"]
         assert "heldout" in f["derived"] and "param_vs_truth" in f and "t2_vs_truth" in f
         assert "bootstrap_x" not in f["provenance"]
+
+
+def test_flat_direction_extends_ci_to_bound(design):
+    """Full model on data with no Lorentzian (white and Lorentzian with short tau_c are
+    near-degenerate): at least one parameter is unconstrained toward a bound; every such flagged
+    parameter must have its CI extended to that bound (no spuriously narrow bootstrap CI)."""
+    tr, _ = _data(REDUCED_TRUTH, design, 51, 151)
+    fr = S.fit(tr, "full", n_boot=6, rng=251)
+    flat = [w for w in fr.identifiability_warnings if "likelihood flat toward" in w]
+    assert flat
+    for w in flat:
+        side = "lower" if "lower bound" in w else "upper"
+        name = w.split(" bound of ")[1].split(" ")[0]
+        i = fr.param_names.index(name)
+        b = S.DEFAULT_BOUNDS[name][0 if side == "lower" else 1]
+        assert (fr.param_ci_low if side == "lower" else fr.param_ci_high)[i] == pytest.approx(b, rel=1e-9, abs=1e-12)
