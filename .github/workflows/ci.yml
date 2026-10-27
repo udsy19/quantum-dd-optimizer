@@ -26,8 +26,9 @@ jobs:
           pip install -e ".[test]"
       - name: Install pandoc (tests/test_site.py renders the paper from report/)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends pandoc
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends pandoc
       - name: Record environment
         run: |
           python --version
@@ -55,10 +56,12 @@ jobs:
         run: |
           if [ -f report/main.tex ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
       - name: Install TeX Live (apt)
+        timeout-minutes: 25
         if: steps.src.outputs.present == 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base \
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends latexmk texlive-latex-base \
             texlive-latex-recommended texlive-latex-extra texlive-publishers texlive-fonts-recommended lmodern poppler-utils
       - name: Build report PDF
         if: steps.src.outputs.present == 'true'
