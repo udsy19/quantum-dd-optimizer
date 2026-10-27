@@ -86,3 +86,7 @@ Confirm license choice and author consent before publishing more team material.
 The main midterm manuscript uses IEEE conference formatting with the four confirmed author names and university emails, a five-page target and a hard six-page cap. Extended scientific results live in the separately compiled supplementary appendix. GitHub CI compiles both and checks the main paper's page count; individual contributions require team confirmation.
 
 The IEEE report build requires the `texlive-publishers` LaTeX distribution for `IEEEtran` and `IEEEtranN`.
+
+## One combined report
+
+GitHub Actions now builds `report/combined_report.pdf`, containing the five-page IEEE main manuscript followed by the supplementary appendix. The appendix is part of the same PDF and repository but does not count toward the five-page main-text limit. Sources remain separately editable in `report/main.tex` and `report/appendix.tex`.
