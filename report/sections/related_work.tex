@@ -1,11 +1,7 @@
 \section{Related work}
 \label{sec:related}
 % ~0.75 page. Each sentence maps to a LIT-xx claim in report/claims.json.
-% Citation audit 2026-10-26 (docs/CITATION_AUDIT.md): NO primary source (arXiv abstract
-% pages, Crossref, doi.org, APS) was reachable from the audit environment (proxy 403), so
-% bibliographic metadata remain UNVERIFIED and no sentence below is based on a reading of
-% an abstract. Each characterisation is restricted to what the cited title itself states.
-% Do not expand these descriptions until the abstracts have been read from arxiv.org.
+% Primary arXiv identities were checked in a later audit; consult docs/CITATION_AUDIT.md.
 
 % LIT-01
 Dynamical decoupling of open quantum systems was introduced by \citet{Viola1999}.
@@ -33,8 +29,7 @@ is described as empirical and carried out on quantum processors, i.e.\ hardware 
 % LIT-09, LIT-11
 The published abstract of \citet{Tong2026} describes empirical optimization of
 DD in dynamic quantum circuits, including measurement and feedforward; the present work,
-by contrast, is synthetic and model-based. Remaining bibliographic fields and
-other references still require a full source audit (\texttt{docs/CITATION\_AUDIT.md}).
+by contrast, is synthetic and model-based. Publisher-version metadata and citation details remain separately tracked (\texttt{docs/CITATION\_AUDIT.md}).
 
 \paragraph{Positioning.}
 % No LIT claim: describes this project only. Novelty claim deliberately limited.
@@ -43,5 +38,5 @@ against a simulated noise model, and no quantum hardware has been used.
 Its contribution is limited to a pre-registered, held-out synthetic benchmark of model-based DD
 optimization with explicit noise floors.
 Its main finding is negative: under the pre-registered synthetic model, CMA-ES did not
-outperform XY4/XY8 on held-out noise (Sec.~\ref{sec:results}).
+provide a practically meaningful generalizable improvement over XY4/XY8 on held-out noise (Sec.~\ref{sec:results}).
 A synthetic benchmark of this kind does not test whether its conclusions transfer to hardware.
