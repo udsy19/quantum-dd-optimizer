@@ -87,6 +87,9 @@ jobs:
         with:
           name: report-pdf
           path: |
+            report/merged.tex
+            report/merged.pdf
+            report/overleaf-project.zip
             report/combined_report.pdf
             report/main.pdf
             report/main.log
