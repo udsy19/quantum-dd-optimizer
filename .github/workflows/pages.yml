@@ -1,0 +1,68 @@
+# Build and deploy the online paper (site/dist) to GitHub Pages.
+#
+# One-time setup by the repository owner: Settings -> Pages -> Build and deployment ->
+# Source: "GitHub Actions". Until that is enabled the deploy job fails; nothing else is affected.
+#
+# The site is generated from checksum-verified runs pinned in report/runs.json; the build fails if
+# report/generated/numbers.tex disagrees with those payloads. The paper PDF is built here too; if
+# the TeX build fails, the site is still deployed without the PDF link.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the site footer links the build commit
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: Install TeX Live (apt)
+        id: tex
+        continue-on-error: true
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base \
+            texlive-latex-recommended texlive-latex-extra texlive-publishers texlive-fonts-recommended lmodern poppler-utils
+      - name: Build paper PDF
+        id: pdf
+        continue-on-error: true
+        if: steps.tex.outcome == 'success'
+        run: PYTHON=python bash scripts/build_report.sh
+      - name: Build site
+        env:
+          # publish the PDF only if the report build passed all of its checks
+          PDF: ${{ steps.pdf.outcome == 'success' && 'report/combined_report.pdf' || 'no-pdf' }}
+        run: python scripts/build_site.py --out site/dist --pdf "$PDF"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

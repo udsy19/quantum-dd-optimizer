@@ -421,8 +421,8 @@ def spectroscopy(run: dict) -> None:
             t2 = fr["t2_vs_truth"]
             def t2c(key):
                 v = t2[key]
-                return (f"{v['fit_s']*1e6:.2f} [{v['ci95_s'][0]*1e6:.2f}, {v['ci95_s'][1]*1e6:.2f}]"
-                        f"{'' if v['truth_in_ci'] else '$^\\ast$'}")
+                star = "" if v["truth_in_ci"] else "$^\\ast$"
+                return f"{v['fit_s']*1e6:.2f} [{v['ci95_s'][0]*1e6:.2f}, {v['ci95_s'][1]*1e6:.2f}]{star}"
             rows.append(f"{tn} & {nice[k]} & {h['rmse']/floor_:.2f} & {h['coverage95']:.3f} & {t2c('T2star')} & "
                         f"{t2c('T2_hahn')} & {'yes' if fr['success'] else 'no'} \\\\")
             tag = {"gaussian": "Gauss", "telegraph": "Tel"}[tn] + {"reduced_alpha1": "Red", "full_alpha1": "Full", "full_alpha_free": "FullAf"}[k]

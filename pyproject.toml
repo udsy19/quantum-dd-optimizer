@@ -5,16 +5,39 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ddopt"
 version = "0.1.0"
-description = "Model-based, hardware-aware dynamical decoupling research code (synthetic simulations only)"
+description = "Pre-registered synthetic benchmark of model-based dynamical decoupling for idle superconducting qubits"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
+authors = [
+  { name = "Christian De Zabala F." },
+  { name = "Madeline Feldner" },
+  { name = "Zarar Haider" },
+  { name = "Udaya Vijay Anand" },
+]
+keywords = ["dynamical decoupling", "superconducting qubits", "filter function", "noise spectroscopy", "CMA-ES", "quantum control"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Physics",
+]
 dependencies = [
   "numpy>=2.0",
   "scipy>=1.13",
   "cma==4.5.0",
   "matplotlib>=3.8",
 ]
+
+[project.urls]
+Homepage = "https://udsy19.github.io/quantum-dd-optimizer/"
+Repository = "https://github.com/udsy19/quantum-dd-optimizer"
+Changelog = "https://github.com/udsy19/quantum-dd-optimizer/blob/main/CHANGELOG.md"
+Issues = "https://github.com/udsy19/quantum-dd-optimizer/issues"
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
