@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software or its synthetic benchmark, please cite it as below.
+  Results are synthetic simulations; no hardware data. Author list pending team confirmation.
+title: "Quantum DD Optimizer: model-based dynamical decoupling under hardware timing constraints (synthetic study)"
+type: software
+authors:
+  - family-names: "Vijay Anand"
+    given-names: "Udaya"
+version: 0.1.0
+date-released: 2026-10-27
+license: MIT
+repository-code: "https://github.com/udsy19/quantum-dd-optimizer"
+url: "https://udsy19.github.io/quantum-dd-optimizer/"
+keywords:
+  - dynamical decoupling
+  - superconducting qubits
+  - filter function
+  - noise spectroscopy
+  - CMA-ES
+  - quantum control

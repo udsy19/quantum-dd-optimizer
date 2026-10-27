@@ -1,0 +1,20 @@
+name: Bug report
+description: Something in the code, tests, report or website is wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include the exact command, the output, and the expected behaviour.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit SHA / version
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Python version, `pip freeze` excerpt.

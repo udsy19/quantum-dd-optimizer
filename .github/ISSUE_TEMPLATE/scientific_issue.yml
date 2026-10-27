@@ -1,0 +1,23 @@
+name: Scientific issue
+description: A physics, statistics, provenance or claim-vs-evidence problem
+labels: [science]
+body:
+  - type: textarea
+    id: claim
+    attributes:
+      label: Claim or computation affected
+      description: Paper section, claim ID from report/evidence_map.csv, or file:line.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Derivation, counter-example or command + output that shows the problem.
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options: [critical, high, medium, low]
