@@ -299,3 +299,7 @@ also synchronizes the generated `report/merged.tex` into the repository. The spl
 editing a downloaded Overleaf project does **not** automatically change GitHub. To
 retain an Overleaf edit in later regenerated versions, apply it to the canonical
 report source as well.
+
+## For paper contributors and AI coding agents
+
+Read **[LaTeX and Overleaf editing guide](docs/LATEX_OVERLEAF_AGENT_GUIDE.md)** before changing the manuscript. It explains the authoritative source files, generated tables and figures, IEEE page limits, report build validation, and the exact limitations of Overleaf/GitHub synchronization. Importantly, `report/merged.tex` is currently **generated output**, not a safely editable two-way source of truth.
