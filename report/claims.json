@@ -197,6 +197,19 @@
    "verification_status": "UNVERIFIED"
   },
   {
+   "claim_id": "GEN-ProvenanceDirtyRuns",
+   "paper_section": "Discussion",
+   "exact_claim": "5 of the 11 pinned runs in report/runs.json record git.dirty=true in their manifest: spectroscopy, bench_a_T4, abl_noamp, abl_noT1, tests",
+   "provenance_type": "model",
+   "artifact_path": "results/spectroscopy_scenario_a_20261026T235246Z_8b272601c344/manifest.json;results/benchmark_scenario_a_T4us_20261026T235309Z_da0c18904bc7/manifest.json;results/ablation_noamp_20261027T000041Z_323cd5f2b975/manifest.json;results/ablation_noT1_20261027T000317Z_20454f2f5af9/manifest.json;results/test_suite_20261027T000401Z_2fc21cc36501/manifest.json",
+   "command": "python scripts/make_report_artifacts.py",
+   "commit_sha": "5a5a916739e8+dirty;0efe3b028193+dirty;995776abadc4+dirty;995776abadc4+dirty;995776abadc4+dirty",
+   "run_id": "spectroscopy_scenario_a_20261026T235246Z_8b272601c344;benchmark_scenario_a_T4us_20261026T235309Z_da0c18904bc7;ablation_noamp_20261027T000041Z_323cd5f2b975;ablation_noT1_20261027T000317Z_20454f2f5af9;test_suite_20261027T000401Z_2fc21cc36501",
+   "seed": "",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
    "claim_id": "GEN-GthreeRelSELo",
    "paper_section": "Results",
    "exact_claim": "G3: smallest relative MC standard error (%)",

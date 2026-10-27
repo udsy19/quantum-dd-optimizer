@@ -13,7 +13,7 @@ where $\delta(t)$ is zero-mean stationary noise, assumed \emph{Gaussian} unless 
 otherwise, $d(t)$ a known deterministic detuning profile (e.g.\ during neighbouring readout),
 and $\delta_{\mathrm{off}}$ a static calibration offset.
 
-\paragraph{Spectrum and filter.} With autocorrelation
+\paragraph{Spectrum and filter} With autocorrelation
 $C(\tau)=\langle\delta(t+\tau)\delta(t)\rangle$ we use the \emph{two-sided} PSD
 $S_2(\omega)=\int_{-\infty}^{\infty} C(\tau)e^{-i\omega\tau}\,d\tau$ in rad$^2$/s.
 For the switching function $y(t)$ (toggling-frame $z$ component, $\pm1$ between ideal $\pi$
@@ -25,13 +25,13 @@ pulses),
 and, under the Gaussian assumption, $W=e^{-\chi/2}$ with pure-dephasing average gate infidelity
 $r=(1-W)/3$. Low- and high-frequency cutoffs of $S_2$ are stated explicitly for every model.
 
-\paragraph{Energy relaxation.} $T_1$ is modelled as amplitude damping with
+\paragraph{Energy relaxation} $T_1$ is modelled as amplitude damping with
 $\gamma=1-e^{-t/T_1}$ per free segment; channels are composed as Pauli transfer matrices, never
 by adding infidelities. Amplitude damping alone has average infidelity
-$r_{\rm AD}=(2+\gamma-2\sqrt{1-\gamma})/6\approx\gamma/3$ (derived in \texttt{docs/PHYSICS.md} and
+$r_{\rm AD}=(2+\gamma-2\sqrt{1-\gamma})/6\approx\gamma/3$ (derived in \repopath{docs/PHYSICS.md} and
 checked numerically against Haar and six-state averages).
 
-\paragraph{Target and frame correction.} Fidelity is evaluated against
+\paragraph{Target and frame correction} Fidelity is evaluated against
 $U_{\mathrm{target}}=R_z(\theta_{\mathrm{vz}})U_0$, where $U_0$ is the ideal net control
 unitary of the sequence and $\theta_{\mathrm{vz}}$ is a virtual-$Z$ correction of the known
 $d(t)$ (zero unless frame correction is allowed). Average gate fidelity of a channel with PTM

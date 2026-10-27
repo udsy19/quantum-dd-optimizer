@@ -781,7 +781,8 @@ class ReportRenderer:
         if not authors:
             raise BuildError("no \\IEEEauthorblockN author entries found in report/main.tex")
         after = full[full.index("\\maketitle"):]
-        date_env = re.match(r"\\maketitle\s*\\begin\{center\}(.*?)\\end\{center\}", after, re.S)
+        date_env = (re.match(r"\\maketitle\s*\\begin\{center\}(.*?)\\end\{center\}", after, re.S)
+                    or re.search(r"\\IEEEspecialpapernotice\{(.*?)\}", full, re.S))
         keywords = env_body(full, "IEEEkeywords")
         abstract = env_body(full, "abstract")
         if abstract is None:
@@ -907,7 +908,8 @@ class ReportRenderer:
         body = re.sub(r"\\cmidrule(\([^)]*\))?\{[^}]*\}", "", body)
         body = re.sub(r"\\(addlinespace|centering|scriptsize|footnotesize|small|normalsize|large|Large)(?![A-Za-z])"
                       r"(\[[^\]]*\])?", "", body)
-        body = re.sub(r"\\paragraph\{([^}]*)\}", r"\n\n\\textbf{\1} ", body)
+        # run-in heading; IEEEtran adds its own punctuation in the PDF, the web text gets a period
+        body = re.sub(r"\\paragraph\{([^}]*)\}", r"\n\n\\textbf{\1.} ", body)
 
         def graphic(m):
             name = Path(m.group(1)).stem
@@ -1352,6 +1354,10 @@ def build(out: Path, pdf_dir: Path | None = None, site_url: str = SITE_URL) -> d
               "spectroscopy": data.spectroscopy()}
     tests = data.tests_counts()
     data.expect("TestsPassed", str(tests["passed"]))
+    dirty_roles = [k for k, r in data.runs.items() if r["manifest"].get("git", {}).get("dirty")]
+    data.expect("PinnedRunsTotal", str(len(data.runs)))
+    data.expect("PinnedRunsDirty", str(len(dirty_roles)))
+    data.expect("PinnedRunsDirtyList", data.mra.role_listing(dirty_roles))
 
     # stale-macro guard: every macro we can recompute must match numbers.tex exactly
     bad = [f"\\{k}: numbers.tex={macros.get(k)!r} recomputed={v!r}" for k, v in sorted(data.expected.items())
