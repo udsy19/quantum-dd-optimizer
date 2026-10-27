@@ -1,42 +1,21 @@
-/* Page behaviour: theme toggle, math, table of contents, provenance popovers, copy buttons. */
+/* Page behaviour: nav, math, table of contents, provenance popovers, copy buttons. */
 (function () {
   "use strict";
-  var root = document.documentElement;
-  var KEY = "ddopt-theme";
-
-  function systemDark() {
-    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  }
-  function currentTheme() {
-    var t = root.getAttribute("data-theme");
-    return t === "light" || t === "dark" ? t : (systemDark() ? "dark" : "light");
-  }
-  function syncToggle() {
-    var b = document.querySelector(".theme-toggle");
-    if (!b) return;
-    var dark = currentTheme() === "dark";
-    b.setAttribute("aria-pressed", dark ? "true" : "false");
-    b.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
-  }
-  var toggle = document.querySelector(".theme-toggle");
-  if (toggle) {
-    toggle.addEventListener("click", function () {
-      var next = currentTheme() === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", next);
-      try { window.localStorage.setItem(KEY, next); } catch (e) { /* not persisted */ }
-      syncToggle();
-      document.dispatchEvent(new CustomEvent("themechange"));
-    });
-  }
-  syncToggle();
+  /* ---- nav: hairline once the page scrolls ---- */
+  var nav = document.getElementById("nav");
+  function navLine() { if (nav) nav.classList.toggle("scrolled", window.scrollY > 8); }
+  window.addEventListener("scroll", navLine, { passive: true });
+  navLine();
 
   /* ---- math ---- */
   function renderMath() {
     if (!window.katex) return;
-    document.querySelectorAll(".tex, .tex-display").forEach(function (el) {
+    /* .math.inline / .math.display: pandoc --katex output rendered from report/; .tex: site text */
+    document.querySelectorAll(".math.inline, .math.display, .tex, .tex-display").forEach(function (el) {
       var src = el.textContent;
+      var display = el.classList.contains("display") || el.classList.contains("tex-display");
       try {
-        window.katex.render(src, el, { displayMode: el.classList.contains("tex-display"), throwOnError: false, output: "htmlAndMathml" });
+        window.katex.render(src, el, { displayMode: display, throwOnError: false, output: "htmlAndMathml" });
         el.classList.add("katex-rendered");
       } catch (e) { el.textContent = src; }
     });

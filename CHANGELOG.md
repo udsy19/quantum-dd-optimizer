@@ -20,7 +20,7 @@ the pinned runs in `report/runs.json`, not by the package version.
 - IEEE conference-format paper (≤ 6 pages; four Columbia authors) and separate supplementary appendix, generated from recorded runs; claims ledger (`report/evidence_map.csv`).
 - Independent red-team review (`docs/REVIEW_FINDINGS.md`) and citation audit.
 - SDK-free QUA schedule adapter (not hardware tested) and hardware protocol.
-- Website (online paper) and GitHub Pages workflow; CI and release workflows.
+- Website (online paper) rendered from the `report/` LaTeX sources at build time and redeployed by GitHub Pages on every push to `main`; CI and release workflows; issue/PR templates; Dependabot.
 
 ### Findings
 - Synthetic, pre-registered: CMA-ES did not beat XY4/XY8 on held-out noise; see the paper.
