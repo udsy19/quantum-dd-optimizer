@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>@@title@@</title>
+<meta name="description" content="@@description@@">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="@@site_url@@">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="article">
+<meta property="og:title" content="@@title@@">
+<meta property="og:description" content="@@description@@">
+<meta property="og:url" content="@@site_url@@">
+<meta property="og:image" content="@@site_url@@assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Title card: Model-based dynamical decoupling, synthetic simulation study, results negative">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="@@title@@">
+<meta name="twitter:description" content="@@description@@">
+<meta name="twitter:image" content="@@site_url@@assets/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="@@katex_css@@" integrity="@@katex_css_sri@@" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/theme.js"></script>
+<script defer src="@@katex_js@@" integrity="@@katex_js_sri@@" crossorigin="anonymous"></script>
+<script defer src="assets/charts.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<a class="skip" href="#article">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top" aria-label="Back to top">
+      <img src="assets/favicon.svg" width="22" height="22" alt="">
+      <span>quantum-dd-optimizer</span>
+    </a>
+    <nav class="topnav" aria-label="Site">
+      <a href="#results">Results</a>
+      <a href="#reproducibility">Reproduce</a>
+      @@if_pdf@@<a href="paper.pdf">PDF</a>@@endif_pdf@@
+      <a href="@@repo_url@@">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle light / dark">
+        <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.2A8 8 0 0 1 9.8 4a8 8 0 1 0 10.2 10.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" aria-labelledby="paper-title">
+  <div class="hero-inner">
+    <p class="eyebrow">Midterm report · synthetic-simulation study</p>
+    <h1 id="paper-title">Model-Based Dynamical Decoupling under Hardware Timing Constraints for Idle Superconducting Qubits</h1>
+    <ul class="badges" aria-label="Study status">
+      <li class="badge">Synthetic simulation</li>
+      <li class="badge">Pre-registered</li>
+      <li class="badge badge-warn">No hardware data</li>
+      <li class="badge badge-neg">Results negative</li>
+    </ul>
+    <dl class="meta">
+      <div><dt>Authors</dt><dd>Team author list — pending confirmation</dd></div>
+      <div><dt>Affiliation</dt><dd>Columbia University (pending confirmation)</dd></div>
+      <div><dt>Status</dt><dd>Not peer reviewed · not submitted · human review of the evidence ledger pending</dd></div>
+    </dl>
+    <div class="actions">
+      @@if_pdf@@<a class="btn btn-primary" href="paper.pdf">Read the PDF</a>@@endif_pdf@@
+      <a class="btn" href="@@repo_url@@">GitHub repository</a>
+      <a class="btn btn-ghost" href="data/build.json">Site data (JSON)</a>
+    </div>
+  </div>
+</section>
+
+<section class="abstract-wrap" aria-labelledby="abstract-h">
+  <div class="abstract">
+    <h2 id="abstract-h" class="label">Abstract</h2>
+    <p>An idle superconducting qubit waiting during a neighbour's mid-circuit measurement loses coherence to stochastic dephasing and to deterministic frequency shifts. We ask whether model-based optimization of dynamical-decoupling (DD) pulse timings and phases with CMA-ES outperforms strong canonical sequences. To answer it fairly, we pre-registered a synthetic transmon-like model, seeds, baselines and a training-only baseline-selection rule, and scored every arm on independent held-out noise. A finite-pulse Monte-Carlo simulator agrees with filter-function theory in five predetermined configurations (largest |z| = @@num:GthreeMaxZ@@). Synthetic Ramsey/Hahn/CPMG spectroscopy recovers a predictive noise model (held-out RMSE @@num:SpecGaussFullRmseRatio@@× the shot-noise floor), but the spectrum is not uniquely identified. In the pre-registered Scenario A, no CMA-ES mode delivered a practically meaningful gain over the selected XY4/XY8 baseline, whose infidelity (@@num:BenchASixteenSelEps@@ at n = 16) is already at the T<sub>1</sub>-plus-white-noise floor (@@num:FloorA@@). With a deterministic Stark-like shift and virtual-Z correction, CMA-ES beat XY4 by a few percent at the nominal profile only at n = 4. The timing+phase variant of that gain reversed under the pre-registered ±100 ns readout-timing shifts, and only phase-only sequences kept a marginal, model-specific advantage. Optimizing on fitted models, or with more headroom, did not help, and training gains did not generalize. <strong>All results are synthetic; no quantum hardware was used.</strong></p>
+    <p class="hint">Numbers with a dotted underline carry provenance: hover, focus or tap one to see the recorded run, command and code commit it comes from.</p>
+  </div>
+</section>
+
+<section class="findings" aria-labelledby="findings-h">
+  <h2 id="findings-h" class="section-kicker">Key findings</h2>
+  <div class="cards">
+    <article class="card">
+      <h3>No CMA-ES gain in Scenario A</h3>
+      <p class="card-value">@@num:BenchASixteenSelEps@@</p>
+      <p class="card-sub">XY8 held-out infidelity at n = 16, against an analytic T<sub>1</sub> + white-noise floor of @@num:FloorA@@. Best timing+phase ratio at n = 16: @@num:BenchASixteenBothRatioLo@@–@@num:BenchASixteenBothRatioHi@@ (&lt; 1 favours XY8).</p>
+      @@prov:BenchASixteenSelEps@@
+    </article>
+    <article class="card">
+      <h3>Scenario B gain does not survive timing shifts</h3>
+      <p class="card-value">@@num:RobBFourBothWorstMax@@</p>
+      <p class="card-sub">Worst case of timing+phase CMA-ES at n = 4 under ±50–100 ns readout-timing shifts, versus @@num:RobBFourDDWorst@@ for XY4 + virtual-Z. It wins in only @@num:RobBFourBothWinsMin@@–@@num:RobBFourBothWinsMax@@ of 10 perturbed profiles.</p>
+      @@prov:RobBFourBothWorstMax@@
+    </article>
+    <article class="card">
+      <h3>Training gains do not generalize</h3>
+      <p class="card-value">@@num:ConvValFinal@@</p>
+      <p class="card-sub">Validation infidelity of timing+phase CMA-ES at n = 8 (training: @@num:ConvTrainFinal@@), against @@num:ConvBestBaselineVal@@ for XY8. Exploratory diagnostic.</p>
+      @@prov:ConvValFinal@@
+    </article>
+    <article class="card">
+      <h3>Spectroscopy is predictive, not identifying</h3>
+      <p class="card-value">@@num:SpecGaussFullRmseRatio@@×</p>
+      <p class="card-sub">Held-out RMSE relative to the shot-noise floor (full Gaussian model), 95% predictive coverage @@num:SpecGaussFullCov@@. The spectrum above ~1 MHz is barely constrained.</p>
+      @@prov:SpecGaussFullRmseRatio@@
+    </article>
+    <article class="card">
+      <h3>Simulator agrees with filter-function theory</h3>
+      <p class="card-value">|z| ≤ @@num:GthreeMaxZ@@</p>
+      <p class="card-sub">Five predetermined configurations, @@num:GthreeNtraj@@ trajectories each. A consistency check between two implementations of the same model, not evidence about any device.</p>
+      @@prov:GthreeMaxZ@@
+    </article>
+  </div>
+</section>
+
+<div class="layout">
+  <aside class="toc-col">
+    <details class="toc" open>
+      <summary>Contents</summary>
+      <nav aria-label="Table of contents">
+        <ol>
+          <li><a href="#introduction">1 Introduction &amp; research questions</a></li>
+          <li><a href="#related">2 Related work</a></li>
+          <li><a href="#model">3 Physical model</a></li>
+          <li><a href="#methods">4 Methods</a></li>
+          <li><a href="#results">5 Results</a>
+            <ol>
+              <li><a href="#rq1">RQ1 Simulator vs filter function</a></li>
+              <li><a href="#rq2">RQ2 Spectroscopy</a></li>
+              <li><a href="#rq3">RQ3 Scenario A benchmark</a></li>
+              <li><a href="#overfitting">Overfitting diagnostic</a></li>
+              <li><a href="#rq4">RQ4 Scenario B</a></li>
+              <li><a href="#rq5">RQ5 Ablations &amp; model mismatch</a></li>
+            </ol>
+          </li>
+          <li><a href="#discussion">6 Discussion &amp; limitations</a></li>
+          <li><a href="#reproducibility">7 Reproducibility</a></li>
+          <li><a href="#hardware">8 Hardware status</a></li>
+          <li><a href="#team">9 Team &amp; AI use</a></li>
+          <li><a href="#citation">10 Citation</a></li>
+          <li><a href="#references">References</a></li>
+        </ol>
+      </nav>
+    </details>
+  </aside>
+
+  <article id="article" class="paper">
+
+<section id="introduction" aria-labelledby="introduction-h">
+  <h2 id="introduction-h"><span class="sec-n">1</span>Introduction and research questions</h2>
+  <p><strong>Motivation.</strong> The project originates from a course project-ideas brief @@cite:QMBrief2026@@; that brief is not evidence that this implementation exists or that hardware access has been provisioned. Prospective use of IQCC hardware remains unconfirmed: no access, authorization or hardware run exists for this report.</p>
+  <p><strong>Problem.</strong> An idle qubit accumulates phase errors from stochastic dephasing and, in dynamic circuits, from deterministic frequency shifts during neighbouring readout. We ask whether model-based optimization of DD sequences can reduce idle-window infidelity relative to strong canonical baselines under a fixed pulse budget and identical constraints.</p>
+  <dl class="rq-list">
+    <div><dt>RQ1</dt><dd>Agreement of Monte-Carlo coherence with analytic filter-function predictions under matched PSD conventions.</dd></div>
+    <div><dt>RQ2</dt><dd>Predictive (held-out) accuracy of noise parameters fitted from synthetic Ramsey, Hahn and CPMG data.</dd></div>
+    <div><dt>RQ3</dt><dd>Whether joint optimization of pulse timings and phases beats strong DD baselines in Scenario A (stochastic dephasing) on held-out noise.</dd></div>
+    <div><dt>RQ4</dt><dd>Whether any gain over calibrated virtual-Z and standard DD survives uncertainty in readout-induced detuning (Scenario B).</dd></div>
+    <div><dt>RQ5</dt><dd>Robustness to pulse imperfections, drift, calibration error, PSD misspecification and control quantization.</dd></div>
+  </dl>
+  <p><strong>Scope.</strong> Synthetic simulations only. Scenarios, seeds, baselines, the baseline-selection rule and the metrics were pre-registered in the repository (<a href="@@gh:docs/EXPERIMENT_PLAN.md@@"><code>docs/EXPERIMENT_PLAN.md</code></a>) before any optimization run; deviations are logged. A zero gain or a regression counts as a valid outcome. Metric: average gate infidelity against the corrected target (<a href="#model">Section 3</a>).</p>
+</section>
+
+<section id="related" aria-labelledby="related-h">
+  <h2 id="related-h"><span class="sec-n">2</span>Related work</h2>
+  <p>Dynamical decoupling of open quantum systems was introduced by Viola, Knill and Lloyd @@cite:Viola1999@@. Uhrig proposed optimized π-pulse sequences for keeping a qubit coherent @@cite:Uhrig2007@@, and Cywiński et al. analysed how to enhance dephasing times in superconducting qubits @@cite:Cywinski2008@@. Biercuk et al. studied optimized DD in a model quantum memory @@cite:Biercuk2009@@. DD has also been used for noise spectroscopy, with a superconducting flux qubit @@cite:Bylander2011@@ and for colored noise @@cite:Alvarez2011@@. Robust DD was studied by Souza, Álvarez and Suter @@cite:Souza2011@@, and Ezzell et al. surveyed DD performance on superconducting qubits @@cite:Ezzell2023@@. Learning-based approaches to choosing DD sequences include @@cite:Rahman2024,Tong2025,Tong2026@@.</p>
+  <p><strong>Empirical versus model-based.</strong> Of the learning-based works, the title of @@cite:Tong2025@@ states its setting: learning is empirical and carried out on quantum processors, i.e. hardware in the loop. The published abstract of @@cite:Tong2026@@ describes empirical optimization of DD in dynamic quantum circuits, including measurement and feedforward. The present work, by contrast, is synthetic and model-based.</p>
+  <p><strong>Positioning.</strong> Sequences are optimized and evaluated against a simulated noise model; no quantum hardware has been used. The contribution is limited to a pre-registered, held-out synthetic benchmark of model-based DD optimization with explicit noise floors. Its main finding is negative, and a synthetic benchmark of this kind does not test whether its conclusions transfer to hardware.</p>
+</section>
+
+<section id="model" aria-labelledby="model-h">
+  <h2 id="model-h"><span class="sec-n">3</span>Physical model and conventions</h2>
+  <p>We use <span class="tex">\hbar = 1</span>, time in s, angular frequency and detuning in rad/s, and angles in rad. In the rotating frame of the drive,</p>
+  <div class="eq" id="eq-h"><div class="tex-display">H(t) = \tfrac{1}{2}\bigl[\delta(t) + d(t) + \delta_{\mathrm{off}}\bigr]\sigma_z + \tfrac{1}{2}\Omega(t)\bigl[\cos\varphi(t)\,\sigma_x + \sin\varphi(t)\,\sigma_y\bigr]</div><span class="eq-n">(1)</span></div>
+  <p>where <span class="tex">\delta(t)</span> is zero-mean stationary noise, assumed <em>Gaussian</em> unless stated otherwise, <span class="tex">d(t)</span> a known deterministic detuning profile (e.g. during neighbouring readout), and <span class="tex">\delta_{\mathrm{off}}</span> a static calibration offset.</p>
+  <h3>Spectrum and filter</h3>
+  <p>With autocorrelation <span class="tex">C(\tau)=\langle\delta(t+\tau)\,\delta(t)\rangle</span> we use the <em>two-sided</em> PSD in rad²/s,</p>
+  <div class="eq"><div class="tex-display">S_2(\omega)=\int_{-\infty}^{\infty} C(\tau)\,e^{-i\omega\tau}\,d\tau .</div><span class="eq-n">(2)</span></div>
+  <p>For the switching function <span class="tex">y(t)</span> (toggling-frame <span class="tex">z</span> component, <span class="tex">\pm1</span> between ideal π pulses),</p>
+  <div class="eq"><div class="tex-display">Y(\omega)=\int_0^T y(t)\,e^{i\omega t}\,dt, \qquad \chi=\operatorname{Var}\phi=\frac{1}{2\pi}\int_{-\infty}^{\infty} S_2(\omega)\,|Y(\omega)|^2\,d\omega ,</div><span class="eq-n">(3)</span></div>
+  <p>and, under the Gaussian assumption, <span class="tex">W=e^{-\chi/2}</span> with pure-dephasing average gate infidelity <span class="tex">r=(1-W)/3</span>. Low- and high-frequency cutoffs of <span class="tex">S_2</span> are stated explicitly for every model.</p>
+  <h3>Energy relaxation</h3>
+  <p><span class="tex">T_1</span> is modelled as amplitude damping with <span class="tex">\gamma = 1-e^{-t/T_1}</span> per free segment; channels are composed as Pauli transfer matrices, never by adding infidelities. Amplitude damping alone has average infidelity</p>
+  <div class="eq"><div class="tex-display">r_{\mathrm{AD}}=\frac{2+\gamma-2\sqrt{1-\gamma}}{6}\approx\frac{\gamma}{3},</div><span class="eq-n">(4)</span></div>
+  <p>derived in <a href="@@gh:docs/PHYSICS.md@@"><code>docs/PHYSICS.md</code></a> and checked numerically against Haar and six-state averages. An expression <span class="tex">[3-2\sqrt{1-\gamma}-\gamma]/6</span> that appeared in the project plan gives <span class="tex">1/6</span> at <span class="tex">\gamma=0</span> and was rejected.</p>
+  <h3>Target and frame correction</h3>
+  <p>Fidelity is evaluated against <span class="tex">U_{\mathrm{target}}=R_z(\theta_{\mathrm{vz}})\,U_0</span>, where <span class="tex">U_0</span> is the ideal net control unitary of the sequence and <span class="tex">\theta_{\mathrm{vz}}</span> is a virtual-Z correction of the known <span class="tex">d(t)</span> (zero unless frame correction is allowed). Average gate fidelity of a channel with PTM <span class="tex">R</span> is</p>
+  <div class="eq"><div class="tex-display">F_{\mathrm{avg}}=\frac{\operatorname{Tr}R'+2}{6},\qquad R' = R_{\mathrm{target}}^{\mathsf T}R .</div><span class="eq-n">(5)</span></div>
+  <p>For finite pulses we use the generalized (three-component toggling-frame) filter function, so <span class="tex">W=e^{-\chi/2}</span> is exact only for instantaneous pulses and leading-order otherwise; the Monte-Carlo simulator needs neither approximation. Finite pulse widths, minimum spacing and timing-grid constraints are enforced for all sequences.</p>
+  <aside class="conventions" aria-label="Conventions at a glance">
+    <h3 class="label">Conventions at a glance</h3>
+    <dl>
+      <div><dt>Hamiltonian</dt><dd>Rotating frame, Eq. (1); <span class="tex">\hbar=1</span></dd></div>
+      <div><dt>Units</dt><dd>s, rad/s, rad; PSD in rad²/s</dd></div>
+      <div><dt>PSD</dt><dd>Two-sided <span class="tex">S_2(\omega)</span>; one-sided <span class="tex">S_1(f)=2S_2(2\pi f)</span></dd></div>
+      <div><dt>Fourier</dt><dd><span class="tex">e^{-i\omega\tau}</span> for <span class="tex">S_2</span>; <span class="tex">\tfrac{1}{2\pi}\int d\omega</span> in <span class="tex">\chi</span></dd></div>
+      <div><dt>Switching function</dt><dd><span class="tex">y(t)=\pm1</span>, toggling-frame <span class="tex">z</span> component</dd></div>
+      <div><dt>Noise statistics</dt><dd>Gaussian, stationary; telegraph noise only as a misspecification control</dd></div>
+      <div><dt>T<sub>1</sub></dt><dd>Amplitude damping, PTM-composed per segment</dd></div>
+      <div><dt>Target</dt><dd><span class="tex">R_z(\theta_{\mathrm{vz}})U_0</span>, virtual-Z only where allowed</dd></div>
+    </dl>
+    <p class="fine">Source: <a href="@@gh:docs/PHYSICS_CONVENTIONS.md@@"><code>docs/PHYSICS_CONVENTIONS.md</code></a>.</p>
+  </aside>
+</section>
+
+<section id="methods" aria-labelledby="methods-h">
+  <h2 id="methods-h"><span class="sec-n">4</span>Methods</h2>
+  <p><strong>Synthetic device (Scenario A).</strong> All device numbers are <em>synthetic assumptions</em>, fixed in a pre-registered plan before any optimization run. The idle window is <span class="tex">T = 2\,\mu\mathrm{s}</span> (alternate 4 µs), with square π pulses of width <span class="tex">w = 32</span> ns, a 4 ns guard and pulse starts on a 4 ns grid (an assumed controller tick). The dephasing PSD is the sum of a band-limited <span class="tex">1/f</span> term (<span class="tex">2\pi\cdot1</span> Hz – <span class="tex">2\pi\cdot10</span> MHz, scaled so that the analytic Ramsey coherence is <span class="tex">e^{-1}</span> at 10 µs), a Gaussian Ornstein–Uhlenbeck (Lorentzian) term with <span class="tex">\tau_c = 0.5\,\mu\mathrm{s}</span>, and a white floor <span class="tex">S_0 = 10^4</span> rad²/s; <span class="tex">T_1 = 100\,\mu\mathrm{s}</span>; and each trajectory draws a relative Rabi-amplitude error <span class="tex">\epsilon\sim\mathcal N(0,0.02^2)</span>. Scenario B adds a deterministic Stark-like shift of <span class="tex">2\pi\cdot0.2</span> MHz between 0.6 and 1.6 µs (20 ns tanh edges) as a stand-in for a neighbouring readout; it models a known frequency shift only, not measurement-induced dephasing.</p>
+  <p><strong>Finite-pulse Monte-Carlo simulator.</strong> Gaussian noise trajectories are sampled on a 1 ns grid by spectral synthesis (exact Ornstein–Uhlenbeck recursion for the Lorentzian; exact Markov jumps for telegraph noise). Free segments are exact <span class="tex">z</span> rotations by the integrated detuning; pulses are propagated in 8 piecewise-constant sub-steps, including detuning during the pulse. Amplitude damping is composed per free segment and approximated as <span class="tex">\mathrm{AD}(w/2)\,U\,\mathrm{AD}(w/2)</span> during pulses. The noise-averaged PTM gives <span class="tex">F_{\mathrm{avg}}</span> against the corrected target; the reported <span class="tex">\epsilon</span> is the mean of per-trajectory infidelities, which equals the channel infidelity because <span class="tex">F_{\mathrm{avg}}</span> is linear in the channel.</p>
+  <p><strong>Spectroscopy and held-out fits.</strong> Synthetic Ramsey, Hahn, CPMG-2 and CPMG-4 data (14 log-spaced idle times in [0.1, 40] µs, 1000 shots per point, binomial shot noise, an affine SPAM map) are fitted by binomial maximum likelihood with a parametric bootstrap. Two Gaussian models are fitted: <em>reduced</em> (<span class="tex">1/f</span> with <span class="tex">\alpha=1</span>, plus white) and <em>full</em> (reduced plus Lorentzian). <span class="tex">T_1</span> is treated as known from a separate experiment, because white dephasing and <span class="tex">1/T_1</span> are degenerate for instantaneous pulses. Held-out data are CPMG-8 and CPMG-16 at all times, and the training families at 13 unseen times, drawn with an independent generator; the fit never sees held-out observations. A misspecification control replaces the Lorentzian with telegraph noise of equal second-order statistics.</p>
+  <p><strong>CMA-ES optimization.</strong> We use pycma 4.5.0 @@cite:Hansen2016@@, an evolution strategy rather than reinforcement learning. Timings are encoded by <span class="tex">n</span> unconstrained coordinates,</p>
+  <div class="eq"><div class="tex-display">g_k = g_{\min} + \bigl(T - n w - (n+1)\,g_{\min}\bigr)\,\operatorname{softmax}([0,z])_k ,</div><span class="eq-n">(6)</span></div>
+  <p>with no redundant shift; starts are snapped to the grid and candidates that cannot be repaired are rejected. Pulse phases are offsets from the base phases, projected so that the ideal net unitary stays equal to the base sequence's, so fidelity is never graded against the wrong target. Three modes are run: timing-only and phase-only (both starting from CPMG with Y pulses) and timing+phase. Each run has a budget of 2000 objective evaluations on 256 frozen training trajectories (common random numbers), with three independent training runs (training seeds 101–103, optimizer seeds 1–3).</p>
+  <p><strong>Baselines, selection rule and evaluation.</strong> At each <span class="tex">n</span>, the baselines are CPMG-<span class="tex">n</span> (Y pulses), XY4, XY8 (where <span class="tex">n</span> divides), UDD-<span class="tex">n</span> and free evolution, with the same <span class="tex">T</span>, <span class="tex">w</span>, guard, grid, noise model and frame-correction privileges. The strongest baseline is fixed by a pre-registered rule: the lowest <em>training</em> infidelity. All arms are then evaluated on the same held-out test draws (seeds 9001–9005, 1024 trajectories each; disjointness from training is enforced in code). We report raw <span class="tex">\epsilon</span>, the ratio <span class="tex">\epsilon_{\mathrm{selected}}/\epsilon_{\mathrm{CMA}}</span> (values &gt; 1 favour CMA-ES), and a two-stage paired-bootstrap 95% interval. These intervals quantify Monte-Carlo uncertainty within the synthetic model only; they are not significance tests and do not account for model selection or model mismatch.</p>
+</section>
+
+<section id="results" aria-labelledby="results-h">
+  <h2 id="results-h"><span class="sec-n">5</span>Experiments and results</h2>
+  <p class="callout"><strong>All results are simulation predictions for the synthetic model of Section 4; none is a measurement.</strong> Every table and figure names the recorded run it comes from; the full claim-to-artifact ledger is <a href="@@gh:report/evidence_map.csv@@"><code>report/evidence_map.csv</code></a>.</p>
+
+  <section id="rq1" aria-labelledby="rq1-h">
+    <h3 id="rq1-h"><span class="rq">RQ1</span> Monte Carlo versus filter function (gate G3)</h3>
+    <p>Five predetermined configurations: free evolution, Hahn and CPMG-8, the last two with both 32 ns and instantaneous pulses. In every configuration the finite-pulse Monte-Carlo infidelity agrees with the analytic prediction within 1.96 standard errors (@@num:GthreeNtraj@@ trajectories per case; largest |z| = @@num:GthreeMaxZ@@). Halving the noise step changes each estimate by less than the combined statistical error of the two runs. The PSD normalization, filter function, noise sampler and propagator are therefore mutually consistent at the resolution of this test (standard errors of @@num:GthreeRelSELo@@–@@num:GthreeRelSEHi@@% of r). This is a consistency check between two implementations of the same model, not evidence about any device.</p>
+    @@table:g3@@
+  </section>
+
+  <section id="rq2" aria-labelledby="rq2-h">
+    <h3 id="rq2-h"><span class="rq">RQ2</span> Spectroscopy and held-out prediction (gate G4)</h3>
+    <p>With the correctly specified full Gaussian model, every fitted parameter's 95% bootstrap interval contains the truth. On 106 held-out points (new pulse counts and unseen idle times) the RMSE is @@num:SpecGaussFullRmseRatio@@× the shot-noise floor and the 95% predictive coverage is @@num:SpecGaussFullCov@@. The reduced model (no Lorentzian) predicts worse (@@num:SpecGaussRedRmseRatio@@× floor, coverage @@num:SpecGaussRedCov@@), but the pre-set failure thresholds do not flag it. For this seed the bootstrap intervals for T<sub>2</sub>* and T<sub>2</sub><sup>Hahn</sup> narrowly exclude the true values (@@num:SpecTruthTtwoStar@@ and @@num:SpecTruthTtwoHahn@@ µs), even though each parameter interval covers. With a single recorded seed we cannot tell whether this is chance or a systematic bias of the derived-time intervals; a multi-seed coverage study is future work.</p>
+    <p>This is a favourable test: the data are generated by the same analytic (instantaneous-pulse, Gaussian) forward model that is fitted, T<sub>1</sub> and the 1/f cutoffs are fixed at their true values, and only one data seed is recorded. The spectrum is <em>not</em> uniquely reconstructed: the Lorentzian (σ, τ<sub>c</sub>) is strongly correlated and weakly identified, the band above ~1 MHz spans orders of magnitude (Figure 1a), white dephasing and 1/T<sub>1</sub> are degenerate, and the 1/f low cutoff is not identifiable. The telegraph misspecification control is nearly Gaussian at Scenario A parameters (motional narrowing), so it does not stress the Gaussian assumption; the full model fits it well (RMSE @@num:SpecTelFullRmseRatio@@× floor). This control is therefore weak.</p>
+    <figure class="chart-figure" id="fig-spectroscopy">
+      <div class="chart" data-chart="spectroscopy" aria-describedby="fig-spectroscopy-cap"></div>
+      <noscript><img src="figures/fig_spectroscopy.png" alt="Synthetic spectroscopy: true versus fitted PSD with bootstrap band, and fitted decay curves with held-out data." width="1120" loading="lazy"></noscript>
+      <figcaption id="fig-spectroscopy-cap"><span class="fig-label">Figure 1 · Synthetic spectroscopy.</span> (a) True versus fitted two-sided PSD (full Gaussian model, MLE) with a 95% parametric-bootstrap band; above ~1 MHz the data barely constrain the spectrum. (b) Fitted decay curves with 95% bands; open circles are <em>held-out</em> data only (CPMG-16 at all times; other families at unseen times; held-out @@spec_heldout_other@@ points have no stored fitted curve and appear in the data table only). Run @@run:spectroscopy@@.</figcaption>
+    </figure>
+    @@table:spectroscopy@@
+  </section>
+
+  <section id="rq3" aria-labelledby="rq3-h">
+    <h3 id="rq3-h"><span class="rq">RQ3</span> CMA-ES versus canonical DD, Scenario A (pre-registered)</h3>
+    <p>The training-only rule selects XY4 at n = 4 and XY8 at n = 8, 16, with ε = @@num:BenchAFourSelEps@@, @@num:BenchAEightSelEps@@ and @@num:BenchASixteenSelEps@@. No CMA-ES mode gives a practically relevant improvement: the best single run (timing+phase, n = 4) has ratio @@num:BenchAFourBothRatioHi@@ with an interval that includes 1, and the other modes are within ±0.2% or worse.</p>
+    <ul>
+      <li><strong>Phase-only:</strong> ratios @@num:BenchASixteenPhaseRatioLo@@–@@num:BenchAFourPhaseRatioHi@@ (≈ 1). The phases it finds are not XY-type: at n = 4 they form a sign-alternated single-axis pattern (a, ā, ā, a), and at n = 8, 16 they are non-canonical. Several different phase patterns reach the same floor.</li>
+      <li><strong>Timing+phase:</strong> ratios @@num:BenchAFourBothRatioLo@@–@@num:BenchAFourBothRatioHi@@ at n = 4 and at most @@num:BenchASixteenBothRatioHi@@ at n = 8, 16.</li>
+      <li><strong>Timing-only:</strong> ratios as low as @@num:BenchASixteenTimingRatioLo@@. This mode keeps CPMG's Y axes, and CPMG with a 2% amplitude error is far worse than XY4/XY8 under gate-fidelity grading.</li>
+    </ul>
+    <p>The reason there is nothing to gain is physical. XY8 reaches @@num:BenchASixteenSelEps@@, essentially the pulse-independent floor of @@num:FloorA@@ set by T<sub>1</sub> and the white dephasing component (dashed line in Figure 2). Under the pre-registered model, no DD sequence can do much better than XY8. At T = 4 µs, timing+phase is worse than XY8 (ratio @@num:BenchATfourSixteenBothRatioLo@@–@@num:BenchATfourSixteenBothRatioHi@@ at n = 16; Table “Held-out comparison across scenario variants”).</p>
+    <figure class="chart-figure wide" id="fig-benchmark">
+      <div class="chart" data-chart="benchmark" aria-describedby="fig-benchmark-cap"></div>
+      <noscript><img src="figures/fig_benchmark.png" alt="Held-out infidelity by pulse number for Scenario A and Scenario B, canonical baselines and CMA-ES." width="1120" loading="lazy"></noscript>
+      <figcaption id="fig-benchmark-cap"><span class="fig-label">Figure 2 · Held-out infidelity at equal n.</span> T = 2 µs, w = 32 ns; mean over test seeds 9001–9005, 1024 trajectories each; CMA-ES: mean over 3 training runs (MC standard errors are smaller than the markers). The dashed line is the analytic floor from T<sub>1</sub> and white noise. Scenario B arms use virtual-Z from the nominal Stark profile. Unlike the PDF figure, timing-only CMA-ES is shown (log axis). Runs @@run:bench_a@@, @@run:bench_b@@.</figcaption>
+    </figure>
+    @@table:bench@@
+  </section>
+
+  <section id="overfitting" aria-labelledby="overfitting-h">
+    <h3 id="overfitting-h">Overfitting diagnostic</h3>
+    <p>For a single training run at n = 8 (exploratory; validation seeds 8001–8002 are disjoint from the test seeds), the training infidelity of timing+phase CMA-ES falls to @@num:ConvTrainFinal@@, below XY8's training value. The validation infidelity stays at @@num:ConvValFinal@@, against @@num:ConvBestBaselineVal@@ for XY8. The apparent training gain comes from fitting the 256 frozen noise trajectories and does not generalize.</p>
+    <figure class="chart-figure" id="fig-convergence">
+      <div class="chart" data-chart="convergence" aria-describedby="fig-convergence-cap"></div>
+      <noscript><img src="figures/fig_convergence.png" alt="Training versus validation infidelity of the best-so-far CMA-ES candidate versus evaluation budget." width="560" loading="lazy"></noscript>
+      <figcaption id="fig-convergence-cap"><span class="fig-label">Figure 3 · Training vs validation.</span> Training (dashed) versus validation (solid) infidelity of the best-so-far CMA-ES candidate as a function of evaluation budget; Scenario A, n = 8, training seed 101. Horizontal lines show XY8. Exploratory diagnostic. Run @@run:convergence@@.</figcaption>
+    </figure>
+  </section>
+
+  <section id="rq4" aria-labelledby="rq4-h">
+    <h3 id="rq4-h"><span class="rq">RQ4</span> Scenario B: deterministic Stark-like shift</h3>
+    <p>At n = 8, the four pre-registered arms reach ε = @@num:BArmNoDD@@ (no DD, no frame correction), @@num:BArmVzOnly@@ (virtual-Z only), @@num:BArmDDVz@@ (best canonical DD + virtual-Z) and @@num:BArmCMAVz@@ (CMA-ES + virtual-Z). Most of the benefit comes from frame correction plus any XY-type DD. At the <em>nominal</em> Stark profile, CMA-ES beats XY4 + virtual-Z only at n = 4: phase-only by ratios @@num:BenchBFourPhaseRatioLo@@–@@num:BenchBFourPhaseRatioHi@@ and timing+phase by @@num:BenchBFourBothRatioLo@@–@@num:BenchBFourBothRatioHi@@ across the three training runs. The bracket formed by the three per-run 95% MC intervals is @@num:BenchBFourBothCILo@@–@@num:BenchBFourBothCIHi@@ for timing+phase. At n = 8, 16 there is no gain. These n = 4 cases were picked out after inspecting about 27 Scenario B comparisons, so they are exploratory.</p>
+    <p>The pre-registered robustness sweep changes the picture for timing+phase. Under ±50–100 ns readout-timing shifts, its worst case reaches @@num:RobBFourBothWorstMax@@, against @@num:RobBFourDDWorst@@ for XY4 + virtual-Z, and it wins in only @@num:RobBFourBothWinsMin@@–@@num:RobBFourBothWinsMax@@ of the 10 perturbed profiles. At n = 8, two of three runs lose in all 10. This nominal gain therefore does <em>not</em> survive the uncertainty RQ4 asks about. Only the n = 4 phase-only sequences remain marginally better than XY4 + virtual-Z in all 10 perturbations in all three runs (worst case @@num:RobBFourPhaseWorstMax@@ versus @@num:RobBFourDDWorst@@), a few-percent, model-specific effect. Virtual-Z alone degrades to @@num:RobBFourVzWorst@@ under a ±20% amplitude error; timing shifts leave it unaffected, because the integrated phase of a shift that stays inside the window is unchanged.</p>
+    <figure class="chart-figure wide" id="fig-robustness">
+      <div class="chart" data-chart="robustness" aria-describedby="fig-robustness-cap"></div>
+      <noscript><img src="figures/fig_robustness_b.png" alt="Scenario B robustness at n = 4 versus Stark amplitude and readout timing shift." width="1120" loading="lazy"></noscript>
+      <figcaption id="fig-robustness-cap"><span class="fig-label">Figure 4 · Scenario B robustness at n = 4, all three training runs.</span> Stark amplitude (left) and timing shift (right) perturbed in evaluation while every virtual-Z angle uses the nominal profile. Timing+phase CMA-ES (dashed) degrades under timing shifts; phase-only (dotted) does not. Run @@run:bench_b@@.</figcaption>
+    </figure>
+    @@table:robustness@@
+  </section>
+
+  <section id="rq5" aria-labelledby="rq5-h">
+    <h3 id="rq5-h"><span class="rq">RQ5</span> Robustness, ablations and model mismatch</h3>
+    <p>The ablations below are post hoc and labelled exploratory. Removing T<sub>1</sub> and the white floor (“colored only”) opens two orders of magnitude of headroom: XY8 then reaches @@num:AblColoredSixteenSelEps@@ at n = 16. Even so, timing+phase CMA-ES under the same 2000-evaluation budget loses to XY8 (ratio @@num:AblColoredSixteenBothRatioLo@@–@@num:AblColoredSixteenBothRatioHi@@), and phase-only gains at most @@num:AblColoredFourPhaseRatioHi@@ at n = 4. Within this budget and parameterization (starting from CPMG, with 2n free coordinates), CMA-ES did not find sequences that generalize better than XY-family designs. The training-only selection rule can itself pick a baseline that is slightly worse on test (UDD in the no-amplitude-error ablation), which inflates ratios there by &lt; 1%. Robustness to calibration drift, Stark rise time and timing-grid quantization of the optimized sequences (master-plan item P5.2) was <strong>not run</strong>.</p>
+    <p>In the model-based pipeline, optimizing on the noise model <em>fitted</em> from synthetic spectroscopy and testing on the truth gives ratios @@num:MBFitFullFourRatioLo@@–@@num:MBFitFullFourRatioHi@@ (full model, n = 4) and @@num:MBFitRedFourRatioLo@@–@@num:MBFitRedFourRatioHi@@ (reduced model): model error adds further loss, and with the reduced model the baseline-selection rule sometimes picks the weaker family.</p>
+    @@table:ablation@@
+    @@table:model_based@@
+  </section>
+</section>
+
+<section id="discussion" aria-labelledby="discussion-h">
+  <h2 id="discussion-h"><span class="sec-n">6</span>Discussion, limitations and roadmap</h2>
+  <p><strong>Interpretation.</strong> Under the pre-registered model the answer to RQ3 is negative. XY4/XY8 already suppress the decouplable colored noise, and the remaining infidelity is set by T<sub>1</sub> and white dephasing, which no π-pulse sequence can remove. Where headroom exists (the colored-only ablation), our CMA-ES setup still did not beat XY8 on held-out noise. Its training improvements came from fitting the finite set of frozen trajectories, and the timing+phase search starting from CPMG did not reach XY8's robustness to amplitude errors within 2000 evaluations. These are statements about this parameterization, budget and synthetic model, not about CMA-ES or learned DD in general. The one positive signal (Scenario B, n = 4) is a few percent and was identified after the fact; its timing+phase form does not survive readout-timing uncertainty, and its phase-only form does only within this model. It would need a new pre-registered test before any claim.</p>
+  <h3>Limitations</h3>
+  <ul class="limitations">
+    <li>All evidence is synthetic. Device parameters are assumptions, not measurements, and optimizing against a model one also evaluates on is circular; the fitted-model pipeline shows that identification error only adds loss.</li>
+    <li>Noise is Gaussian and stationary (except in the telegraph control, which is near-Gaussian at our parameters). Non-stationary, measurement-induced dephasing during readout is <em>not</em> modelled; Scenario B is a known deterministic frequency shift only.</li>
+    <li>T<sub>1</sub> during pulses is approximated; leakage, crosstalk, finite bandwidth and pulse shaping are absent. Pulse errors are a static per-trajectory amplitude error.</li>
+    <li>Monte-Carlo intervals capture sampling uncertainty within the model only; with 5 test seeds the seed-level variability is coarsely resolved. The colored-only, no-T<sub>1</sub>, no-amplitude-error and convergence analyses were added after seeing the pre-registered results and are exploratory. One plumbing smoke run touched the test seeds before the main run (documented in <a href="@@gh:docs/EXPERIMENT_PLAN.md@@"><code>docs/EXPERIMENT_PLAN.md</code></a>).</li>
+    <li>Robustness of the optimized sequences to calibration drift, Stark rise time and timing-grid quantization (plan item P5.2) was not evaluated. The exploratory ablations reused the held-out test seeds, and the spectroscopy and benchmark bootstraps share one seed.</li>
+    <li>Earlier runs recorded the git state at manifest write time rather than run start; several exploratory runs were marked dirty without preserving their uncommitted diffs. Provenance now records the start-of-run git state and diff for <em>future</em> runs, which cannot retroactively recover earlier uncommitted code (<a href="@@gh:docs/REVIEW_FINDINGS.md@@"><code>docs/REVIEW_FINDINGS.md</code></a>).</li>
+    <li>Literature records were checked at identity level against arXiv; publisher pagination and DOIs are not fully audited (<a href="@@gh:docs/CITATION_AUDIT.md@@"><code>docs/CITATION_AUDIT.md</code></a>).</li>
+    <li>No quantum-hardware execution was performed. The QUA adapter is an SDK-free schedule translator marked <em>not hardware tested</em>; the QM SDK serialization test is skipped because the SDK is not installed in the project environment.</li>
+  </ul>
+  <p><strong>Independent review.</strong> An AI red-team pass (<a href="@@gh:docs/REVIEW_FINDINGS.md@@"><code>docs/REVIEW_FINDINGS.md</code></a>) independently re-derived the conventions, reproduced several reported numbers bit-for-bit and found no critical defect. Its high-severity finding (the Scenario B timing+phase gain is not robust) is incorporated above. Human review of the evidence ledger is pending.</p>
+  <p><strong>Roadmap.</strong> (i) Measure, with authorization, T<sub>1</sub>, Ramsey, Hahn and CPMG decays and spectator phase during neighbour readout on the target device (<a href="@@gh:docs/HARDWARE_PROTOCOL.md@@"><code>docs/HARDWARE_PROTOCOL.md</code></a>), to see whether the decouplable colored component is large enough for optimization to matter at all. (ii) Model measurement-induced dephasing as non-stationary noise and repeat Scenario B. (iii) Regularize the optimizer (more training trajectories, robust objectives, starting from XY8) and pre-register a new held-out benchmark.</p>
+</section>
+
+<section id="reproducibility" aria-labelledby="reproducibility-h">
+  <h2 id="reproducibility-h"><span class="sec-n">7</span>Reproducibility</h2>
+  <p>Each run writes an immutable <code>results/&lt;run_id&gt;/</code> directory with a manifest (UTC time, git SHA and dirty flag, platform, Python and package versions, config hash, seeds, command) and SHA-256 checksums. Every table, figure and number on this page is regenerated from the checksum-verified runs pinned in <a href="@@gh:report/runs.json@@"><code>report/runs.json</code></a>; the site build refuses to run if a number macro disagrees with the pinned payloads. Recorded test-suite status: <strong>@@num:TestsPassed@@ passed, @@tests_failed@@ failed, @@tests_errors@@ errors, @@tests_skipped@@ skipped</strong> (run <a class="run-link" href="@@tests_run_link@@"><code>@@tests_run@@</code></a>; skipped = QUA SDK not installed). This is a recorded local run, not a CI result.</p>
+  <div class="code-block">
+    <button class="copy" type="button" data-copy="repro-cmd">Copy</button>
+<pre id="repro-cmd"><code>python -m venv .venv &amp;&amp; . .venv/bin/activate &amp;&amp; pip install -e ".[test]"
+python -m pytest -q                                   # unit + integration tests
+python scripts/run_g3_validation.py --n-traj 64000    # gate G3 (MC vs filter function)
+python scripts/run_spectroscopy.py                    # synthetic spectroscopy (G4)
+python scripts/run_benchmark.py --scenario scenario_a # pre-registered benchmark
+python scripts/run_benchmark.py --scenario scenario_b --robustness
+python scripts/make_report_artifacts.py               # figures/tables/macros from pinned runs
+python -m ddopt.provenance verify results/&lt;run_id&gt;   # re-check checksums of a run
+python scripts/build_site.py                          # this website, into site/dist/</code></pre>
+  </div>
+  <h3>Pinned runs</h3>
+  <p>Run IDs link to the run directory (payload, manifest, checksums); commits link to the code state recorded in each manifest. “dirty” means the working tree had uncommitted changes when the run was recorded. Machine-readable: <a href="data/runs.json"><code>data/runs.json</code></a>, <a href="data/numbers.json"><code>data/numbers.json</code></a>, <a href="data/tables.json"><code>data/tables.json</code></a>.</p>
+  @@runs_table@@
+</section>
+
+<section id="hardware" aria-labelledby="hardware-h">
+  <h2 id="hardware-h"><span class="sec-n">8</span>Hardware status</h2>
+  <div class="status-banner" role="note">
+    <span class="pill pill-neg">NOT RUN</span>
+    <p>No hardware access, no credentials, no authorization. Nothing has been executed on any real device, cloud simulator or vendor-hosted service. No coherence time, calibration value or device result on this page is a measurement.</p>
+  </div>
+  <p>The prospective IQCC / Quantum Machines protocol is documented as a plan in <a href="@@gh:docs/HARDWARE_PROTOCOL.md@@"><code>docs/HARDWARE_PROTOCOL.md</code></a>. Hardware execution requires explicit authorization from the human project owner. Gate status, as recorded there:</p>
+  @@hardware_table@@
+</section>
+
+<section id="team" aria-labelledby="team-h">
+  <h2 id="team-h"><span class="sec-n">9</span>Team contributions and use of AI tools</h2>
+  <p><span class="pill pill-warn">PENDING</span> The author list and contribution statement are to be supplied and confirmed by the team.</p>
+  <p>Portions of the repository scaffolding, the report draft and this website were drafted with an AI coding assistant. The team's full AI-use statement, and the human review of all AI-drafted material, are pending. In the scientific sense of this project, “AI” means data-driven identification and CMA-ES, not deep reinforcement learning.</p>
+</section>
+
+<section id="citation" aria-labelledby="citation-h">
+  <h2 id="citation-h"><span class="sec-n">10</span>Citation</h2>
+  <p>This report is not published and has no DOI. The software citation below is generated from <a href="@@cff_link@@"><code>CITATION.cff</code></a>; it has not been reviewed by the team and the author list is pending confirmation.</p>
+  <div class="code-block wrap">
+    <button class="copy" type="button" data-copy="bibtex">Copy BibTeX</button>
+<pre id="bibtex"><code>@@bibtex@@</code></pre>
+  </div>
+</section>
+
+<section id="references" aria-labelledby="references-h">
+  <h2 id="references-h">References</h2>
+  <p class="fine">From <a href="@@gh:report/refs.bib@@"><code>report/refs.bib</code></a>. Status per <a href="@@gh:docs/CITATION_AUDIT.md@@"><code>docs/CITATION_AUDIT.md</code></a> (“Follow-up completion”): the 12 public records were identity-verified against their arXiv entries (title, authors, year, abstract); publisher pagination and DOIs were not fully audited, and bibliographic fields below are as in <code>refs.bib</code>.</p>
+  @@references@@
+</section>
+
+  </article>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p><strong>Synthetic results; no hardware validation.</strong> Every number on this page is generated from checksum-verified runs in the repository.</p>
+    <p>Code and text: <a href="@@gh:LICENSE@@">MIT License</a> · Built from commit <a href="@@build_sha_link@@"><code>@@build_sha@@</code></a> · Math by KaTeX @@katex_version@@ · No trackers or analytics.</p>
+  </div>
+</footer>
+
+<div class="popover" id="prov-pop" role="tooltip" hidden></div>
+<script type="application/json" id="chart-data">@@chart_data@@</script>
+</body>
+</html>
