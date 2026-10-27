@@ -33,10 +33,12 @@
   /* ---- math ---- */
   function renderMath() {
     if (!window.katex) return;
-    document.querySelectorAll(".tex, .tex-display").forEach(function (el) {
+    /* .math.inline / .math.display: pandoc --katex output rendered from report/; .tex: site text */
+    document.querySelectorAll(".math.inline, .math.display, .tex, .tex-display").forEach(function (el) {
       var src = el.textContent;
+      var display = el.classList.contains("display") || el.classList.contains("tex-display");
       try {
-        window.katex.render(src, el, { displayMode: el.classList.contains("tex-display"), throwOnError: false, output: "htmlAndMathml" });
+        window.katex.render(src, el, { displayMode: display, throwOnError: false, output: "htmlAndMathml" });
         el.classList.add("katex-rendered");
       } catch (e) { el.textContent = src; }
     });

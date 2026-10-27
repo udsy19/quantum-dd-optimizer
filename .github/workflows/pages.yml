@@ -3,9 +3,12 @@
 # One-time setup by the repository owner: Settings -> Pages -> Build and deployment ->
 # Source: "GitHub Actions". Until that is enabled the deploy job fails; nothing else is affected.
 #
+# Runs on every push to main (any path, including report/**) and on manual dispatch, so editing the
+# paper in report/ republishes the site. The paper body is rendered from report/*.tex with pandoc
+# (required: the build fails if pandoc or the rendering fails, so a stale page is never shipped).
 # The site is generated from checksum-verified runs pinned in report/runs.json; the build fails if
-# report/generated/numbers.tex disagrees with those payloads. The paper PDF is built here too; if
-# the TeX build fails, the site is still deployed without the PDF link.
+# report/generated/numbers.tex disagrees with those payloads. The PDFs are built first; if the TeX
+# build fails, the site is still deployed, without PDF links.
 name: pages
 
 on:
@@ -36,23 +39,27 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .
+      - name: Install pandoc (required to render report/)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pandoc
+          pandoc --version | head -1
       - name: Install TeX Live (apt)
         id: tex
         continue-on-error: true
         run: |
-          sudo apt-get update
           sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base \
             texlive-latex-recommended texlive-latex-extra texlive-publishers texlive-fonts-recommended lmodern poppler-utils
-      - name: Build paper PDF
+      - name: Build paper PDFs (main, appendix, combined)
         id: pdf
         continue-on-error: true
         if: steps.tex.outcome == 'success'
         run: PYTHON=python bash scripts/build_report.sh
       - name: Build site
         env:
-          # publish the PDF only if the report build passed all of its checks
-          PDF: ${{ steps.pdf.outcome == 'success' && 'report/combined_report.pdf' || 'no-pdf' }}
-        run: python scripts/build_site.py --out site/dist --pdf "$PDF"
+          # publish the PDFs only if the report build passed all of its checks
+          PDF_ARGS: ${{ steps.pdf.outcome == 'success' && '--pdf-dir report' || '' }}
+        run: python scripts/build_site.py --out site/dist $PDF_ARGS
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist
