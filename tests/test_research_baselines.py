@@ -8,7 +8,7 @@ from ddopt import sequences
 
 def test_analytic_proxy_no_noise_or_relaxation():
     n=NoiseModel()
-    s=sequences.xy4(2e-6,width=0.0)
+    s=sequences.xy4(4,2e-6,width=0.0)
     assert abs(ideal_filter_proxy(s,n)) < 1e-10
 
 
@@ -21,7 +21,7 @@ def test_analytic_proxy_recovers_amplitude_damping():
 
 def test_proxy_rejects_finite_pulses():
     with pytest.raises(ValueError, match="instantaneous"):
-        ideal_filter_proxy(sequences.xy4(2e-6,width=32e-9),NoiseModel())
+        ideal_filter_proxy(sequences.xy4(4,2e-6,width=32e-9),NoiseModel())
 
 
 def test_readout_aware_pulses_outside_uncertain_window():
