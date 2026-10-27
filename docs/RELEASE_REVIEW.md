@@ -155,3 +155,21 @@ approval:
   points, 14 times / 1000 shots, budgets, seeds, device parameters).
 
 A named human reviewer must approve rows and update the ledger.
+
+
+## Follow-up editing pass (2026-10-27)
+
+The original findings above are preserved as an audit of an earlier PDF build, not a live checklist.
+The current report source now includes: a two-by-two author grid, readable seven-to-eight-point
+plot fonts with TrueType (PDF Type 42) embedding, a ratio benchmark figure, explicit
+spectroscopy panel labels, qualified sub-percent/ablation wording, exact dirty-run caveats,
+fixed paragraph punctuation, supplementary S-numbered references/figures/tables,
+line-breakable provenance paths, and improved URL handling. The authors have supplied a
+statement of equal contributions, which the manuscript now uses. The main paper and
+supplement now both include the public project URL.
+
+The AI-use paragraph has been removed from the paper at the owner's request; any
+institutional/course AI-disclosure requirements remain the submitting authors'
+responsibility. The original use of AI is still described in repository history and project
+documents. The latest CI PDF and visual render should be reviewed before considering this
+follow-up list complete. Evidence-ledger human sign-off is still separate from an AI check.
