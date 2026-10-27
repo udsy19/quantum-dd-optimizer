@@ -281,3 +281,21 @@ Use GitHub's **"Cite this repository"** button, which is generated from [`CITATI
 ## License
 
 [MIT](LICENSE) © 2026 Udaya Vijay Anand. Team material beyond this repository requires the authors' consent before publication.
+
+## Edit the paper in one Overleaf file
+
+Use **`report/merged.tex`** as the one editable LaTeX document. All paper sections,
+number macros, and the bibliography are inlined. The appendix follows the main paper
+in the same source. Figures remain PDF assets, so for a fresh Overleaf project download
+the **`overleaf-project.zip`** file from the latest successful CI run under
+**Actions → ci → Artifacts → report-pdf** and upload it using Overleaf's
+**New Project → Upload Project**. Set `merged.tex` as the main document and choose
+pdfLaTeX. No separate `sections/` or `generated/` tree is needed.
+
+Every successful CI report job now generates `merged.tex`, `merged.pdf`, and
+`overleaf-project.zip` alongside `combined_report.pdf`. On a push to `main`, the job
+also synchronizes the generated `report/merged.tex` into the repository. The split
+`report/main.tex` and `report/sections/` remain the canonical generation sources;
+editing a downloaded Overleaf project does **not** automatically change GitHub. To
+retain an Overleaf edit in later regenerated versions, apply it to the canonical
+report source as well.
