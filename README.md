@@ -25,8 +25,7 @@ A pre-registered, held-out synthetic benchmark of CMA-ES–optimized dynamical-d
 > [!IMPORTANT]
 > **Everything here is a simulation of a synthetic model.** No quantum hardware (IQCC or other)
 > has been accessed or used, and no measured data exist. "CMA-ES" is an evolution strategy, not
-> reinforcement learning. Badges for CI and Pages show live status; neither had been observed
-> running at the time of writing.
+> reinforcement learning. Badges reflect the live GitHub status; numerical results remain synthetic.
 
 ---
 
