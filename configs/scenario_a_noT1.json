@@ -1,0 +1,102 @@
+{
+  "description": "ABLATION (post-hoc, exploratory) of Scenario A: T1 removed. SYNTHETIC ASSUMPTIONS.",
+  "produced_by": "python scripts/make_ablation_configs.py",
+  "calibration": {
+    "chi_1overf_FID_10us": 2.0,
+    "chi_1overf_FID_2us": 0.09214872940890509,
+    "chi_lorentzian_FID_2us": 0.023037182352226272,
+    "units": "chi dimensionless (rad^2)"
+  },
+  "window": {
+    "T": 2e-06,
+    "T_alt": 4e-06,
+    "width": 3.2e-08,
+    "guard": 4e-09,
+    "dt_grid": 4e-09,
+    "n_values": [
+      4,
+      8,
+      16
+    ]
+  },
+  "noise": {
+    "components": [
+      {
+        "kind": "one_over_f",
+        "params": {
+          "A": 5928746911.177706,
+          "alpha": 1.0
+        },
+        "omega_low": 6.283185307179586,
+        "omega_high": 62831853.071795866
+      },
+      {
+        "kind": "lorentzian",
+        "params": {
+          "sigma": 123551.30895351955,
+          "tau_c": 5e-07
+        },
+        "omega_low": 0.0,
+        "omega_high": "inf"
+      },
+      {
+        "kind": "white",
+        "params": {
+          "S0": 10000.0
+        },
+        "omega_low": 0.0,
+        "omega_high": 628318530.7179586
+      }
+    ],
+    "T1": "inf",
+    "detuning": {
+      "kind": "none"
+    }
+  },
+  "simulation": {
+    "noise_dt": 1e-09,
+    "pulse_steps": 8,
+    "include_T1": false,
+    "control_errors": {
+      "amp_rel_std": 0.02,
+      "amp_rel_bias": 0.0,
+      "phase_std": 0.0,
+      "detuning_offset": 0.0
+    }
+  },
+  "seeds": {
+    "train": [
+      101,
+      102,
+      103
+    ],
+    "optimizer": [
+      1,
+      2,
+      3
+    ],
+    "test": [
+      9001,
+      9002,
+      9003,
+      9004,
+      9005
+    ],
+    "n_traj_train": 256,
+    "n_traj_test": 1024,
+    "spectroscopy": {
+      "train": 5001,
+      "heldout": 5002,
+      "bootstrap": 5003
+    }
+  },
+  "optimizer": {
+    "sigma0": 0.3,
+    "max_evals": 2000,
+    "modes": [
+      "timing",
+      "phase",
+      "both"
+    ]
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "T": 2e-06,
+  "criterion": "|r_MC - r_FF| <= 1.96 SE + quad; disc budget reported separately",
+  "gate": "G3",
+  "n_traj_per_case": 64000,
+  "noise": {
+    "T1": "inf",
+    "components": [
+      {
+        "kind": "one_over_f",
+        "omega_high": 62831853.071795866,
+        "omega_low": 6.283185307179586,
+        "params": {
+          "A": 5928746911.177706,
+          "alpha": 1.0
+        }
+      },
+      {
+        "kind": "lorentzian",
+        "omega_high": "inf",
+        "omega_low": 0.0,
+        "params": {
+          "sigma": 123551.30895351955,
+          "tau_c": 5e-07
+        }
+      },
+      {
+        "kind": "white",
+        "omega_high": 628318530.7179586,
+        "omega_low": 0.0,
+        "params": {
+          "S0": 10000.0
+        }
+      }
+    ],
+    "detuning": {
+      "amplitude": 0.0,
+      "kind": "none",
+      "rise": 1e-09,
+      "t_off": 0.0,
+      "t_on": 0.0
+    },
+    "metadata": {}
+  },
+  "rows": [
+    {
+      "abs_diff_dt1ns": 0.0001120374446669549,
+      "case": "FID",
+      "chi_ff": 0.1351757796555995,
+      "chi_quad_err": 6.387111655368228e-11,
+      "disc_budget": 0.0004654998014129244,
+      "n_pulses": 0,
+      "pass_primary": true,
+      "pass_with_disc_budget": true,
+      "primary_tol": 0.00023009610169967687,
+      "r_ff": 0.021784809610757905,
+      "r_mc_dt0p5ns": 0.021812107361476544,
+      "r_mc_dt1ns": 0.02167277216609095,
+      "se_mc_dt0p5ns": 0.00011794340290847596,
+      "se_mc_dt1ns": 0.00011739596517867389,
+      "width_s": 0.0,
+      "z_dt1ns": -0.9543551560433661
+    },
+    {
+      "abs_diff_dt1ns": 5.891298827922532e-06,
+      "case": "Hahn_w32",
+      "chi_ff": 0.036859711035873634,
+      "chi_quad_err": 7.290795718808989e-13,
+      "disc_budget": 0.0001387186544458545,
+      "n_pulses": 1,
+      "pass_primary": true,
+      "pass_with_disc_budget": true,
+      "primary_tol": 6.533107952946934e-05,
+      "r_ff": 0.006087021418060871,
+      "r_mc_dt0p5ns": 0.006046575071894496,
+      "r_mc_dt1ns": 0.006092912716888794,
+      "se_mc_dt0p5ns": 3.332418169418009e-05,
+      "se_mc_dt1ns": 3.333218337253828e-05,
+      "width_s": 3.2e-08,
+      "z_dt1ns": 0.17674506233444806
+    },
+    {
+      "abs_diff_dt1ns": 4.913154985189665e-06,
+      "case": "CPMG8_w32",
+      "chi_ff": 0.02140071655365215,
+      "chi_quad_err": 2.584433684164526e-14,
+      "disc_budget": 6.503715865584318e-05,
+      "n_pulses": 8,
+      "pass_primary": true,
+      "pass_with_disc_budget": true,
+      "primary_tol": 3.6141051264645705e-05,
+      "r_ff": 0.003547771030824043,
+      "r_mc_dt0p5ns": 0.003538940090351309,
+      "r_mc_dt1ns": 0.0035526841858092325,
+      "se_mc_dt0p5ns": 1.8570326456000626e-05,
+      "se_mc_dt1ns": 1.843931186754294e-05,
+      "width_s": 3.2e-08,
+      "z_dt1ns": 0.2664500183348951
+    },
+    {
+      "abs_diff_dt1ns": 1.3229108147788486e-05,
+      "case": "Hahn_inst",
+      "chi_ff": 0.036824978684255105,
+      "chi_quad_err": 3.594617215471114e-11,
+      "disc_budget": 9.387642341835044e-05,
+      "n_pulses": 1,
+      "pass_primary": true,
+      "pass_with_disc_budget": true,
+      "primary_tol": 6.55559770528462e-05,
+      "r_ff": 0.006081338351728786,
+      "r_mc_dt0p5ns": 0.00606894359331578,
+      "r_mc_dt1ns": 0.006068109243580998,
+      "se_mc_dt0p5ns": 3.3685998438879304e-05,
+      "se_mc_dt1ns": 3.34469240668969e-05,
+      "width_s": 0.0,
+      "z_dt1ns": -0.39552540381079776
+    },
+    {
+      "abs_diff_dt1ns": 6.130425277877608e-06,
+      "case": "CPMG8_inst",
+      "chi_ff": 0.021219699303394828,
+      "chi_quad_err": 5.586127188783613e-13,
+      "disc_budget": 7.661459041887115e-05,
+      "n_pulses": 8,
+      "pass_primary": true,
+      "pass_with_disc_budget": true,
+      "primary_tol": 3.843012083883559e-05,
+      "r_ff": 0.003517921242181495,
+      "r_mc_dt0p5ns": 0.003534007019738422,
+      "r_mc_dt1ns": 0.0035117908169036175,
+      "se_mc_dt0p5ns": 1.9643257292102213e-05,
+      "se_mc_dt1ns": 1.9607204462610227e-05,
+      "width_s": 0.0,
+      "z_dt1ns": -0.3126618733215112
+    }
+  ],
+  "wall_time_s": 408.80481934547424,
+  "width": 3.2e-08
+}

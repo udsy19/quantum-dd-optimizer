@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "name": "smoke",
+  "kind": "plumbing_smoke",
+  "description": "Placeholder configuration for provenance/CI plumbing only. It defines no noise model, pulse sequence or device and supports no physical claim.",
+  "seeds": {
+    "train": [0, 1, 2],
+    "test": [1000, 1001, 1002, 1003, 1004]
+  },
+  "budget": {
+    "mc_draws": 8,
+    "max_evals": 4,
+    "restarts": 1
+  },
+  "outputs": {
+    "results_dir": "results"
+  },
+  "physics": null
+}

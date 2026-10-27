@@ -1,0 +1,69 @@
+# CI for quantum-dd-optimizer.
+# NOTE: this workflow has not yet been observed to run on GitHub; no CI pass is claimed.
+name: ci
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # provenance manifests record the git SHA
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+      - name: Record environment
+        run: |
+          python --version
+          pip freeze
+      - name: Smoke tests (not slow)
+        run: python -m pytest -q -m "not slow" --junitxml=pytest-report.xml
+      - name: Validate smoke config and evidence map
+        run: |
+          python -c "from ddopt.provenance import load_config, SMOKE_CONFIG_SCHEMA as S; load_config('configs/smoke.json', S)"
+          if [ -f report/claims.json ]; then python scripts/make_evidence_map.py --check; fi
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report-py${{ matrix.python-version }}
+          path: pytest-report.xml
+
+  report:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for report source
+        id: src
+        run: |
+          if [ -f report/main.tex ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Install TeX Live (apt)
+        if: steps.src.outputs.present == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base \
+            texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Build report PDF
+        if: steps.src.outputs.present == 'true'
+        run: bash scripts/build_report.sh
+      - name: Upload report PDF
+        if: steps.src.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-pdf
+          path: |
+            report/main.pdf
+            report/main.log

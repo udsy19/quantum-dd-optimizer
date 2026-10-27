@@ -1,0 +1,176 @@
+{
+  "artifacts": {
+    "payload.json": "91823775de44d772e14f5476066483dcc716f1b77d91863d7f90665e7b06101e"
+  },
+  "command": [
+    "scripts/run_benchmark.py",
+    "--scenario",
+    "scenario_a_noT1",
+    "--name",
+    "ablation_noT1"
+  ],
+  "command_str": "scripts/run_benchmark.py --scenario scenario_a_noT1 --name ablation_noT1",
+  "config": {
+    "calibration": {
+      "chi_1overf_FID_10us": 2.0,
+      "chi_1overf_FID_2us": 0.09214872940890509,
+      "chi_lorentzian_FID_2us": 0.023037182352226272,
+      "units": "chi dimensionless (rad^2)"
+    },
+    "description": "ABLATION (post-hoc, exploratory) of Scenario A: T1 removed. SYNTHETIC ASSUMPTIONS.",
+    "noise": {
+      "T1": "inf",
+      "components": [
+        {
+          "kind": "one_over_f",
+          "omega_high": 62831853.071795866,
+          "omega_low": 6.283185307179586,
+          "params": {
+            "A": 5928746911.177706,
+            "alpha": 1.0
+          }
+        },
+        {
+          "kind": "lorentzian",
+          "omega_high": "inf",
+          "omega_low": 0.0,
+          "params": {
+            "sigma": 123551.30895351955,
+            "tau_c": 5e-07
+          }
+        },
+        {
+          "kind": "white",
+          "omega_high": 628318530.7179586,
+          "omega_low": 0.0,
+          "params": {
+            "S0": 10000.0
+          }
+        }
+      ],
+      "detuning": {
+        "kind": "none"
+      }
+    },
+    "optimizer": {
+      "max_evals": 2000,
+      "modes": [
+        "timing",
+        "phase",
+        "both"
+      ],
+      "sigma0": 0.3
+    },
+    "overrides": {
+      "T": null,
+      "max_evals": 2000,
+      "modes": [
+        "timing",
+        "phase",
+        "both"
+      ],
+      "n": [
+        4,
+        8,
+        16
+      ],
+      "robustness": false
+    },
+    "produced_by": "python scripts/make_ablation_configs.py",
+    "seeds": {
+      "n_traj_test": 1024,
+      "n_traj_train": 256,
+      "optimizer": [
+        1,
+        2,
+        3
+      ],
+      "spectroscopy": {
+        "bootstrap": 5003,
+        "heldout": 5002,
+        "train": 5001
+      },
+      "test": [
+        9001,
+        9002,
+        9003,
+        9004,
+        9005
+      ],
+      "train": [
+        101,
+        102,
+        103
+      ]
+    },
+    "simulation": {
+      "control_errors": {
+        "amp_rel_bias": 0.0,
+        "amp_rel_std": 0.02,
+        "detuning_offset": 0.0,
+        "phase_std": 0.0
+      },
+      "include_T1": false,
+      "noise_dt": 1e-09,
+      "pulse_steps": 8
+    },
+    "window": {
+      "T": 2e-06,
+      "T_alt": 4e-06,
+      "dt_grid": 4e-09,
+      "guard": 4e-09,
+      "n_values": [
+        4,
+        8,
+        16
+      ],
+      "width": 3.2e-08
+    }
+  },
+  "config_hash": "20454f2f5af97f7b5007fe7df9e0236920f13ee5911be1a0d521b325c83e31a2",
+  "cpu_count": 4,
+  "created_utc": "2026-10-27T00:03:17.432088Z",
+  "ddopt_version": "0.1.0",
+  "extra": {},
+  "git": {
+    "dirty": true,
+    "sha": "995776abadc444763b577bf1ae3dbea4169dc744"
+  },
+  "manifest_schema_version": "0.1",
+  "packages": {
+    "cma": "4.5.0",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  },
+  "platform": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v165-x86_64-with-glibc2.39",
+    "release": "6.18.44-fc-v165",
+    "system": "Linux"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.13.17"
+  },
+  "run_id": "ablation_noT1_20261027T000317Z_20454f2f5af9",
+  "seeds": {
+    "optimizer": [
+      1,
+      2,
+      3
+    ],
+    "test": [
+      9001,
+      9002,
+      9003,
+      9004,
+      9005
+    ],
+    "train": [
+      101,
+      102,
+      103
+    ]
+  }
+}

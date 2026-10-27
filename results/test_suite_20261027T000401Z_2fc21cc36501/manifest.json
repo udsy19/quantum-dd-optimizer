@@ -1,0 +1,40 @@
+{
+  "artifacts": {
+    "payload.json": "d078b6cc18a7280d54d6e7becf33e05337135c9d54e12bfdf697f80b31603abd"
+  },
+  "command": [
+    "scripts/run_tests_recorded.py"
+  ],
+  "command_str": "scripts/run_tests_recorded.py",
+  "config": {
+    "suite": "pytest full"
+  },
+  "config_hash": "2fc21cc3650137be9074906038d81192c16fd26af0eab8043ab9c17e77cc0375",
+  "cpu_count": 4,
+  "created_utc": "2026-10-27T00:04:01.823956Z",
+  "ddopt_version": "0.1.0",
+  "extra": {},
+  "git": {
+    "dirty": true,
+    "sha": "995776abadc444763b577bf1ae3dbea4169dc744"
+  },
+  "manifest_schema_version": "0.1",
+  "packages": {
+    "cma": "4.5.0",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  },
+  "platform": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v165-x86_64-with-glibc2.39",
+    "release": "6.18.44-fc-v165",
+    "system": "Linux"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.13.17"
+  },
+  "run_id": "test_suite_20261027T000401Z_2fc21cc36501",
+  "seeds": []
+}

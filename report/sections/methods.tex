@@ -1,0 +1,69 @@
+\section{Methods}
+\label{sec:methods}
+% Describes only what the code implements (src/ddopt/*). All numbers below come from
+% configs/scenario_a.json (synthetic assumptions) or generated macros.
+
+\paragraph{Synthetic device (Scenario~A).} All device numbers are \emph{synthetic assumptions},
+fixed in a pre-registered plan (\texttt{docs/EXPERIMENT\_PLAN.md}) before any optimization run.
+The idle window is $T=2\,\mu$s (alternate $4\,\mu$s), with square $\pi$ pulses of width
+$w=32$\,ns, a 4\,ns guard and pulse starts on a 4\,ns grid (an assumed controller tick).
+The dephasing PSD is the sum of a band-limited $1/f$ term ($2\pi\cdot1$\,Hz--$2\pi\cdot10$\,MHz,
+scaled so that the analytic Ramsey coherence is $e^{-1}$ at $10\,\mu$s), a Gaussian
+Ornstein--Uhlenbeck (Lorentzian) term with $\tau_c=0.5\,\mu$s, and a white floor
+$S_0=10^4$\,rad$^2$/s; $T_1=100\,\mu$s; and each trajectory draws a relative Rabi-amplitude error
+$\epsilon\sim\mathcal N(0,0.02^2)$. Scenario~B adds a deterministic Stark-like shift of
+$2\pi\cdot0.2$\,MHz between 0.6 and 1.6\,$\mu$s (20\,ns tanh edges) as a stand-in for a
+neighbouring readout; it models a known frequency shift only, not measurement-induced
+dephasing.
+
+\paragraph{Finite-pulse Monte-Carlo simulator.} Gaussian noise trajectories are sampled on a
+1\,ns grid by spectral synthesis (exact Ornstein--Uhlenbeck recursion for the Lorentzian; exact
+Markov jumps for telegraph noise). Free segments are exact $z$ rotations by the integrated
+detuning; pulses are propagated in 8 piecewise-constant sub-steps, including detuning during the
+pulse. Amplitude damping is composed per free segment (exact, as it is phase-covariant) and
+approximated as $\mathrm{AD}(w/2)\,U\,\mathrm{AD}(w/2)$ during pulses. The noise-averaged Pauli
+transfer matrix gives $F_{\rm avg}$ against the corrected target. The reported $\epsilon$ is the
+mean of per-trajectory infidelities, which equals the channel infidelity because $F_{\rm avg}$ is
+linear in the channel. Unit tests check unitarity ($<10^{-14}$), zero-noise compensated infidelity
+($\le10^{-10}$ for all families, odd and even $n$), $O(\Delta t^2)$ and $O(m^{-2})$ convergence
+in noise step and pulse sub-steps, and the $T_1$-only formula to $10^{-12}$.
+
+\paragraph{Spectroscopy and held-out fits.} Synthetic Ramsey, Hahn, CPMG-2 and CPMG-4 data
+(14 log-spaced idle times in $[0.1,40]\,\mu$s, 1000 shots per point, binomial shot noise, an
+affine SPAM map) are fitted by binomial maximum likelihood with a parametric bootstrap.
+Two Gaussian models are fitted: \emph{reduced} ($1/f$ with $\alpha=1$, plus white) and
+\emph{full} (reduced plus Lorentzian). $T_1$ is treated as known from a separate experiment,
+because white dephasing and $1/T_1$ are degenerate for instantaneous pulses. Held-out data are
+CPMG-8 and CPMG-16 at all times, and the training families at 13 unseen times, drawn with an
+independent generator. The fit never sees held-out observations; a unit test asserts identical
+parameters with and without test data. A misspecification control replaces the Lorentzian
+with telegraph noise of equal second-order statistics.
+
+\paragraph{CMA-ES optimization.} We use pycma 4.5.0 \citep{Hansen2016} (LIT-12), an evolution
+strategy rather than reinforcement learning. Timings are encoded by $n$ unconstrained
+coordinates, giving gaps $g_k=g_{\min}+(T-nw-(n+1)g_{\min})\,\mathrm{softmax}([0,z])_k$ with no
+redundant shift; starts are snapped to the grid, and candidates that cannot be repaired are
+rejected. Pulse phases are offsets from the base phases, projected so that the ideal net unitary
+stays equal to the base sequence's ($\propto I$ or a Pauli). Fidelity is therefore never graded
+against the wrong target. Three modes are run: timing-only and phase-only (both starting from
+CPMG with $Y$ pulses) and timing+phase. Each run has a budget of 2000 objective evaluations on
+256 frozen training trajectories (common random numbers). There are three independent training
+runs (training seeds 101--103 with optimizer seeds 1--3).
+
+\paragraph{Baselines, selection rule and evaluation.} At each $n$, the baselines are CPMG-$n$
+($Y$ pulses), XY4, XY8 (where $n$ divides), UDD-$n$ and free evolution, with the same $T$, $w$,
+guard, grid, noise model and frame-correction privileges. The \emph{strongest} baseline is fixed
+by a pre-registered rule: the lowest \emph{training} infidelity. All arms are then evaluated on
+the same held-out test draws (seeds 9001--9005, 1024 trajectories each; disjointness from
+training is enforced in code). We report raw $\epsilon$, the ratio
+$\epsilon_{\rm selected}/\epsilon_{\rm CMA}$ (values $>1$ favour CMA-ES), and a two-stage paired
+bootstrap 95\% interval (seeds as blocks, trajectories within seeds). These intervals quantify
+Monte-Carlo uncertainty within the synthetic model only; they are not significance tests and do
+not account for model selection or model mismatch.
+
+\paragraph{Reproducibility.} Each run writes an immutable \texttt{results/<run\_id>/} directory
+with a manifest (UTC time, git SHA and dirty flag, platform, Python and package versions, config
+hash, seeds, command) and SHA-256 checksums. Every table, figure and number macro in this report
+is regenerated by \texttt{scripts/make\_report\_artifacts.py} from checksum-verified runs pinned
+in \texttt{report/runs.json}; the claim ledger is \texttt{report/evidence\_map.csv}.
+Test-suite status: \GenTestSummary.

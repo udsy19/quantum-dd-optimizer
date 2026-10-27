@@ -1,0 +1,15 @@
+{
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 249,
+    "skipped": 1,
+    "tests": 250
+  },
+  "returncode": 0,
+  "skipped": [
+    "tests.test_qua_syntax::test_qua_program_builds_and_serializes_with_sdk -- QM QUA SDK (qm-qua) not installed: SDK serialization check SKIPPED"
+  ],
+  "stdout_tail": "........................................................................ [ 28%]\n........................................................................ [ 57%]\n.......s................................................................ [ 86%]\n..................................                                       [100%]\n=========================== short test summary info ============================\nSKIPPED [1] tests/test_qua_syntax.py:269: QM QUA SDK (qm-qua) not installed: SDK serialization check SKIPPED\n249 passed, 1 skipped in 33.26s\n",
+  "wall_time_s": 33.75108051300049
+}

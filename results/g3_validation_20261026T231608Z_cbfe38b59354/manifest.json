@@ -1,0 +1,48 @@
+{
+  "artifacts": {
+    "payload.json": "732cd4c292221561c4c12802f2996b09db4362952e4e0fc804be2e8903fcd08e"
+  },
+  "command": [
+    "scripts/run_g3_validation.py",
+    "--n-traj",
+    "64000"
+  ],
+  "command_str": "scripts/run_g3_validation.py --n-traj 64000",
+  "config": {
+    "T1": "off",
+    "control_errors": "off",
+    "n_traj": 64000,
+    "scenario": "scenario_a",
+    "seed": 31
+  },
+  "config_hash": "cbfe38b593541806a4f8353b5f4ab4be766c6f7a76aefef82deef4f26aa70f3a",
+  "cpu_count": 4,
+  "created_utc": "2026-10-26T23:16:08.142973Z",
+  "ddopt_version": "0.1.0",
+  "extra": {},
+  "git": {
+    "dirty": false,
+    "sha": "2170bfed872091c5d87a0d5e4d2772b252b2369f"
+  },
+  "manifest_schema_version": "0.1",
+  "packages": {
+    "cma": "4.5.0",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  },
+  "platform": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v153-x86_64-with-glibc2.39",
+    "release": "6.18.44-fc-v153",
+    "system": "Linux"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.13.17"
+  },
+  "run_id": "g3_validation_20261026T231608Z_cbfe38b59354",
+  "seeds": [
+    31
+  ]
+}
