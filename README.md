@@ -84,3 +84,5 @@ Confirm license choice and author consent before publishing more team material.
 ## Publication formatting
 
 The main midterm manuscript uses IEEE conference formatting with the four confirmed author names and university emails, a five-page target and a hard six-page cap. Extended scientific results live in the separately compiled supplementary appendix. GitHub CI compiles both and checks the main paper's page count; individual contributions require team confirmation.
+
+The IEEE report build requires the `texlive-publishers` LaTeX distribution for `IEEEtran` and `IEEEtranN`.
