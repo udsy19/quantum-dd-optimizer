@@ -3,7 +3,7 @@
 
 \paragraph{Interpretation.} Under the pre-registered model the answer to RQ3 is negative. XY4/XY8
 already suppress the decouplable colored noise, and the remaining infidelity is set by $T_1$
-and white dephasing, which no $\pi$-pulse sequence can remove. Where headroom exists (the
+and white dephasing, which ideal refocusing pulses do not suppress in this model. Where headroom exists (the
 colored-only ablation), our CMA-ES setup still did not beat XY8 on held-out noise. Its training
 improvements came from fitting the finite set of frozen trajectories, and the timing+phase
 search starting from CPMG did not reach XY8's robustness to amplitude errors within 2000
@@ -37,9 +37,10 @@ a new pre-registered test before any claim.
     record the start-of-run git state and diff. That change improves \emph{future}
     runs but cannot retroactively recover earlier uncommitted code, so historical
     reconstruction remains limited (\texttt{docs/REVIEW\_FINDINGS.md}).
-  \item Bibliographic metadata could not be verified against primary sources from our
-    environment (\texttt{docs/CITATION\_AUDIT.md}).
-  \item No quantum-hardware execution was performed (claim PROV-01). The QUA adapter is an
+  \item The original citation audit environment blocked primary sources; a later
+    audit checked public arXiv reference identities. Publication metadata and
+    final bibliographic presentation are documented in \texttt{docs/CITATION\_AUDIT.md}.
+  \item No quantum-hardware execution was performed. The QUA adapter is an
     SDK-free schedule translator marked \emph{not hardware tested}; the QM SDK serialization
     test was skipped because the SDK is not installed in the project environment.
 \end{itemize}
