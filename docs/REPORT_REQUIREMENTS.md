@@ -1,4 +1,4 @@
-# 5–7-page midterm paper: required evidence and layout
+# 5–6-page midterm paper: required evidence and layout
 
 Target: conventional two-column or single-column academic article matching the supplied revised report's restrained article styling. Do not invent completed work to fill pages. Keep author list and contributions subject to team confirmation.
 
@@ -35,4 +35,14 @@ No numerical figure, author contribution, test pass count, dependency version, h
 - QM brief's prior SAC readout result is another project, not this DD project's result.
 
 ## Submission checks
-`latexmk -pdf -halt-on-error` or equivalent; no unresolved refs, broken figure paths, unsupported citation, or placeholder pretending to be an actual result. Render all PDF pages for layout QA. Validate 5–7 pages including/excluding references per course rule; state which count is used. Ensure affiliations and contribution roster reconcile and team confirms authorship.
+`latexmk -pdf -halt-on-error` or equivalent; no unresolved refs, broken figure paths, unsupported citation, or placeholder pretending to be an actual result. Render all PDF pages for layout QA. Validate 5–6 pages including/excluding references per course rule; state which count is used. Ensure affiliations and contribution roster reconcile and team confirms authorship.
+
+## Current IEEE submission release requirements (2026-10-27)
+
+- Main paper target: 5 pages, hard maximum 6 pages including references; authors and Columbia emails appear in IEEEtran conference author blocks.
+- Supplement: separate, lettered IEEE appendix sections, appended after the main paper in `report/combined_report.pdf`.
+- `scripts/build_report.sh` checks the main-paper page cap, compiles the appendix, and merges the PDFs.
+- Paper reports synthetic results only, not measured IQCC hardware gains.
+- The generated 249-pass/1-skip result is a historical full-test snapshot; CI smoke tests must be checked independently for current commits.
+- The arXiv identity-level literature follow-up does not establish that every publisher field was checked; consult `docs/CITATION_AUDIT.md`.
+- Individual author contributions still require the authors' approval. Never invent them.
