@@ -1,6 +1,6 @@
 # Claude Code project instructions — mandatory
 
-Read `docs/CLAUDE_CODE_MASTER_PROMPT.md`, `docs/ACCEPTANCE_GATES.md`, and `docs/REPORT_REQUIREMENTS.md` before writing code. This is a scientific research repository, not a demo that can be made credible with plausible-looking output.
+Read `docs/CLAUDE_CODE_MASTER_PROMPT.md`, `docs/ACCEPTANCE_GATES.md`, and `docs/REPORT_REQUIREMENTS.md` before writing code. **Before any report/LaTeX change also read [`docs/LATEX_OVERLEAF_AGENT_GUIDE.md`](docs/LATEX_OVERLEAF_AGENT_GUIDE.md).** The split report sources are canonical; `report/merged.tex` is generated and may be overwritten by CI. Do not promise automatic two-way Overleaf sync. This is a scientific research repository, not a demo that can be made credible with plausible-looking output.
 
 1. **Never invent** datasets, accuracy, CI results, experiment logs, hardware access, author contribution, citation detail, publication, or customer validation. If unavailable: mark UNVERIFIED / NOT RUN / PENDING.
 2. Distinguish source-supported historical facts, new computations and projections; every figure and number needs provenance.
