@@ -29,10 +29,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0   # the site footer links the build commit
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
       - name: Install
@@ -62,7 +62,7 @@ jobs:
           # publish the PDFs only if the report build passed all of its checks
           PDF_ARGS: ${{ steps.pdf.outcome == 'success' && '--pdf-dir report' || '' }}
         run: python scripts/build_site.py --out site/dist $PDF_ARGS
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site/dist
 
@@ -74,4 +74,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
