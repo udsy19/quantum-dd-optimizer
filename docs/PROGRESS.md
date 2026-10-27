@@ -42,3 +42,22 @@ Agents ran as subagents in isolated git worktrees, merged by the lead with `git 
   - `spectroscopy_scenario_a_20261026T235246Z_8b272601c344` — `python scripts/run_spectroscopy.py` (pre-registered seeds 5001-5003).
 - Headline (synthetic only): in Scenario A no CMA-ES mode beats the training-selected canonical baseline (XY4/XY8) on held-out seeds; XY8 sits at the analytic T1+white floor. Scenario B: phase-only ties; timing+phase at n=4 is 2–5 % better than XY4+virtual-Z in all three training runs (CIs >1); n=8,16 ties/worse. T=4 µs: timing+phase is 2–7 % worse at n=8,16 (overfitting).
 - Spectroscopy: full Gaussian model parameters all inside 95 % CIs; held-out RMSE 1.15× shot floor, coverage 0.934; T2*, T2_Hahn CIs narrowly exclude truth for this seed. Telegraph control at Scenario A parameters is near-Gaussian (weak misspecification test).
+
+## 2026-10-27 Red-team review and resolution (lead)
+Agent G review: `docs/REVIEW_FINDINGS.md` (no critical finding; reproduced XY8/CPMG n=8 seed-9001 values bit-for-bit, two G3 rows, the spectroscopy MLE; 11/11 checksums OK).
+- H1 (Scenario B n=4 timing+phase gain not robust to readout-timing shifts): CONFIRMED by lead from stored payload; report abstract/results/discussion rewritten; new `report/generated/robustness_table.tex` (all n, both modes, all 3 runs) and n=4 robustness figure. Only phase-only n=4 stays marginally better in 10/10 perturbations (model-specific).
+- M1 (phase-only does not rediscover XY4/XY8): CONFIRMED (n=4 phases a,ā,ā,a); wording fixed.
+- M2 (post-hoc highlighting, CI wording, "no improvement" wording): fixed; one Scenario A run at n=4 is 1.1 % better with CI including 1 — stated.
+- M3 (spectroscopy favourable-test disclosure): added to report.
+- M4: PROV-02 ledger row corrected; G3 wording now "SE 0.52–0.56 %" (macro); bench caption SE computed from data (≤1.5 % pooled, ≤3.5 % per seed). Ledger rows stay UNVERIFIED pending human review.
+- M5 (P5.2 drift/rise-time/quantization robustness not run): disclosed as NOT RUN.
+- M6 (manifest git SHA captured at end, dirty runs without diff): disclosed; `ddopt.provenance` now stores the tracked diff for dirty trees and all experiment scripts record `git_at_start` (applies to future runs; existing runs unchanged).
+- L5 stale stub removed; L6 title no longer says "Hardware-Aware", figure fonts enlarged, page-count rule stated; L2/L3/L4 disclosed.
+- After fixes: `python -m pytest -q` → 249 passed, 1 skipped (QUA SDK absent). Report builds with no undefined refs/overfull boxes; main text ≤7 pages, references on p. 8.
+
+## Open blockers (require human action)
+- Citation metadata: arxiv.org, doi.org, api.crossref.org, journals.aps.org blocked by the environment network policy → all references UNVERIFIED (`docs/CITATION_AUDIT.md`).
+- GitHub Actions CI never observed running (UNVERIFIED).
+- No IQCC/hardware access or authorization; QUA adapter is a template, SDK not installed, nothing executed.
+- Author list, affiliations, contributions and AI-use statement: PENDING team.
+- Gate G9 requires human sign-off of the evidence ledger.

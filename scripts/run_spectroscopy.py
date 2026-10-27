@@ -19,7 +19,7 @@ import numpy as np
 
 from ddopt import noise as noise_mod
 from ddopt import spectroscopy as sp
-from ddopt.provenance import run_manifest, write_run
+from ddopt.provenance import git_state, run_manifest, write_run
 from ddopt.scenarios import load_scenario, scenario_noise
 
 
@@ -28,6 +28,7 @@ def nat(spec, x):
 
 
 def main(argv=None):
+    git_at_start = git_state()
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-boot", type=int, default=200)
     ap.add_argument("--out", default="results")
@@ -88,7 +89,8 @@ def main(argv=None):
                                             "curves": curves, "psd": psd},
                "status": "SYNTHETIC; pre-registered spectroscopy seeds", "wall_time_s": time.time() - t0}
     man = run_manifest({"scenario": "scenario_a", "n_boot": a.n_boot, "shots": 1000, "spam_truth": list(sp.DEFAULT_SPAM)},
-                       seeds=s, command=sys.argv)
+                       seeds=s, command=sys.argv,
+                       extra={"git_at_start": git_at_start})
     print("wrote", write_run(a.out, "spectroscopy_scenario_a", payload, man))
 
 

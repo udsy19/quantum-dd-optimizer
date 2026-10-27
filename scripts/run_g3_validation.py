@@ -17,7 +17,7 @@ import time
 import numpy as np
 
 from ddopt import filters, sequences, simulator
-from ddopt.provenance import run_manifest, write_run
+from ddopt.provenance import git_state, run_manifest, write_run
 from ddopt.scenarios import load_scenario, scenario_noise, sim_config
 from ddopt.contracts import ControlErrors
 
@@ -34,6 +34,7 @@ def mc(seq, nm, cfg, n_traj, seed, dt, batch=2000):
 
 
 def main(argv=None):
+    git_at_start = git_state()
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-traj", type=int, default=16000)
     ap.add_argument("--out", default="results")
@@ -74,7 +75,8 @@ def main(argv=None):
                "noise": nm.to_dict(), "T": T, "width": w, "wall_time_s": time.time() - t0,
                "criterion": "|r_MC - r_FF| <= 1.96 SE + quad; disc budget reported separately"}
     man = run_manifest({"scenario": "scenario_a", "n_traj": a.n_traj, "seed": a.seed, "T1": "off",
-                        "control_errors": "off"}, seeds=[a.seed], command=sys.argv)
+                        "control_errors": "off"}, seeds=[a.seed], command=sys.argv,
+                       extra={"git_at_start": git_at_start})
     p = write_run(a.out, "g3_validation", payload, man)
     print("wrote", p)
 

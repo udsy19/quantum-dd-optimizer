@@ -22,7 +22,7 @@ import numpy as np  # noqa: E402
 from ddopt import sequences, simulator  # noqa: E402
 from ddopt.evaluation import canonical_baselines  # noqa: E402
 from ddopt.optimizer import optimize  # noqa: E402
-from ddopt.provenance import run_manifest, write_run  # noqa: E402
+from ddopt.provenance import git_state, run_manifest, write_run  # noqa: E402
 from ddopt.scenarios import load_scenario, scenario_noise, sim_config  # noqa: E402
 
 BUDGETS = [50, 100, 250, 500, 1000, 2000]
@@ -59,6 +59,7 @@ def _job(args):
 
 
 def main(argv=None):
+    git_at_start = git_state()
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenario", default="scenario_a")
     ap.add_argument("--n", type=int, default=8)
@@ -82,7 +83,8 @@ def main(argv=None):
                "status": "EXPLORATORY diagnostic (not pre-registered)", "wall_time_s": time.time() - t0}
     cfg_rec = {k: v for k, v in cfg.items() if k != "_path"}
     man = run_manifest({"cfg": cfg_rec, "n": a.n, "budgets": BUDGETS}, seeds={"train": cfg["seeds"]["train"][:1],
-                       "optimizer": cfg["seeds"]["optimizer"][:1], "validation": VAL_SEEDS}, command=sys.argv)
+                       "optimizer": cfg["seeds"]["optimizer"][:1], "validation": VAL_SEEDS}, command=sys.argv,
+                       extra={"git_at_start": git_at_start})
     print("wrote", write_run(a.out, f"convergence_{a.scenario}_n{a.n}", payload, man))
 
 

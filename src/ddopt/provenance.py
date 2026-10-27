@@ -174,7 +174,20 @@ def _git_info() -> dict[str, Any]:
     if not sha:
         return {"sha": "unavailable", "dirty": None}
     status = _git("status", "--porcelain", "--untracked-files=no")
-    return {"sha": sha, "dirty": None if status is None else bool(status)}
+    info: dict[str, Any] = {"sha": sha, "dirty": None if status is None else bool(status)}
+    if status:
+        # record the uncommitted tracked changes so a dirty run stays reconstructible
+        diff = _git("diff", "HEAD") or ""
+        info["diff"] = diff
+        info["diff_sha256"] = hashlib.sha256(diff.encode()).hexdigest()
+    return info
+
+
+def git_state() -> dict[str, Any]:
+    """Current git SHA, dirty flag and (if dirty) the tracked diff. Call at the *start* of a run
+    and pass as ``run_manifest(..., extra={"git_at_start": git_state()})``; the manifest's own
+    ``git`` field is captured when the manifest is built (usually at the end of the run)."""
+    return _git_info()
 
 
 def _package_version(name: str) -> str:

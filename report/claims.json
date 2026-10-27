@@ -1,5 +1,5 @@
 {
- "_comment": "Claim ledger source for scripts/make_evidence_map.py. Literature metadata is copied from docs/REFERENCES.md and is PENDING verification. Scripts that produce results must append model/dataset claims with artifact_path, command, commit_sha, run_id and seed; nothing may be marked VERIFIED without a named reviewer.",
+ "_comment": "Claim ledger source for scripts/make_evidence_map.py. Literature metadata is copied from docs/REFERENCES.md and is PENDING verification. Scripts that produce results must append model/dataset claims with artifact_path, command, commit_sha, run_id and seed; nothing may be marked VERIFIED without a named reviewer. GEN-* rows are machine-generated from checksum-verified runs; an AI red-team pass (docs/REVIEW_FINDINGS.md) reproduced a sample of them, but every row awaits HUMAN review, so none is marked VERIFIED.",
  "claims": [
   {
    "claim_id": "LIT-01",
@@ -181,20 +181,46 @@
    "run_id": "",
    "seed": "",
    "reviewer": "PENDING",
-   "verification_status": "PENDING"
+   "verification_status": "UNVERIFIED"
   },
   {
    "claim_id": "PROV-02",
    "paper_section": "Experiments and results",
-   "exact_claim": "All simulation experiments are NOT RUN in this draft; no numerical result is reported.",
+   "exact_claim": "All numerical results in the report are synthetic simulation outputs from recorded runs listed in report/runs.json; none is a hardware measurement.",
    "provenance_type": "model",
-   "artifact_path": "report/sections/results.tex",
+   "artifact_path": "report/runs.json",
    "command": "",
    "commit_sha": "",
    "run_id": "",
    "seed": "",
    "reviewer": "PENDING",
-   "verification_status": "PENDING"
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-GthreeRelSELo",
+   "paper_section": "Results",
+   "exact_claim": "G3: smallest relative MC standard error (%)",
+   "provenance_type": "model",
+   "artifact_path": "results/g3_validation_20261026T231608Z_cbfe38b59354/payload.json",
+   "command": "python scripts/run_g3_validation.py --n-traj 64000",
+   "commit_sha": "2170bfed8720",
+   "run_id": "g3_validation_20261026T231608Z_cbfe38b59354",
+   "seed": "",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-GthreeRelSEHi",
+   "paper_section": "Results",
+   "exact_claim": "G3: largest relative MC standard error (%)",
+   "provenance_type": "model",
+   "artifact_path": "results/g3_validation_20261026T231608Z_cbfe38b59354/payload.json",
+   "command": "python scripts/run_g3_validation.py --n-traj 64000",
+   "commit_sha": "2170bfed8720",
+   "run_id": "g3_validation_20261026T231608Z_cbfe38b59354",
+   "seed": "",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
   },
   {
    "claim_id": "GEN-GthreeMaxZ",
@@ -548,9 +574,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobVzAmpLo",
+   "claim_id": "GEN-RobBFourPhaseWinsMin",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 2, amp sweep: min eps",
+   "exact_claim": "Scenario B n=4 phase: min over runs of #perturbations (of 10) where CMA beats DD+VZ",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -561,9 +587,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobVzAmpHi",
+   "claim_id": "GEN-RobBFourPhaseWinsMax",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 2, amp sweep: max eps",
+   "exact_claim": "Scenario B n=4 phase: max over runs of #perturbations where CMA beats DD+VZ",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -574,9 +600,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobVzShiftLo",
+   "claim_id": "GEN-RobBFourPhaseWorstMax",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 2, shift sweep: min eps",
+   "exact_claim": "Scenario B n=4 phase: largest worst-case eps over runs",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -587,9 +613,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobVzShiftHi",
+   "claim_id": "GEN-RobBFourDDWorst",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 2, shift sweep: max eps",
+   "exact_claim": "Scenario B n=4: worst-case eps of selected DD+VZ",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -600,9 +626,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobDDVzAmpLo",
+   "claim_id": "GEN-RobBFourVzWorst",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 3, amp sweep: min eps",
+   "exact_claim": "Scenario B n=4: worst-case eps of virtual-Z only",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -613,9 +639,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobDDVzAmpHi",
+   "claim_id": "GEN-RobBFourVzBest",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 3, amp sweep: max eps",
+   "exact_claim": "Scenario B n=4: best-case eps of virtual-Z only over perturbations",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -626,9 +652,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobDDVzShiftLo",
+   "claim_id": "GEN-RobBFourBothWinsMin",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 3, shift sweep: min eps",
+   "exact_claim": "Scenario B n=4 both: min over runs of #perturbations (of 10) where CMA beats DD+VZ",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -639,9 +665,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobDDVzShiftHi",
+   "claim_id": "GEN-RobBFourBothWinsMax",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 3, shift sweep: max eps",
+   "exact_claim": "Scenario B n=4 both: max over runs of #perturbations where CMA beats DD+VZ",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -652,9 +678,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobCMAVzAmpLo",
+   "claim_id": "GEN-RobBFourBothWorstMax",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 4, amp sweep: min eps",
+   "exact_claim": "Scenario B n=4 both: largest worst-case eps over runs",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -665,9 +691,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobCMAVzAmpHi",
+   "claim_id": "GEN-RobBEightPhaseWinsMin",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 4, amp sweep: max eps",
+   "exact_claim": "Scenario B n=8 phase: min over runs of #perturbations (of 10) where CMA beats DD+VZ",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -678,9 +704,9 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobCMAVzShiftLo",
+   "claim_id": "GEN-RobBEightPhaseWinsMax",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 4, shift sweep: min eps",
+   "exact_claim": "Scenario B n=8 phase: max over runs of #perturbations where CMA beats DD+VZ",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -691,9 +717,204 @@
    "verification_status": "UNVERIFIED"
   },
   {
-   "claim_id": "GEN-RobCMAVzShiftHi",
+   "claim_id": "GEN-RobBEightPhaseWorstMax",
    "paper_section": "Results",
-   "exact_claim": "Scenario B robustness n=8 (train run 1), arm 4, shift sweep: max eps",
+   "exact_claim": "Scenario B n=8 phase: largest worst-case eps over runs",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBEightDDWorst",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=8: worst-case eps of selected DD+VZ",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBEightVzWorst",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=8: worst-case eps of virtual-Z only",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBEightVzBest",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=8: best-case eps of virtual-Z only over perturbations",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBEightBothWinsMin",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=8 both: min over runs of #perturbations (of 10) where CMA beats DD+VZ",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBEightBothWinsMax",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=8 both: max over runs of #perturbations where CMA beats DD+VZ",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBEightBothWorstMax",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=8 both: largest worst-case eps over runs",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenPhaseWinsMin",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16 phase: min over runs of #perturbations (of 10) where CMA beats DD+VZ",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenPhaseWinsMax",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16 phase: max over runs of #perturbations where CMA beats DD+VZ",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenPhaseWorstMax",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16 phase: largest worst-case eps over runs",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenDDWorst",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16: worst-case eps of selected DD+VZ",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenVzWorst",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16: worst-case eps of virtual-Z only",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenVzBest",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16: best-case eps of virtual-Z only over perturbations",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenBothWinsMin",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16 both: min over runs of #perturbations (of 10) where CMA beats DD+VZ",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenBothWinsMax",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16 both: max over runs of #perturbations where CMA beats DD+VZ",
+   "provenance_type": "model",
+   "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
+   "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
+   "commit_sha": "1222d72f7b3d",
+   "run_id": "benchmark_scenario_b_20261026T234545Z_ad7b16de1c23",
+   "seed": "9001-9005",
+   "reviewer": "PENDING",
+   "verification_status": "UNVERIFIED"
+  },
+  {
+   "claim_id": "GEN-RobBSixteenBothWorstMax",
+   "paper_section": "Results",
+   "exact_claim": "Scenario B n=16 both: largest worst-case eps over runs",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -706,7 +927,7 @@
   {
    "claim_id": "GEN-BArmNoDD",
    "paper_section": "Results",
-   "exact_claim": "Scenario B n=8 arm 1_no_dd: held-out eps (nominal)",
+   "exact_claim": "Scenario B n=8 arm 1_no_dd: held-out eps (nominal, training run of first listed)",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -719,7 +940,7 @@
   {
    "claim_id": "GEN-BArmVzOnly",
    "paper_section": "Results",
-   "exact_claim": "Scenario B n=8 arm 2_virtual_z_only: held-out eps (nominal)",
+   "exact_claim": "Scenario B n=8 arm 2_virtual_z_only: held-out eps (nominal, training run of first listed)",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -732,7 +953,7 @@
   {
    "claim_id": "GEN-BArmDDVz",
    "paper_section": "Results",
-   "exact_claim": "Scenario B n=8 arm 3_xy4_plus_vz: held-out eps (nominal)",
+   "exact_claim": "Scenario B n=8 arm 3_xy4_plus_vz: held-out eps (nominal, training run of first listed)",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",
@@ -745,7 +966,7 @@
   {
    "claim_id": "GEN-BArmCMAVz",
    "paper_section": "Results",
-   "exact_claim": "Scenario B n=8 arm 4_optimized_plus_vz: held-out eps (nominal)",
+   "exact_claim": "Scenario B n=8 arm 4_optimized_plus_vz: held-out eps (nominal, training run of first listed)",
    "provenance_type": "model",
    "artifact_path": "results/benchmark_scenario_b_20261026T234545Z_ad7b16de1c23/payload.json",
    "command": "python scripts/run_benchmark.py --scenario scenario_b --robustness",

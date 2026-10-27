@@ -9,12 +9,13 @@ import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from ddopt.provenance import run_manifest, write_run
+from ddopt.provenance import git_state, run_manifest, write_run
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
+    git_at_start = git_state()
     with tempfile.TemporaryDirectory() as d:
         xml = Path(d) / "junit.xml"
         t0 = time.time()
@@ -28,7 +29,8 @@ def main():
                    for tc in ts.iter("testcase") if tc.find("skipped") is not None]
         payload = {"counts": counts, "returncode": p.returncode, "skipped": skipped,
                    "stdout_tail": p.stdout[-4000:], "wall_time_s": time.time() - t0}
-    man = run_manifest({"suite": "pytest full"}, seeds=[], command=sys.argv)
+    man = run_manifest({"suite": "pytest full"}, seeds=[], command=sys.argv,
+                       extra={"git_at_start": git_at_start})
     print(counts, "->", write_run(ROOT / "results", "test_suite", payload, man))
     return 0 if p.returncode == 0 else 1
 

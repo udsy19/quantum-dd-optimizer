@@ -42,7 +42,7 @@ LABEL = {"free": "Free (Ramsey)", "cpmg": "CPMG", "xy4": "XY4", "xy8": "XY8", "u
          "optimized": "CMA-ES", "hahn": "Hahn (n=1 ref.)"}
 MODE_LABEL = {"timing": "timing-only", "phase": "phase-only", "both": "timing+phase"}
 
-plt.rcParams.update({"font.size": 8, "axes.spines.top": False, "axes.spines.right": False,
+plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.right": False,
                      "axes.grid": True, "grid.color": "#e6e6e3", "grid.linewidth": 0.6,
                      "lines.linewidth": 1.5, "legend.frameon": False, "savefig.bbox": "tight",
                      "font.family": "serif"})
@@ -125,6 +125,9 @@ Configuration & $10^3 r_{\rm FF}$ & $10^3 r_{\rm MC}\pm$SE & $z$ & Pass\\\midrul
 %s
 \bottomrule\end{tabular}\end{table}
 """ % (run["payload"]["n_traj_per_case"], run["run_id"].replace("_", r"\_"), "\n".join(lines)))
+    rel = [100 * r["se_mc_dt1ns"] / r["r_mc_dt1ns"] for r in rows]
+    macro("GthreeRelSELo", f"{min(rel):.2f}", "G3: smallest relative MC standard error (%)", run, "Results")
+    macro("GthreeRelSEHi", f"{max(rel):.2f}", "G3: largest relative MC standard error (%)", run, "Results")
     zmax = max(abs(r["z_dt1ns"]) for r in rows)
     macro("GthreeMaxZ", f"{zmax:.2f}", f"G3: max |z| between MC and filter function over {len(rows)} configurations is {zmax:.2f}; all pass={all(r['pass_primary'] for r in rows)}", run, "Results")
     macro("GthreeNtraj", f"{run['payload']['n_traj_per_case']}", "G3 used this many MC trajectories per configuration", run, "Results")
@@ -160,7 +163,19 @@ def sel_eps(e: dict, f=None) -> str:
     return "/".join(f(e["baselines"][x]) for x in sorted(e["selected_all"]))
 
 
-def bench_table(summs: list[tuple[str, dict, str]]) -> None:
+def max_rel_se(run: dict) -> tuple[float, float]:
+    """(max relative SE of a 5-seed pooled mean, max relative per-seed SE) over all arms/runs."""
+    pooled, per = 0.0, 0.0
+    for r in run["payload"]["runs"]:
+        for name, d in r["test"]["per_seed"].items():
+            ses = [v["stderr"] for v in d.values()]
+            eps = [v["infidelity"] for v in d.values()]
+            pooled = max(pooled, math.sqrt(sum(x * x for x in ses)) / len(ses) / np.mean(eps))
+            per = max(per, max(se / e for se, e in zip(ses, eps)))
+    return pooled, per
+
+
+def bench_table(summs: list[tuple[str, dict, str]], se: tuple[float, float]) -> None:
     """One full-width table: rows = (scenario, n); infidelities in units of 1e-3."""
     rows = []
     for title, summ, run_id in summs:
@@ -179,7 +194,7 @@ def bench_table(summs: list[tuple[str, dict, str]]) -> None:
     write("bench_table.tex", r"""\begin{table*}[t]
 \centering\scriptsize\setlength{\tabcolsep}{4pt}
 \caption{Held-out benchmark at $T=2\,\mu$s, $w=32$\,ns: infidelity $10^3\epsilon$ averaged over test seeds
-9001--9005 (1024 trajectories each; MC standard errors $\lesssim1\%%$ of $\epsilon$). ``Sel.'' = baseline
+9001--9005 (1024 trajectories each; MC standard error of each 5-seed mean $\le%.1f\%%$ of $\epsilon$, per seed $\le%.1f\%%$). ``Sel.'' = baseline
 selected by the pre-registered training-only rule. CMA-ES: mean $\epsilon$ over 3 independent training runs and,
 in parentheses, the range of $\epsilon_{\rm sel}/\epsilon_{\rm CMA}$ over runs ($>1$ favours CMA-ES).
 Scenario~B arms all use virtual-$Z$ from the nominal Stark profile. UDD-16 is infeasible on the grid
@@ -191,7 +206,7 @@ Scenario~B arms all use virtual-$Z$ from the nominal Stark profile. UDD-16 is in
 Scenario & $n$ & Free & CPMG & XY4 & XY8 & UDD & Sel. & timing-only & phase-only & timing+phase\\\midrule
 %s
 \bottomrule\end{tabular}\end{table*}
-""" % (ids, "\n".join(rows[:-1])))
+""" % (100 * se[0], 100 * se[1], ids, "\n".join(rows[:-1])))
 
 
 def bench_figure(summs: dict[str, dict], floors: dict[str, float], name: str) -> None:
@@ -293,46 +308,78 @@ def convergence(run: dict) -> None:
 
 
 def scen_b(run: dict) -> None:
-    runs = [r for r in run["payload"]["runs"] if "scenario_b_robustness" in r]
-    # pick the pre-registered arm summary at each n from the first training run (arms 1-3 are
-    # independent of the training run; arm 4 depends on it: report all three)
-    fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.4), sharey=True)
-    n_show = 8
-    rs = [r for r in runs if r["n"] == n_show and r["mode"] == "both"]
-    for ax, key, xlabel, xs, fx in (
-        (axes[0], "amp", "Stark amplitude / nominal", [0.8, 0.9, 1.0, 1.1, 1.2], lambda v: f"amp_x{v}"),
-        (axes[1], "shift", "readout timing shift (ns)", [-100, -50, 0, 50, 100], None),
-    ):
-        rob = rs[0]["scenario_b_robustness"]
-        keys = [k for k in rob if k.startswith(key)] or []
-        # sort keys by their numeric value
-        def val(k):
-            return float(k.split("_")[-1].replace("x", "").replace("ns", "").replace("p", "."))
-        keys = sorted(keys, key=val)
-        arms = list(rob[keys[0]]["summary"])
-        for arm in arms:
-            ys = [rob[k]["summary"][arm]["mean_over_seeds"] for k in keys]
-            col = {"1": COLORS["free"], "2": COLORS["cpmg"], "3": COLORS["xy4"], "4": COLORS["optimized"]}[arm[0]]
-            ax.plot([val(k) for k in keys], ys, marker="o", ms=3, color=col, label={"1": "no DD, no frame correction", "2": "virtual-Z only", "3": "best canonical DD + virtual-Z",
-                                                        "4": "CMA-ES DD + virtual-Z"}[arm[0]])
-        ax.set_xlabel(xlabel)
+    """Scenario B robustness: all n, phase-only and timing+phase CMA-ES, all three training runs."""
+    runs = [r for r in run["payload"]["runs"] if "scenario_b_robustness" in r and r["mode"] in ("phase", "both")]
+
+    def val(k):
+        return float(k.split("_")[-1].replace("x", "").replace("ns", ""))
+
+    def series(r, arm, key):
+        rob = r["scenario_b_robustness"]
+        ks = sorted([k for k in rob if k.startswith(key)], key=val)
+        return [val(k) for k in ks], [next(v["mean_over_seeds"] for a, v in rob[k]["summary"].items() if a.startswith(arm)) for k in ks]
+
+    # figure at n = 4 (where the nominal comparison favoured CMA-ES)
+    n_show = 4
+    rs4 = sorted([r for r in runs if r["n"] == n_show], key=lambda r: (r["mode"], r["seeds"]["train"]))
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6), sharey=True)
+    for ax, key, xlabel in ((axes[0], "amp", "Stark amplitude / nominal"), (axes[1], "shift", "readout timing shift (ns)")):
+        x, y = series(rs4[0], "2", key)
+        ax.plot(x, y, color=COLORS["cpmg"], marker="o", ms=3, label="virtual-Z only")
+        x, y = series(rs4[0], "3", key)
+        ax.plot(x, y, color=COLORS["xy4"], marker="s", ms=3, lw=2, label="XY4 + virtual-Z")
+        for r in rs4:
+            x, y = series(r, "4", key)
+            both = r["mode"] == "both"
+            ax.plot(x, y, color=COLORS["optimized"] if both else COLORS["udd"], ls="--" if both else ":", marker="*" if both else "P",
+                    ms=4, lw=1, label=(f"CMA-ES {MODE_LABEL[r['mode']]} + VZ (3 runs)" if r["seeds"]["train"] == 101 else None))
+        ax.set_xlabel(xlabel, fontsize=9)
         ax.set_yscale("log")
-    axes[0].set_ylabel(r"held-out $\epsilon$ (n=%d)" % n_show)
-    rob = rs[0]["scenario_b_robustness"]
-    def rng_(arm_prefix, key):
-        v = [rob[k]["summary"][a]["mean_over_seeds"] for k in rob if k.startswith(key) for a in rob[k]["summary"] if a.startswith(arm_prefix)]
-        return min(v), max(v)
-    for arm, nm_ in (("2", "Vz"), ("3", "DDVz"), ("4", "CMAVz")):
-        for key, kn in (("amp", "Amp"), ("shift", "Shift")):
-            lo, hi = rng_(arm, key)
-            macro(f"Rob{nm_}{kn}Lo", fmt(lo), f"Scenario B robustness n={n_show} (train run 1), arm {arm}, {key} sweep: min eps", run, "Results", "9001-9005")
-            macro(f"Rob{nm_}{kn}Hi", fmt(hi), f"Scenario B robustness n={n_show} (train run 1), arm {arm}, {key} sweep: max eps", run, "Results", "9001-9005")
-    arms = rs[0]["scenario_b_arms"]["summary"]
-    for a, v in arms.items():
-        nm_ = {"1": "NoDD", "2": "VzOnly", "3": "DDVz", "4": "CMAVz"}[a[0]]
-        macro(f"BArm{nm_}", fmt(v["mean_over_seeds"]), f"Scenario B n={n_show} arm {a}: held-out eps (nominal)", run, "Results", "9001-9005")
-    axes[1].legend(fontsize=6, loc="upper left", bbox_to_anchor=(1.0, 1.0))
+        ax.tick_params(labelsize=8)
+    axes[0].set_ylabel(r"held-out $\epsilon$ (n=%d)" % n_show, fontsize=9)
+    axes[1].legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.0, 1.0))
     save(fig, "fig_robustness_b")
+
+    # worst-case table over the 10 perturbations
+    rows = []
+    for n in sorted({r["n"] for r in runs}):
+        r0 = [r for r in runs if r["n"] == n][0]
+        dd = [v for key in ("amp", "shift") for v in series(r0, "3", key)[1]]
+        vz = [v for key in ("amp", "shift") for v in series(r0, "2", key)[1]]
+        sel = r0["selected_baseline"].upper()
+        for mode in ("phase", "both"):
+            cells, wins = [], []
+            for r in sorted([r for r in runs if r["n"] == n and r["mode"] == mode], key=lambda r: r["seeds"]["train"]):
+                cm = [v for key in ("amp", "shift") for v in series(r, "4", key)[1]]
+                cells.append(m3(max(cm)))
+                wins.append(sum(c < d for c, d in zip(cm, dd)))
+            rows.append(f"{n} & {MODE_LABEL[mode]} & {m3(max(vz))} & {m3(max(dd))} ({sel}) & {' / '.join(cells)} & "
+                        f"{' / '.join(map(str, wins))} \\\\")
+            nn = {4: "Four", 8: "Eight", 16: "Sixteen"}[n]
+            ml = {"phase": "Phase", "both": "Both"}[mode]
+            macro(f"RobB{nn}{ml}WinsMin", str(min(wins)), f"Scenario B n={n} {mode}: min over runs of #perturbations (of 10) where CMA beats DD+VZ", run, "Results", "9001-9005")
+            macro(f"RobB{nn}{ml}WinsMax", str(max(wins)), f"Scenario B n={n} {mode}: max over runs of #perturbations where CMA beats DD+VZ", run, "Results", "9001-9005")
+            macro(f"RobB{nn}{ml}WorstMax", fmt(max(float(c) for c in cells) / 1e3), f"Scenario B n={n} {mode}: largest worst-case eps over runs", run, "Results", "9001-9005")
+            if mode == "phase":
+                macro(f"RobB{nn}DDWorst", fmt(max(dd)), f"Scenario B n={n}: worst-case eps of selected DD+VZ", run, "Results", "9001-9005")
+                macro(f"RobB{nn}VzWorst", fmt(max(vz)), f"Scenario B n={n}: worst-case eps of virtual-Z only", run, "Results", "9001-9005")
+                macro(f"RobB{nn}VzBest", fmt(min(vz)), f"Scenario B n={n}: best-case eps of virtual-Z only over perturbations", run, "Results", "9001-9005")
+    write("robustness_table.tex", r"""\begin{table}[t]
+\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Scenario~B robustness (pre-registered sweep): worst-case $10^3\epsilon$ over 10 perturbed Stark
+profiles (amplitude $\times\{0.8,\dots,1.2\}$, timing $\pm\{50,100\}$\,ns and nominal), virtual-$Z$ always from the
+nominal profile; CMA-ES values for training runs 101/102/103, and in how many of the 10 perturbations
+CMA-ES beats the selected DD + virtual-$Z$. Run \texttt{%s}.}
+\label{tab:robustness}
+\begin{tabular}{@{}clcccc@{}}\toprule
+$n$ & CMA-ES mode & VZ only & DD+VZ & CMA-ES+VZ (runs) & wins/10\\\midrule
+%s
+\bottomrule\end{tabular}\end{table}
+""" % (run["run_id"].replace("_", r"\_"), "\n".join(rows)))
+    arms = [r for r in runs if r["n"] == 8][0]["scenario_b_arms"]["summary"]
+    for a_, v in arms.items():
+        nm_ = {"1": "NoDD", "2": "VzOnly", "3": "DDVz", "4": "CMAVz"}[a_[0]]
+        macro(f"BArm{nm_}", fmt(v["mean_over_seeds"]), f"Scenario B n=8 arm {a_}: held-out eps (nominal, training run of first listed)", run, "Results", "9001-9005")
 
 
 def spectroscopy(run: dict) -> None:
@@ -511,7 +558,9 @@ def main() -> None:
                 macro(f"BenchB{tag}{ml}CIHi", f"{max(x['ratio_ci'][1] for x in rs):.3f}", f"Scenario B n={n} {m}: highest CI bound", runs["bench_b"], "Results", "9001-9005")
     if summs:
         bench_figure(summs, floors, "fig_benchmark")
-        bench_table([(t, sm, runs[r]["run_id"]) for (t, sm), r in zip(summs.items(), ("bench_a", "bench_b"))])
+        se_ = [max_rel_se(runs[r]) for r in ("bench_a", "bench_b") if r in runs]
+        bench_table([(t, sm, runs[r]["run_id"]) for (t, sm), r in zip(summs.items(), ("bench_a", "bench_b"))],
+                    (max(x[0] for x in se_), max(x[1] for x in se_)))
     for role, nice in (("abl_noamp", "AblNoAmp"), ("abl_noT1", "AblNoTone"), ("abl_colored", "AblColored"), ("bench_a_T4", "BenchATfour")):
         if role in runs:
             s = bench_summary(runs[role])

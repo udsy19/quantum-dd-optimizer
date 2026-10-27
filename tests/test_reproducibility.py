@@ -33,7 +33,8 @@ def test_manifest_has_required_fields():
         "ddopt_version", "cpu_count", "config", "config_hash", "seeds", "command", "command_str", "extra",
     ):
         assert key in m, key
-    assert set(m["git"]) == {"sha", "dirty"}
+    expected = {"sha", "dirty"} | ({"diff", "diff_sha256"} if m["git"]["dirty"] else set())
+    assert set(m["git"]) == expected
     assert m["created_utc"].endswith("Z")
     assert set(m["packages"]) == {"numpy", "scipy", "cma", "matplotlib"}
     assert all(isinstance(v, str) and v for v in m["packages"].values())

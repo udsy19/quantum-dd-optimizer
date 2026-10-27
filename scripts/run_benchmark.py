@@ -18,7 +18,7 @@ os.environ.setdefault("OMP_NUM_THREADS", "1")
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 
 from ddopt.evaluation import run_benchmark  # noqa: E402
-from ddopt.provenance import run_manifest, write_run  # noqa: E402
+from ddopt.provenance import git_state, run_manifest, write_run  # noqa: E402
 from ddopt.scenarios import load_scenario  # noqa: E402
 
 
@@ -35,6 +35,7 @@ def _job(args):
 
 
 def main(argv=None):
+    git_at_start = git_state()
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenario", default="scenario_a")
     ap.add_argument("--name", default=None)
@@ -65,7 +66,8 @@ def main(argv=None):
     cfg_rec = {k: v for k, v in cfg.items() if k != "_path"}
     cfg_rec["overrides"] = {"T": a.T, "max_evals": max_evals, "n": ns, "modes": modes, "robustness": a.robustness}
     man = run_manifest(cfg_rec, seeds={"train": s["train"], "optimizer": s["optimizer"], "test": s["test"]},
-                       command=sys.argv)
+                       command=sys.argv,
+                       extra={"git_at_start": git_at_start})
     name = a.name or f"benchmark_{a.scenario}"
     print("wrote", write_run(a.out, name, payload, man), f"({time.time()-t0:.0f}s)")
 

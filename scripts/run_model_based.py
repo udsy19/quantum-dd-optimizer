@@ -22,7 +22,7 @@ from ddopt import simulator  # noqa: E402
 from ddopt.contracts import FitResult  # noqa: E402
 from ddopt.evaluation import canonical_baselines, evaluate, pooled_comparison, select_baseline  # noqa: E402
 from ddopt.optimizer import optimize  # noqa: E402
-from ddopt.provenance import load_run, run_manifest, write_run  # noqa: E402
+from ddopt.provenance import load_run, git_state, run_manifest, write_run  # noqa: E402
 from ddopt.scenarios import ROOT, load_scenario, scenario_noise, sim_config  # noqa: E402
 from ddopt.spectroscopy import fitted_noise_model  # noqa: E402
 
@@ -68,6 +68,7 @@ def job(args):
 
 
 def main(argv=None):
+    git_at_start = git_state()
     ap = argparse.ArgumentParser()
     ap.add_argument("--spectroscopy-run", required=True)
     ap.add_argument("--n", type=int, nargs="*", default=[4, 8])
@@ -87,7 +88,8 @@ def main(argv=None):
                "status": "SYNTHETIC; pre-registered model-based pipeline", "wall_time_s": time.time() - t0}
     cfg_rec = {k: v for k, v in cfg.items() if k != "_path"}
     man = run_manifest({"cfg": cfg_rec, "spectroscopy_run": spec_id, "n": a.n, "mode": a.mode},
-                       seeds={"train": s["train"], "optimizer": s["optimizer"], "test": s["test"]}, command=sys.argv)
+                       seeds={"train": s["train"], "optimizer": s["optimizer"], "test": s["test"]}, command=sys.argv,
+                       extra={"git_at_start": git_at_start})
     print("wrote", write_run(a.out, "model_based_scenario_a", payload, man))
 
 

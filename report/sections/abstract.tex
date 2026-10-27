@@ -10,7 +10,8 @@ Synthetic Ramsey/Hahn/CPMG spectroscopy recovers a predictive noise model (held-
 $\SpecGaussFullRmseRatio\times$ the shot-noise floor), but the spectrum is not uniquely
 identified. In the pre-registered Scenario~A, no CMA-ES mode beat the selected XY4/XY8 baseline,
 whose infidelity ($\BenchASixteenSelEps$ at $n=16$) is already at the $T_1$-plus-white-noise
-floor ($\FloorA$). With a deterministic Stark-like shift and virtual-$Z$ correction, the only
-consistent gain was small (ratio $\BenchBFourBothRatioLo$--$\BenchBFourBothRatioHi$ at $n=4$).
-Optimizing on fitted models, or with more headroom, did not help, and training gains did not
-generalize. All results are synthetic; no quantum hardware was used.
+floor ($\FloorA$). With a deterministic Stark-like shift and virtual-$Z$ correction, CMA-ES
+beat XY4 by a few percent at the nominal profile only at $n=4$. The timing+phase variant of that
+gain reversed under the pre-registered $\pm100$\,ns readout-timing shifts, and only phase-only
+sequences kept a marginal, model-specific advantage. Optimizing on fitted models, or with more
+headroom, did not help, and training gains did not generalize. All results are synthetic; no quantum hardware was used.
