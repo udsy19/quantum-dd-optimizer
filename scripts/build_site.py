@@ -53,12 +53,12 @@ from ddopt.provenance import load_run  # noqa: E402
 SRC = ROOT / "site" / "src"
 REPO_URL = "https://github.com/udsy19/quantum-dd-optimizer"
 SITE_URL = "https://udsy19.github.io/quantum-dd-optimizer/"
-# KaTeX is loaded from jsDelivr with Subresource Integrity. The hashes were computed from the
-# files of the npm package katex@0.16.22 (jsDelivr /npm/ serves the npm tarball unchanged).
+# KaTeX and the Geist fonts are self-hosted under site/src/assets (copied from the npm packages
+# katex@0.16.22 and geist@1.7.2; licences alongside). No third-party requests at runtime.
 KATEX_VERSION = "0.16.22"
-KATEX_BASE = f"https://cdn.jsdelivr.net/npm/katex@{KATEX_VERSION}/dist/"
-KATEX_CSS_SRI = "sha384-5TcZemv2l/9On385z///+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP"
-KATEX_JS_SRI = "sha384-cMkvdD8LoxVzGF/RPUKAcvmm49FQ0oxwDF3BGKtDXcEc+T1b2N+teh/OJfpU0jr6"
+KATEX_BASE = "assets/vendor/katex/"
+KATEX_CSS_SRI = ""
+KATEX_JS_SRI = ""
 
 NUM_WORD = {4: "Four", 8: "Eight", 16: "Sixteen"}
 MODE_LABEL = {"timing": "timing-only", "phase": "phase-only", "both": "timing+phase"}
@@ -1240,37 +1240,87 @@ def make_bibtex(cff: dict, build_sha: str) -> str:
     return "\n".join(lines)
 
 
-def og_image(path: Path, title: str) -> None:
+HERO_CMAES_TRAIN_SEED = 101  # pre-specified training run shown in the hero (not the best of the three)
+
+
+def hero_data(data: "Data", ref_sha: str) -> dict:
+    """Pulse timing and held-out infidelity per sequence for the hero instrument (Scenario A, T = 2 us).
+
+    Canonical sequences are rebuilt with the same constructors as the benchmark (same width, guard, grid);
+    CMA-ES is the timing+phase result of the pre-specified training run. Infidelities are the pinned run's
+    test-seed means; the floor is the analytic T1 + white-dephasing channel (as in make_report_artifacts.py).
+    """
+    from ddopt.evaluation import canonical_baselines
+    from ddopt.scenarios import load_scenario
+
+    run = data.runs["bench_a"]
+    cfg = load_scenario("scenario_a")
+    w = cfg["window"]
+    out: dict = {"T": w["T"], "width": w["width"], "run_id": run["run_id"],
+                 "run_href": gh_tree(ref_sha, "results/" + run["run_id"]),
+                 "floor": data.mra.floor_infidelity(cfg, w["T"]), "by_n": {}, "default_n": "8"}
+    test_seeds = None
+    for r in run["payload"]["runs"]:
+        n = r["n"]
+        if n in out["by_n"]:
+            continue
+        test_seeds = r["seeds"]["test"]
+        bl = canonical_baselines(n, w["T"], w["width"], guard=w["guard"], dt_grid=w["dt_grid"], include_hahn=False)
+        summ = r["test"]["summary"]
+        seqs = {k: {"centers": list(sq.centers), "phases": list(sq.phases), "eps": summ[k]["mean_over_seeds"]}
+                for k, sq in bl.items() if k in summ}
+        cm = [x for x in run["payload"]["runs"] if x["n"] == n and x["mode"] == "both"
+              and x["seeds"]["train"] == HERO_CMAES_TRAIN_SEED]
+        if len(cm) != 1:
+            raise BuildError(f"hero: expected one timing+phase run with training seed {HERO_CMAES_TRAIN_SEED} at n={n}")
+        bs = cm[0]["optimization"]["best_sequence"]
+        seqs["cmaes"] = {"centers": bs["centers"], "phases": bs["phases"],
+                         "eps": cm[0]["comparison_vs_selected"]["pooled"]["eps_b"], "train_seed": HERO_CMAES_TRAIN_SEED}
+        out["by_n"][str(n)] = {"selected": r["selected_baseline"], "seqs": seqs}
+    out["by_n"] = dict(sorted(out["by_n"].items(), key=lambda kv: int(kv[0])))
+    out["test_seeds"] = f"{min(test_seeds)}–{max(test_seeds)}" if test_seeds else ""
+    return out
+
+
+def og_image(path: Path, title: str, hero: dict | None = None) -> None:
+    """1200x630 social card in the site's design language (dark field, Geist, pulse-amber pulse train)."""
     import textwrap
 
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    from matplotlib import font_manager
 
+    fdir = SRC / "og-fonts"
+    sans = font_manager.FontProperties(fname=str(fdir / "Geist-SemiBold.ttf"))
+    mono = font_manager.FontProperties(fname=str(fdir / "GeistMono-Medium.ttf"))
+    bg, fg, muted, subtle, amber, grid = "#08090b", "#f4f4f5", "#9a9ba3", "#80818a", "#f6c56f", "#16171b"
     fig = plt.figure(figsize=(12, 6.3), dpi=100)
-    fig.patch.set_facecolor("#0a0a0b")
+    fig.patch.set_facecolor(bg)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_xlim(0, 1200)
     ax.set_ylim(0, 630)
     ax.axis("off")
-    for x in range(0, 1201, 40):
-        ax.plot([x, x], [0, 630], color="#ffffff", alpha=0.035, lw=1)
-    for y in range(0, 631, 40):
-        ax.plot([0, 1200], [y, y], color="#ffffff", alpha=0.035, lw=1)
-    ax.text(72, 520, "ONLINE PAPER  ·  SYNTHETIC SIMULATION STUDY", color="#a5a3ff", fontsize=15,
-            family="DejaVu Sans", weight="bold")
-    ax.text(72, 470, "\n".join(textwrap.wrap(title, 38)[:4]), color="#ededec", fontsize=40,
-            family="DejaVu Sans", weight="bold", va="top", linespacing=1.18)
-    x = 72
-    for label, fg, bg in (("Synthetic simulation", "#ededec", "#1d1d21"), ("Pre-registered", "#ededec", "#1d1d21"),
-                          ("No hardware data", "#ffd38a", "#2b2110"), ("Results negative", "#ffb4a8", "#2d1512")):
-        w = 15 + 10.6 * len(label)
-        ax.add_patch(matplotlib.patches.FancyBboxPatch((x, 92), w, 40, boxstyle="round,pad=0,rounding_size=20",
-                                                       fc=bg, ec="#3a3a40", lw=1))
-        ax.text(x + w / 2, 112, label, color=fg, fontsize=15, ha="center", va="center", family="DejaVu Sans")
-        x += w + 14
-    ax.text(72, 48, "udsy19.github.io/quantum-dd-optimizer", color="#8f8e89", fontsize=14, family="DejaVu Sans")
+    for x in range(0, 1201, 48):
+        ax.plot([x, x], [0, 630], color=grid, lw=1)
+    for y in range(6, 631, 48):
+        ax.plot([0, 1200], [y, y], color=grid, lw=1)
+    ax.text(72, 548, "IEEE MIDTERM REPORT / SYNTHETIC SIMULATION STUDY", color=subtle, fontsize=13, fontproperties=mono)
+    ax.text(72, 508, "\n".join(textwrap.wrap(title, 34)[:3]), color=fg, fontsize=42, fontproperties=sans, va="top",
+            linespacing=1.12)
+    # pulse train: XY8 at n = 8 in the 2 us window (real timing when hero data is available)
+    x0, x1, base, h = 72, 1128, 150, 70
+    ax.plot([x0, x1], [base, base], color="#34353d", lw=1.2)
+    centers = (hero or {}).get("by_n", {}).get("8", {}).get("seqs", {}).get("xy8", {}).get("centers") or []
+    T = (hero or {}).get("T", 2e-6)
+    for c in centers:
+        cx = x0 + (c / T) * (x1 - x0)
+        ax.add_patch(matplotlib.patches.Rectangle((cx - 7, base), 14, h, color=amber, lw=0))
+    ax.text(x0, base - 34, "0", color=subtle, fontsize=12, fontproperties=mono)
+    ax.text(x1, base - 34, "2.0 \u00b5s", color=subtle, fontsize=12, fontproperties=mono, ha="right")
+    ax.text(72, 48, "udsy19.github.io/quantum-dd-optimizer", color=muted, fontsize=13, fontproperties=mono)
+    ax.text(1128, 48, "No hardware data. Result: negative.", color=muted, fontsize=13, fontproperties=mono, ha="right")
     fig.savefig(path, facecolor=fig.get_facecolor(), metadata={"Software": None})
     plt.close(fig)
 
@@ -1351,7 +1401,8 @@ def build(out: Path, pdf_dir: Path | None = None, site_url: str = SITE_URL) -> d
         if pdf_dir and (pdf_dir / src_name).is_file():
             shutil.copy2(pdf_dir / src_name, out / dst_name)
             pdfs[dst_name] = True
-    og_image(out / "assets" / "og.png", meta["title"])
+    hero = hero_data(data, ref_sha)
+    og_image(out / "assets" / "og.png", meta["title"], hero)
 
     numbers_json = {k: {"tex": v, "text": tex_value_text(v), "value": tex_value_float(v), **prov.get(k, {})}
                     for k, v in sorted(macros.items())}
@@ -1431,6 +1482,7 @@ def build(out: Path, pdf_dir: Path | None = None, site_url: str = SITE_URL) -> d
         "tests_skipped": str(tests["skipped"]),
         "tests_run": esc(tests["run_id"]), "tests_run_link": gh_tree(ref_sha, "results/" + tests["run_id"]),
         "chart_data": dumps(charts).replace("</", "<\\/"),
+        "hero_data": dumps(hero).replace("</", "<\\/"),
     }
     flags = {"paper_pdf": "paper.pdf" in pdfs, "appendix_pdf": "appendix.pdf" in pdfs,
              "combined_pdf": "combined_report.pdf" in pdfs}

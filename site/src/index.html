@@ -7,11 +7,10 @@
 <meta name="description" content="@@description@@">
 <meta name="author" content="@@author_names@@">
 <meta name="keywords" content="@@keywords@@">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#08090b">
 <link rel="canonical" href="@@site_url@@">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="article">
@@ -26,239 +25,319 @@
 <meta name="twitter:title" content="@@full_title@@">
 <meta name="twitter:description" content="@@description@@">
 <meta name="twitter:image" content="@@site_url@@assets/og.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
-<link rel="stylesheet" href="@@katex_css@@" integrity="@@katex_css_sri@@" crossorigin="anonymous">
+<link rel="preload" href="assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="@@katex_css@@">
 <link rel="stylesheet" href="assets/style.css">
-<script src="assets/theme.js"></script>
-<script defer src="@@katex_js@@" integrity="@@katex_js_sri@@" crossorigin="anonymous"></script>
+<script defer src="@@katex_js@@"></script>
 <script defer src="assets/charts.js"></script>
+<script defer src="assets/hero.js"></script>
 <script defer src="assets/app.js"></script>
 </head>
 <body>
-<a class="skip" href="#article">Skip to content</a>
+<a class="skip" href="#main">Skip to content</a>
 
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="#top" aria-label="Back to top">
-      <img src="assets/favicon.svg" width="22" height="22" alt="">
-      <span>quantum-dd-optimizer</span>
+<header class="nav" id="nav">
+  <div class="container nav-in">
+    <a class="wordmark" href="#top" aria-label="Quantum DD Optimizer, back to top">
+      <span class="px" aria-hidden="true">Q<b>DD</b></span><span class="name">Quantum DD Optimizer</span>
     </a>
-    <nav class="topnav" aria-label="Site">
+    <nav class="nav-links" aria-label="Site">
+      <a href="#findings" class="opt">Findings</a>
       <a href="#paper">Paper</a>
-      <a href="#appendix">Appendix</a>
-      @@if_combined_pdf@@<a href="combined_report.pdf">PDF</a>@@endif_combined_pdf@@
+      <a href="#figures" class="opt">Figures</a>
+      <a href="#reproduce" class="opt">Reproduce</a>
+      <span class="nav-sep" aria-hidden="true"></span>
       <a href="@@repo_url@@">GitHub</a>
-      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle light / dark">
-        <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.2A8 8 0 0 1 9.8 4a8 8 0 1 0 10.2 10.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-      </button>
+      @@if_combined_pdf@@<a class="btn btn-primary btn-sm" href="combined_report.pdf">PDF</a>@@endif_combined_pdf@@
     </nav>
   </div>
 </header>
 
-<main id="top">
-<section class="hero" aria-labelledby="paper-title">
-  <div class="hero-inner">
-    <p class="eyebrow">@@date_line@@</p>
-    <h1 id="paper-title">@@title@@</h1>
-    <p class="subtitle">@@subtitle@@</p>
-    <ul class="badges" aria-label="Study status">
-      <li class="badge">Synthetic simulation</li>
-      <li class="badge">Pre-registered</li>
-      <li class="badge badge-warn">No hardware data</li>
-      <li class="badge badge-neg">Results negative</li>
-    </ul>
-    <ul class="authors" aria-label="Authors">@@authors@@</ul>
-    <div class="actions">
-      @@if_combined_pdf@@<a class="btn btn-primary" href="combined_report.pdf">Full paper + appendix PDF</a>@@endif_combined_pdf@@
-      @@if_paper_pdf@@<a class="btn" href="paper.pdf">Paper PDF</a>@@endif_paper_pdf@@
-      <a class="btn" href="@@repo_url@@">GitHub repository</a>
-      <a class="btn btn-ghost" href="@@report_tree@@">LaTeX source</a>
+<main id="main">
+<section class="hero" id="top" aria-labelledby="paper-title">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <p class="label-mono">@@date_line@@ / Synthetic simulation study</p>
+        <h1 id="paper-title">@@title@@</h1>
+        <p class="kicker-sub">@@subtitle@@</p>
+        <p class="sub">We asked whether CMA-ES can design better dynamical-decoupling sequences for an idle qubit than XY4 and XY8. Under a pre-registered synthetic model and independent held-out noise, it could not.</p>
+        <p class="authors"><strong>@@author_names@@</strong><br>Columbia University</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#paper">Read the paper</a>
+          @@if_combined_pdf@@<a class="btn" href="combined_report.pdf">Paper and appendix (PDF)</a>@@endif_combined_pdf@@
+          <a class="btn btn-ghost" href="@@report_tree@@">LaTeX source</a>
+        </div>
+      </div>
+      <dl class="aside-dl">
+        <div><dt class="label-mono">Below</dt><dd>The recorded runs, replayed. Choose a sequence and a pulse count to see its timing and its infidelity on noise the optimizer never saw.</dd></div>
+        <div><dt class="label-mono">Evidence</dt><dd>Synthetic simulation only. Scenarios, seeds and the baseline rule were fixed before any optimization run.</dd></div>
+        <div><dt class="label-mono">Not</dt><dd>A hardware result. No IQCC or other device was accessed.</dd></div>
+      </dl>
+    </div>
+
+    <section class="instrument" aria-labelledby="inst-h">
+      <div class="inst-head">
+        <div class="inst-title">
+          <h2 id="inst-h">Idle window, T = 2&nbsp;µs</h2>
+          <span class="ev sim">Simulated / held-out seeds</span>
+        </div>
+        <fieldset class="seg" id="npulse"><legend><span class="sym">π</span> pulses</legend></fieldset>
+      </div>
+      <div class="inst-tabs"><fieldset class="tabs" id="seq" aria-label="Sequence"><legend class="sr-only">Sequence</legend></fieldset></div>
+      <div class="trace" id="trace" role="img" aria-label="Pulse timing of the selected sequence"></div>
+      <dl class="readouts" aria-live="polite">
+        <div class="readout"><dt class="label-mono">Held-out infidelity</dt><dd class="hot" id="r-eps">–</dd></div>
+        <div class="readout"><dt class="label-mono">Physical floor</dt><dd id="r-floor">–</dd></div>
+        <div class="readout"><dt class="label-mono">Above floor</dt><dd id="r-over">–</dd></div>
+        <div class="readout"><dt class="label-mono" id="r-cmp-l">Versus selected baseline</dt><dd id="r-cmp">–</dd></div>
+      </dl>
+      <div class="inst-foot">
+        <p class="verdict" id="verdict"></p>
+        <div>
+          <div class="scale" id="scale"></div>
+          <p class="prov" id="inst-prov"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="section" id="findings" aria-labelledby="findings-title">
+  <div class="container">
+    <header class="sec-head">
+      <div class="sec-mark"><span class="n" aria-hidden="true">01</span><span class="label-mono">Findings</span></div>
+      <div class="sec-title">
+        <h2 id="findings-title"><span class="sr-only">01. </span>The optimizer found nothing the canonical sequences had left</h2>
+        <p>Five results carry the paper. Each number links to the recorded run, the command that produced it and the code commit. Hover, focus or tap a number to see its source.</p>
+      </div>
+    </header>
+    <div class="sec-body">
+      <dl class="findings">
+        <div class="finding">
+          <dt>Pre-registered benchmark (Scenario A)</dt>
+          <dd>No CMA-ES mode improves on the training-selected XY4/XY8 baseline in a way that matters. XY8 already sits on the floor set by T<sub>1</sub> and white noise, which no pulse sequence can remove. Timing+phase ratio at n = 16: @@num:BenchASixteenBothRatioLo@@ to @@num:BenchASixteenBothRatioHi@@, where values below 1 favour XY8.</dd>
+          <div class="fig"><span class="val hot">@@num:BenchASixteenSelEps@@</span><span class="ev sim">XY8, n = 16; floor @@num:FloorA@@</span></div>
+        </div>
+        <div class="finding">
+          <dt>Readout-like detuning (Scenario B)</dt>
+          <dd>A few-percent nominal gain at n = 4 does not survive the pre-registered readout-timing shifts. Timing+phase CMA-ES wins in only @@num:RobBFourBothWinsMin@@ to @@num:RobBFourBothWinsMax@@ of 10 perturbed profiles, against @@num:RobBFourDDWorst@@ worst case for XY4 with virtual-Z.</dd>
+          <div class="fig"><span class="val">@@num:RobBFourBothWorstMax@@</span><span class="ev sim">CMA-ES worst case, n = 4</span></div>
+        </div>
+        <div class="finding">
+          <dt>Training versus validation</dt>
+          <dd>Training infidelity falls below XY8 (@@num:ConvTrainFinal@@) while validation on unseen noise stays at @@num:ConvValFinal@@, against @@num:ConvBestBaselineVal@@ for XY8. The apparent gain is fitted noise, not a better sequence. Exploratory diagnostic.</dd>
+          <div class="fig"><span class="val">@@num:ConvValFinal@@</span><span class="ev sim">Validation, n = 8</span></div>
+        </div>
+        <div class="finding">
+          <dt>Synthetic spectroscopy</dt>
+          <dd>Ramsey, Hahn and CPMG fits predict held-out decays well (95% coverage @@num:SpecGaussFullCov@@), but the spectrum itself is not uniquely identified.</dd>
+          <div class="fig"><span class="val">@@num:SpecGaussFullRmseRatio@@×</span><span class="ev sim">Held-out RMSE / shot noise</span></div>
+        </div>
+        <div class="finding">
+          <dt>Simulator against theory</dt>
+          <dd>The finite-pulse Monte Carlo simulator matches filter-function predictions in five predetermined configurations, @@num:GthreeNtraj@@ trajectories each. This checks internal consistency, not any device.</dd>
+          <div class="fig"><span class="val">|z| ≤ @@num:GthreeMaxZ@@</span><span class="ev ok">Gate G3 passed</span></div>
+        </div>
+      </dl>
     </div>
   </div>
 </section>
 
-<section class="abstract-wrap" aria-labelledby="abstract-h">
-  <div class="abstract">
-    <h2 id="abstract-h" class="label">Abstract</h2>
-    @@abstract_html@@
-    <p class="keywords"><span class="label-inline">Index Terms</span> @@keywords@@</p>
-    <p class="hint">This page is generated from the LaTeX sources in <a href="@@report_tree@@"><code>report/</code></a> on every change. Numbers with a dotted underline carry provenance: hover, focus or tap one to see the recorded run, command and code commit it comes from.</p>
-  </div>
-</section>
-
-<section class="findings" aria-labelledby="findings-h">
-  <h2 id="findings-h" class="section-kicker">Key findings</h2>
-  <div class="cards">
-    <article class="card">
-      <h3>No CMA-ES gain in Scenario A</h3>
-      <p class="card-value">@@num:BenchASixteenSelEps@@</p>
-      <p class="card-sub">Selected XY8 baseline, held-out infidelity at n = 16, close to the T<sub>1</sub> + white-noise floor of @@num:FloorA@@. Timing+phase ratio at n = 16: @@num:BenchASixteenBothRatioLo@@–@@num:BenchASixteenBothRatioHi@@ (&lt; 1 favours XY8).</p>
-      @@prov:BenchASixteenSelEps@@
-    </article>
-    <article class="card">
-      <h3>Scenario B gain does not survive timing shifts</h3>
-      <p class="card-value">@@num:RobBFourBothWorstMax@@</p>
-      <p class="card-sub">Worst case of timing+phase CMA-ES at n = 4 under the pre-registered timing shifts, versus @@num:RobBFourDDWorst@@ for XY4 + virtual-Z. It wins in only @@num:RobBFourBothWinsMin@@–@@num:RobBFourBothWinsMax@@ of 10 perturbed profiles.</p>
-      @@prov:RobBFourBothWorstMax@@
-    </article>
-    <article class="card">
-      <h3>Training gains do not generalize</h3>
-      <p class="card-value">@@num:ConvValFinal@@</p>
-      <p class="card-sub">Validation infidelity of timing+phase CMA-ES at n = 8 (training: @@num:ConvTrainFinal@@), against @@num:ConvBestBaselineVal@@ for XY8. Exploratory diagnostic.</p>
-      @@prov:ConvValFinal@@
-    </article>
-    <article class="card">
-      <h3>Spectroscopy is predictive, not identifying</h3>
-      <p class="card-value">@@num:SpecGaussFullRmseRatio@@×</p>
-      <p class="card-sub">Held-out RMSE relative to the shot-noise floor (full Gaussian model), 95% coverage @@num:SpecGaussFullCov@@. The spectral model is not uniquely identified.</p>
-      @@prov:SpecGaussFullRmseRatio@@
-    </article>
-    <article class="card">
-      <h3>Simulator agrees with filter-function theory</h3>
-      <p class="card-value">|z| ≤ @@num:GthreeMaxZ@@</p>
-      <p class="card-sub">Five predetermined configurations, @@num:GthreeNtraj@@ trajectories each: internal consistency, not device validation.</p>
-      @@prov:GthreeMaxZ@@
-    </article>
-  </div>
-</section>
-
-<div class="layout">
-  <aside class="toc-col">
-    <details class="toc" open>
-      <summary>Contents</summary>
-      <nav aria-label="Table of contents">
-        <p class="toc-part"><a href="#paper">Paper</a></p>
-        @@toc_paper@@
-        <p class="toc-part"><a href="#appendix">Supplementary appendix</a></p>
-        @@toc_appendix@@
-        <p class="toc-part">Website</p>
-        <ol>
-          <li><a href="#figures">Figures (interactive)</a></li>
-          <li><a href="#reproducibility">Reproducibility</a></li>
-          <li><a href="#hardware">Hardware status</a></li>
-          <li><a href="#citation">Citation</a></li>
-        </ol>
-      </nav>
-    </details>
-  </aside>
-
-  <article id="article" class="paper">
-
-<section id="paper" class="part" aria-labelledby="paper-part-h">
-  <header class="part-header">
-    <p class="part-kicker">Part 1</p>
-    <h2 id="paper-part-h" class="part-title">Paper</h2>
-    <p class="part-links">Rendered from <a href="@@gh:report/main.tex@@"><code>report/main.tex</code></a>@@if_paper_pdf@@ · <a href="paper.pdf">PDF</a>@@endif_paper_pdf@@</p>
-  </header>
-  <div class="rendered">
+<section class="section" id="paper" aria-labelledby="paper-sec-title">
+  <div class="container">
+    <header class="sec-head">
+      <div class="sec-mark"><span class="n" aria-hidden="true">02</span><span class="label-mono">Paper</span></div>
+      <div class="sec-title">
+        <h2 id="paper-sec-title"><span class="sr-only">02. </span>The report, rendered from its LaTeX source</h2>
+        <p>This text is converted from <a href="@@report_tree@@"><code>report/</code></a> with @@pandoc_version@@ on every push, so it always matches the PDF. Numbers with a dotted underline carry their provenance.</p>
+      </div>
+    </header>
+    <div class="sec-body docs">
+      <aside class="toc-col">
+        <details class="toc" open>
+          <summary class="label-mono">On this page</summary>
+          <nav aria-label="Table of contents">
+            <p class="toc-part label-mono"><a href="#paper-part">Paper</a></p>
+            @@toc_paper@@
+            <p class="toc-part label-mono"><a href="#appendix">Appendix</a></p>
+            @@toc_appendix@@
+          </nav>
+        </details>
+      </aside>
+      <article class="prose" id="article">
+        <div class="abstract">
+          <span class="label-mono">Abstract</span>
+          @@abstract_html@@
+          <p class="keywords">Index terms: @@keywords@@</p>
+        </div>
+        <section class="part" id="paper-part" aria-labelledby="paper-part-h">
+          <header class="part-head">
+            <h3 id="paper-part-h">Paper</h3>
+            <p><a href="@@gh:report/main.tex@@">report/main.tex</a>@@if_paper_pdf@@, <a href="paper.pdf">PDF</a>@@endif_paper_pdf@@</p>
+          </header>
+          <div class="rendered">
 @@paper_html@@
-  </div>
-</section>
-
-<section id="appendix" class="part" aria-labelledby="appendix-part-h">
-  <header class="part-header">
-    <p class="part-kicker">Part 2</p>
-    <h2 id="appendix-part-h" class="part-title">Supplementary appendix</h2>
-    <p class="part-subtitle">@@appendix_title@@</p>
-    <p class="part-links">Rendered from <a href="@@gh:report/appendix.tex@@"><code>report/appendix.tex</code></a>@@if_appendix_pdf@@ · <a href="appendix.pdf">PDF</a>@@endif_appendix_pdf@@</p>
-  </header>
-  <div class="rendered">
+          </div>
+        </section>
+        <section class="part" id="appendix" aria-labelledby="appendix-part-h">
+          <header class="part-head">
+            <h3 id="appendix-part-h">Supplementary appendix</h3>
+            <p><a href="@@gh:report/appendix.tex@@">report/appendix.tex</a>@@if_appendix_pdf@@, <a href="appendix.pdf">PDF</a>@@endif_appendix_pdf@@</p>
+            <p class="sub">@@appendix_title@@</p>
+          </header>
+          <div class="rendered">
 @@appendix_html@@
+          </div>
+        </section>
+      </article>
+    </div>
   </div>
 </section>
 
-<section id="figures" class="part site-part" aria-labelledby="figures-h">
-  <header class="part-header">
-    <p class="part-kicker">Website</p>
-    <h2 id="figures-h" class="part-title">Figures (interactive)</h2>
-    <p class="part-links">Drawn in the browser from the checksum-verified runs; captions are the report's. Hover or use the arrow keys for exact values; every chart has a data table.</p>
-  </header>
-  <figure class="chart-figure wide" id="fig-benchmark">
-    <div class="chart" data-chart="benchmark" aria-describedby="fig-benchmark-cap"></div>
-    <noscript><img src="figures/fig_benchmark.png" alt="Held-out infidelity by pulse number for Scenario A and Scenario B." width="1120" loading="lazy"></noscript>
-    <figcaption id="fig-benchmark-cap">@@cap_benchmark@@ Runs @@run:bench_a@@, @@run:bench_b@@.</figcaption>
-  </figure>
-  <figure class="chart-figure" id="fig-convergence">
-    <div class="chart" data-chart="convergence" aria-describedby="fig-convergence-cap"></div>
-    <noscript><img src="figures/fig_convergence.png" alt="Training versus validation infidelity versus evaluation budget." width="560" loading="lazy"></noscript>
-    <figcaption id="fig-convergence-cap">@@cap_convergence@@ Run @@run:convergence@@.</figcaption>
-  </figure>
-  <figure class="chart-figure wide" id="fig-robustness">
-    <div class="chart" data-chart="robustness" aria-describedby="fig-robustness-cap"></div>
-    <noscript><img src="figures/fig_robustness_b.png" alt="Scenario B robustness at n = 4 versus Stark amplitude and readout timing shift." width="1120" loading="lazy"></noscript>
-    <figcaption id="fig-robustness-cap">@@cap_robustness@@ Run @@run:bench_b@@.</figcaption>
-  </figure>
-  <figure class="chart-figure" id="fig-spectroscopy">
-    <div class="chart" data-chart="spectroscopy" aria-describedby="fig-spectroscopy-cap"></div>
-    <noscript><img src="figures/fig_spectroscopy.png" alt="Synthetic spectroscopy: fitted PSD with band and decay curves with held-out data." width="1120" loading="lazy"></noscript>
-    <figcaption id="fig-spectroscopy-cap">@@cap_spectroscopy@@ Run @@run:spectroscopy@@.</figcaption>
-  </figure>
+<section class="section" id="figures" aria-labelledby="figures-title">
+  <div class="container">
+    <header class="sec-head">
+      <div class="sec-mark"><span class="n" aria-hidden="true">03</span><span class="label-mono">Figures</span></div>
+      <div class="sec-title">
+        <h2 id="figures-title"><span class="sr-only">03. </span>The appendix figures, drawn from the data</h2>
+        <p>Each chart is drawn in your browser from the checksum-verified runs, with the report's caption. Hover or use the arrow keys for exact values; every chart has a data table.</p>
+      </div>
+    </header>
+    <div class="sec-body charts">
+      <figure class="chart-figure wide" id="fig-benchmark">
+        <div class="chart" data-chart="benchmark" aria-describedby="fig-benchmark-cap"></div>
+        <noscript><img src="figures/fig_benchmark.png" alt="Held-out infidelity by pulse number for Scenario A and Scenario B." width="1120" loading="lazy"></noscript>
+        <figcaption id="fig-benchmark-cap">@@cap_benchmark@@ Runs @@run:bench_a@@, @@run:bench_b@@.</figcaption>
+      </figure>
+      <figure class="chart-figure" id="fig-convergence">
+        <div class="chart" data-chart="convergence" aria-describedby="fig-convergence-cap"></div>
+        <noscript><img src="figures/fig_convergence.png" alt="Training versus validation infidelity versus evaluation budget." width="560" loading="lazy"></noscript>
+        <figcaption id="fig-convergence-cap">@@cap_convergence@@ Run @@run:convergence@@.</figcaption>
+      </figure>
+      <figure class="chart-figure wide" id="fig-robustness">
+        <div class="chart" data-chart="robustness" aria-describedby="fig-robustness-cap"></div>
+        <noscript><img src="figures/fig_robustness_b.png" alt="Scenario B robustness at n = 4 versus Stark amplitude and readout timing shift." width="1120" loading="lazy"></noscript>
+        <figcaption id="fig-robustness-cap">@@cap_robustness@@ Run @@run:bench_b@@.</figcaption>
+      </figure>
+      <figure class="chart-figure" id="fig-spectroscopy">
+        <div class="chart" data-chart="spectroscopy" aria-describedby="fig-spectroscopy-cap"></div>
+        <noscript><img src="figures/fig_spectroscopy.png" alt="Synthetic spectroscopy: fitted PSD with band and decay curves with held-out data." width="1120" loading="lazy"></noscript>
+        <figcaption id="fig-spectroscopy-cap">@@cap_spectroscopy@@ Run @@run:spectroscopy@@.</figcaption>
+      </figure>
+    </div>
+  </div>
 </section>
 
-<section id="reproducibility" class="part site-part" aria-labelledby="reproducibility-h">
-  <header class="part-header">
-    <p class="part-kicker">Website</p>
-    <h2 id="reproducibility-h" class="part-title">Reproducibility</h2>
-  </header>
-  <p>Each run writes an immutable <code>results/&lt;run_id&gt;/</code> directory with a manifest (UTC time, git SHA and dirty flag, platform, Python and package versions, config hash, seeds, command) and SHA-256 checksums. This page is built from the runs pinned in <a href="@@gh:report/runs.json@@"><code>report/runs.json</code></a>; the build refuses to run if a number macro in <code>report/generated/numbers.tex</code> disagrees with the pinned payloads, and the paper text is converted from <code>report/</code> with pandoc (@@pandoc_version@@). Recorded test-suite status: <strong>@@num:TestsPassed@@ passed, @@tests_failed@@ failed, @@tests_errors@@ errors, @@tests_skipped@@ skipped</strong> (run <a class="run-link" href="@@tests_run_link@@"><code>@@tests_run@@</code></a>; skipped = QUA SDK not installed). This is a recorded local run, not a CI result.</p>
-  <div class="code-block">
-    <button class="copy" type="button" data-copy="repro-cmd">Copy</button>
+<section class="section" id="reproduce" aria-labelledby="reproduce-title">
+  <div class="container">
+    <header class="sec-head">
+      <div class="sec-mark"><span class="n" aria-hidden="true">04</span><span class="label-mono">Reproduce</span></div>
+      <div class="sec-title">
+        <h2 id="reproduce-title"><span class="sr-only">04. </span>Every number traces to a run you can rerun</h2>
+        <p>Each run writes an immutable <code>results/&lt;run_id&gt;/</code> directory with a manifest and SHA-256 checksums. This site is built only from the runs pinned in <a href="@@gh:report/runs.json@@"><code>report/runs.json</code></a>, and the build stops if any number in the report disagrees with them.</p>
+      </div>
+    </header>
+    <div class="sec-body">
+      <ul class="stat-line">
+        <li><span class="label-mono">Tests passed</span><span class="v ok">@@num:TestsPassed@@</span></li>
+        <li><span class="label-mono">Failed</span><span class="v">@@tests_failed@@</span></li>
+        <li><span class="label-mono">Errors</span><span class="v">@@tests_errors@@</span></li>
+        <li><span class="label-mono">Skipped</span><span class="v">@@tests_skipped@@</span></li>
+      </ul>
+      <p class="copy-text">Recorded test-suite run <a class="run-link" href="@@tests_run_link@@"><code>@@tests_run@@</code></a>. The skipped test needs the QM QUA SDK, which is not installed. This is a recorded local run, not a CI result.</p>
+      <div class="code-block">
+        <div class="cb-head"><span class="label-mono">Reproduce</span><button class="copy" type="button" data-copy="repro-cmd">Copy</button></div>
 <pre id="repro-cmd"><code>python -m venv .venv &amp;&amp; . .venv/bin/activate &amp;&amp; pip install -e ".[test]"
-python -m pytest -q                                   # unit + integration tests
-python scripts/run_g3_validation.py --n-traj 64000    # gate G3 (MC vs filter function)
-python scripts/run_spectroscopy.py                    # synthetic spectroscopy (G4)
-python scripts/run_benchmark.py --scenario scenario_a # pre-registered benchmark
+python -m pytest -q
+python scripts/run_g3_validation.py --n-traj 64000
+python scripts/run_spectroscopy.py
+python scripts/run_benchmark.py --scenario scenario_a
 python scripts/run_benchmark.py --scenario scenario_b --robustness
-python scripts/make_report_artifacts.py               # figures/tables/macros from pinned runs
-python -m ddopt.provenance verify results/&lt;run_id&gt;   # re-check checksums of a run
-bash scripts/build_report.sh                          # main.pdf, appendix.pdf, combined_report.pdf
-python scripts/build_site.py                          # this website (needs pandoc), into site/dist/</code></pre>
+python scripts/make_report_artifacts.py
+python -m ddopt.provenance verify results/&lt;run_id&gt;
+bash scripts/build_report.sh
+python scripts/build_site.py</code></pre>
+      </div>
+      <p class="copy-text"><strong>Pinned runs.</strong> Run IDs link to the run directory (payload, manifest, checksums); commits link to the code state recorded in each manifest. “dirty” means the working tree had uncommitted changes when the run was recorded. Machine-readable: <a href="data/runs.json"><code>data/runs.json</code></a>, <a href="data/numbers.json"><code>data/numbers.json</code></a>, <a href="data/paper.json"><code>data/paper.json</code></a>.</p>
+      @@runs_table@@
+    </div>
   </div>
-  <h3>Pinned runs</h3>
-  <p>Run IDs link to the run directory (payload, manifest, checksums); commits link to the code state recorded in each manifest. “dirty” means the working tree had uncommitted changes when the run was recorded. Machine-readable: <a href="data/runs.json"><code>data/runs.json</code></a>, <a href="data/numbers.json"><code>data/numbers.json</code></a>, <a href="data/tables.json"><code>data/tables.json</code></a>.</p>
-  @@runs_table@@
 </section>
 
-<section id="hardware" class="part site-part" aria-labelledby="hardware-h">
-  <header class="part-header">
-    <p class="part-kicker">Website</p>
-    <h2 id="hardware-h" class="part-title">Hardware status</h2>
-  </header>
-  <div class="status-banner" role="note">
-    <span class="pill pill-neg">NOT RUN</span>
-    <p>No hardware access, no credentials, no authorization. Nothing has been executed on any real device, cloud simulator or vendor-hosted service. No coherence time, calibration value or device result on this page is a measurement.</p>
+<section class="section" id="hardware" aria-labelledby="hardware-title">
+  <div class="container">
+    <header class="sec-head">
+      <div class="sec-mark"><span class="n" aria-hidden="true">05</span><span class="label-mono">Hardware</span></div>
+      <div class="sec-title">
+        <h2 id="hardware-title"><span class="sr-only">05. </span>Hardware status: not run</h2>
+        <p>The prospective IQCC / Quantum Machines protocol is a plan in <a href="@@gh:docs/HARDWARE_PROTOCOL.md@@"><code>docs/HARDWARE_PROTOCOL.md</code></a>. Hardware execution needs explicit authorization from the project owner.</p>
+      </div>
+    </header>
+    <div class="sec-body">
+      <div class="callout" role="note">
+        <span class="ev none">Not run</span>
+        <p>No hardware access, credentials or authorization. Nothing has run on a real device, cloud simulator or vendor-hosted service, and no coherence time, calibration value or device result on this page is a measurement.</p>
+      </div>
+      @@hardware_table@@
+    </div>
   </div>
-  <p>The prospective IQCC / Quantum Machines protocol is documented as a plan in <a href="@@gh:docs/HARDWARE_PROTOCOL.md@@"><code>docs/HARDWARE_PROTOCOL.md</code></a>. Hardware execution requires explicit authorization from the human project owner. Gate status, as recorded there:</p>
-  @@hardware_table@@
 </section>
 
-<section id="citation" class="part site-part" aria-labelledby="citation-h">
-  <header class="part-header">
-    <p class="part-kicker">Website</p>
-    <h2 id="citation-h" class="part-title">Citation</h2>
-  </header>
-  <p>This report is not published and has no DOI. The software citation below is generated from <a href="@@cff_link@@"><code>CITATION.cff</code></a>.</p>
-  <div class="code-block wrap">
-    <button class="copy" type="button" data-copy="bibtex">Copy BibTeX</button>
+<section class="section" id="cite" aria-labelledby="cite-title">
+  <div class="container">
+    <header class="sec-head">
+      <div class="sec-mark"><span class="n" aria-hidden="true">06</span><span class="label-mono">Cite</span></div>
+      <div class="sec-title">
+        <h2 id="cite-title"><span class="sr-only">06. </span>Citing this work</h2>
+        <p>The report is not published and has no DOI. The software citation is generated from <a href="@@cff_link@@"><code>CITATION.cff</code></a>.</p>
+      </div>
+    </header>
+    <div class="sec-body">
+      <div class="code-block wrap">
+        <div class="cb-head"><span class="label-mono">BibTeX</span><button class="copy" type="button" data-copy="bibtex">Copy</button></div>
 <pre id="bibtex"><code>@@bibtex@@</code></pre>
+      </div>
+    </div>
   </div>
 </section>
-
-  </article>
-</div>
 </main>
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <p><strong>Synthetic results; no hardware validation.</strong> The paper text is rendered from <code>report/</code>; every number is generated from checksum-verified runs in the repository.</p>
-    <p>Code and text: <a href="@@gh:LICENSE@@">MIT License</a> · Built from commit <a href="@@build_sha_link@@"><code>@@build_sha@@</code></a> · Math by KaTeX @@katex_version@@ · Reference style: IEEE CSL (CC BY-SA 3.0) · No trackers or analytics.</p>
+<footer class="footer">
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <span class="wordmark" aria-hidden="true"><span class="px">Q<b>DD</b></span></span>
+        <p style="margin-top:14px">A pre-registered synthetic benchmark of model-based dynamical decoupling. Synthetic results only; no hardware validation. The paper text is rendered from <code>report/</code>, and every number is generated from checksum-verified runs.</p>
+      </div>
+      <div>
+        <span class="label-mono">Read</span>
+        <ul>
+          <li><a href="#paper">Paper</a></li>
+          <li><a href="#appendix">Appendix</a></li>
+          @@if_combined_pdf@@<li><a href="combined_report.pdf">PDF</a></li>@@endif_combined_pdf@@
+        </ul>
+      </div>
+      <div>
+        <span class="label-mono">Source</span>
+        <ul>
+          <li><a href="@@repo_url@@">Repository</a></li>
+          <li><a href="@@report_tree@@">LaTeX source</a></li>
+          <li><a href="@@gh:LICENSE@@">MIT License</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-meta">
+      <span>Built from <a href="@@build_sha_link@@">@@build_sha@@</a></span>
+      <span>KaTeX @@katex_version@@, Geist fonts, self-hosted</span>
+      <span>No trackers or analytics</span>
+    </div>
   </div>
 </footer>
 
 <div class="popover" id="prov-pop" role="tooltip" hidden></div>
 <script type="application/json" id="chart-data">@@chart_data@@</script>
+<script type="application/json" id="hero-data">@@hero_data@@</script>
 </body>
 </html>

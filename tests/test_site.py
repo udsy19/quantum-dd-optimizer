@@ -65,8 +65,8 @@ def index(site):
 
 
 def _part(index: str, part_id: str) -> str:
-    start = index.index(f'<section id="{part_id}"')
-    return index[start:index.index("</section>\n\n<section", start)]
+    start = re.search(rf'<section [^>]*id="{part_id}"', index).start()
+    return index[start:index.index("</section>", start)]
 
 
 def _visible_text(fragment: str) -> str:
@@ -137,15 +137,17 @@ def test_paper_sections_follow_report_order(index):
 @needs_pandoc
 def test_front_matter_from_report(index):
     main_tex = (ROOT / "report" / "main.tex").read_text()
+    authors = index[index.index('<p class="authors">'):]
+    authors = authors[:authors.index("</p>")]
     for name in re.findall(r"\\IEEEauthorblockN\{([^}]*)\}", main_tex):
-        assert f'<span class="author-name">{B.esc(B.tex_to_text(name))}</span>' in index, name
+        assert B.esc(B.tex_to_text(name)) in authors, name
     title = B.tex_to_text(re.split(r"\\\\", re.search(r"\\title\{(.*?)\}\n\\author", main_tex, re.S).group(1))[0])
     assert f"<h1 id=\"paper-title\">{B.esc(title)}</h1>" in index
     abstract = (ROOT / "report" / "sections" / "abstract.tex").read_text()
     first_sentence = B.tex_to_text(re.sub(r"%.*", "", abstract).strip().split(". ")[0])
-    abstract_html = index[index.index('id="abstract-h"'):index.index('class="keywords"')]
+    abstract_html = index[index.index('<div class="abstract">'):index.index('<p class="keywords">')]
     assert first_sentence.replace("'", "’") in re.sub(r"\s+", " ", _visible_text(abstract_html)), first_sentence
-    assert "Index Terms" in index and "dynamical decoupling" in index
+    assert "Index terms" in index and "dynamical decoupling" in index
 
 
 @needs_pandoc
@@ -238,24 +240,20 @@ def test_local_links_resolve(site):
 
 
 @needs_pandoc
-def test_external_scripts_are_pinned_with_sri(index):
+def test_scripts_and_styles_are_self_hosted(index, site):
     p = _parse(index)
-    ext = [(t, r, a) for t, r, a in p.refs if r.startswith("https://") and t in ("script", "link")
-           and (t == "script" or a.get("rel") == "stylesheet")]
-    katex = [x for x in ext if "katex" in x[1]]
-    assert len(katex) == 2
-    for tag, ref, a in katex:
-        assert re.search(r"katex@\d+\.\d+\.\d+/", ref), ref
-        assert a.get("integrity", "").startswith("sha384-") and a.get("crossorigin") == "anonymous", ref
-    for tag, ref, a in ext:
-        if tag == "script":
-            assert a.get("integrity"), ref
+    loaded = [(t, r) for t, r, a in p.refs if t == "script" or (t == "link" and a.get("rel") in ("stylesheet", "preload"))]
+    assert loaded and not [r for t, r in loaded if "//" in r], loaded
+    assert any("vendor/katex/katex.min.js" in r for t, r in loaded)
+    for t, r in loaded:
+        assert (site[0] / r.split("?")[0]).is_file(), r
+    assert "script-src 'self'" in index
     assert "google-analytics" not in index and "gtag(" not in index
 
 
 @needs_pandoc
 def test_status_and_seo(index, site):
-    for s in ("Synthetic simulation", "Pre-registered", "No hardware data", "Results negative", "NOT RUN",
+    for s in ("Synthetic simulation", "Pre-registered", "No hardware access", "NOT RUN", "Not run",
               'rel="canonical"', 'property="og:image"', 'name="twitter:card"', 'name="description"',
               "CITATION.cff", 'id="figures"', 'data-chart="benchmark"', 'href="#fig-benchmark"'):
         assert s in index, s
@@ -274,7 +272,7 @@ def test_pdfs_included_and_build_deterministic(tmp_path, site):
     assert (out / "paper.pdf").read_bytes() == (pdf_dir / "main.pdf").read_bytes()
     for href in ("paper.pdf", "appendix.pdf", "combined_report.pdf"):
         assert f'href="{href}"' in index and (out / href).is_file()
-    assert "Full paper + appendix PDF" in index
+    assert "Paper and appendix (PDF)" in index
 
     pdfs = ("paper.pdf", "appendix.pdf", "combined_report.pdf")
     a, b = _tree_digest(site[0], pdfs), _tree_digest(out, pdfs)

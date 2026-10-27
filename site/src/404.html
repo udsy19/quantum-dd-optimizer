@@ -3,20 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Page not found</title>
-<meta name="description" content="This page does not exist. Return to the online paper.">
+<title>Page not found: @@title@@</title>
 <meta name="robots" content="noindex">
-<meta name="color-scheme" content="light dark">
-<link rel="icon" href="@@base_path@@assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="@@base_path@@assets/style.css">
-<script src="@@base_path@@assets/theme.js"></script>
+<meta name="color-scheme" content="dark">
+<base href="@@base_path@@">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<main class="notfound">
-  <p class="eyebrow">404</p>
-  <h1>Page not found</h1>
-  <p>There is nothing at this address. The online paper lives at the site root.</p>
-  <p><a class="btn btn-primary" href="@@base_path@@">Go to the paper</a></p>
+<header class="nav scrolled">
+  <div class="container nav-in">
+    <a class="wordmark" href="./"><span class="px" aria-hidden="true">Q<b>DD</b></span><span class="name">Quantum DD Optimizer</span></a>
+  </div>
+</header>
+<main id="main" class="container notfound">
+  <span class="n" aria-hidden="true">404</span>
+  <h1>This page does not exist</h1>
+  <p>The address may be mistyped, or the page moved. The whole paper lives on one page.</p>
+  <p style="margin-top:24px"><a class="btn btn-primary" href="./">Go to the paper</a> <a class="btn btn-ghost" href="@@repo_url@@">Repository</a></p>
 </main>
 </body>
 </html>
