@@ -46,5 +46,13 @@ if grep -E "There were undefined (references|citations)|Citation .* undefined|Re
   echo "error: appendix has unresolved cross-references or citations" >&2
   status=1
 fi
-echo "built report/appendix.pdf (separate supplementary document)"
+command -v pdfunite >/dev/null || { echo "error: pdfunite missing" >&2; exit 2; }
+pdfunite main.pdf appendix.pdf combined_report.pdf
+combined_pages="$(pdfinfo combined_report.pdf | awk '/^Pages:/ {print $2}')"
+appendix_pages="$(pdfinfo appendix.pdf | awk '/^Pages:/ {print $2}')"
+if [[ "$combined_pages" -ne "$((pages_main + appendix_pages))" ]]; then
+  echo "error: combined PDF has unexpected page count" >&2
+  status=1
+fi
+echo "built report/combined_report.pdf (${combined_pages} pages; main ${pages_main}, appendix ${appendix_pages})"
 exit "$status"

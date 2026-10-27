@@ -41,6 +41,7 @@ jobs:
           PYTHON=python bash scripts/build_report.sh
           cp report/main.pdf dist/quantum-dd-optimizer-paper.pdf
           cp report/appendix.pdf dist/quantum-dd-optimizer-appendix.pdf
+          cp report/combined_report.pdf dist/quantum-dd-optimizer-paper-with-appendix.pdf
       - name: Extract changelog section
         run: |
           python - <<'PY'

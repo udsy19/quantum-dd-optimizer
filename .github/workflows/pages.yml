@@ -51,7 +51,7 @@ jobs:
       - name: Build site
         env:
           # publish the PDF only if the report build passed all of its checks
-          PDF: ${{ steps.pdf.outcome == 'success' && 'report/main.pdf' || 'no-pdf' }}
+          PDF: ${{ steps.pdf.outcome == 'success' && 'report/combined_report.pdf' || 'no-pdf' }}
         run: python scripts/build_site.py --out site/dist --pdf "$PDF"
       - uses: actions/upload-pages-artifact@v3
         with:

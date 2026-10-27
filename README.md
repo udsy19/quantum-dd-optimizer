@@ -174,9 +174,17 @@ on pushes to `main`. One-time setup: *Settings → Pages → Build and deploymen
 
 ## Citing
 
-See [`CITATION.cff`](CITATION.cff) (GitHub shows a "Cite this repository" button). The paper (IEEE conference format, ≤ 6 pages)
-and its separate supplementary appendix are built by `scripts/build_report.sh` (`report/main.pdf`, `report/appendix.pdf`).
-Individual contribution attributions await confirmation by all four authors.
+See [`CITATION.cff`](CITATION.cff) (GitHub shows a "Cite this repository" button).
+
+## The paper
+
+`bash scripts/build_report.sh` builds the IEEE conference-format paper (`report/main.pdf`; five-page
+target, hard six-page cap enforced by the script), the separately compiled supplementary appendix
+(`report/appendix.pdf`) and **one combined PDF** (`report/combined_report.pdf`: main paper followed by
+the appendix; the appendix does not count toward the page limit). Sources stay separately editable in
+`report/main.tex` and `report/appendix.tex`. The build needs `texlive-publishers` (IEEEtran, IEEEtranN),
+`latexmk` and `poppler-utils` (`pdfinfo`, `pdfunite`). CI builds and uploads all three PDFs; the website
+links the combined PDF. Individual contribution attributions await confirmation by all four authors.
 
 ## Contributing, releases, security
 

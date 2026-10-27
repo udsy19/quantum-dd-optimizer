@@ -65,6 +65,7 @@ jobs:
         with:
           name: report-pdf
           path: |
+            report/combined_report.pdf
             report/main.pdf
             report/main.log
             report/appendix.pdf
