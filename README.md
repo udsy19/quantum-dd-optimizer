@@ -16,7 +16,9 @@ Columbia University
 ![Results](https://img.shields.io/badge/results-synthetic%20only-orange.svg)
 
 [**Read the paper online**](https://udsy19.github.io/quantum-dd-optimizer/) ·
-[PDF (latest release)](https://github.com/udsy19/quantum-dd-optimizer/releases/latest) ·
+[**Download complete PDF (paper + appendix)**](https://github.com/udsy19/quantum-dd-optimizer/releases/download/v0.1.1/quantum-dd-optimizer-paper-with-appendix.pdf) ·
+[**5-page paper PDF**](https://github.com/udsy19/quantum-dd-optimizer/releases/download/v0.1.1/quantum-dd-optimizer-paper.pdf) ·
+[All release assets](https://github.com/udsy19/quantum-dd-optimizer/releases/latest) ·
 [Paper source](report/) ·
 [Experiment plan](docs/EXPERIMENT_PLAN.md) ·
 [Red-team review](docs/REVIEW_FINDINGS.md)
