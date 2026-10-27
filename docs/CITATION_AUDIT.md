@@ -183,3 +183,32 @@ search-result URLs that the search summary cited.
    The journal titles are what should be cited, if the journal metadata is confirmed.
 3. Tong2025: confirm PRX Quantum 6, 030319 (2025). No source reached corroborates it.
 4. Full author lists and DOIs as listed above.
+
+
+## Independent follow-up source checks (2026-10-26, separate web environment)
+
+The initial execution environment could not reach primary sources. A subsequent independent
+web research pass confirmed these specific records (this is a **partial** audit, not
+an all-13-record verification):
+
+- Tong, Zhang, Pokharel, *Empirical learning of dynamical decoupling on quantum processors*:
+  https://arxiv.org/abs/2403.02294 — arXiv entry confirms title, full names and the
+  genetic-algorithm hardware-empirical method. Publisher entry:
+  https://journals.aps.org/prxquantum/abstract/10.1103/h7pq-s159 confirms published title.
+- Rahman, Egger, Arenz, *Learning How to Dynamically Decouple*:
+  https://arxiv.org/abs/2405.08689 — arXiv entry confirms title and the three authors;
+  the abstract reports optimizing DD rotational gates for superconducting-qubit noise.
+- Ezzell et al., *Dynamical decoupling for superconducting qubits: a performance survey*:
+  https://arxiv.org/abs/2207.03670 — arXiv entry confirms author list, title and
+  60-sequence survey across IBM superconducting devices.
+- Tong et al., *Learning error suppression strategies for dynamic quantum circuits*:
+  https://arxiv.org/abs/2604.18734 — arXiv entry confirms 2026 publication,
+  five authors and empirical DD learning for dynamic circuits.
+- Hansen, *The CMA Evolution Strategy: A Tutorial*:
+  https://arxiv.org/abs/1604.00772 — arXiv confirms author, title, year and the
+  continuous-optimization scope.
+
+These checks corroborate the named records but **do not verify the remaining eight
+reference entries, every bibliographic field, every paper claim, or published-version
+metadata**. The initial audit above remains preserved as an accurate account of
+its restricted network environment. Human review and final citation audit are outstanding.
