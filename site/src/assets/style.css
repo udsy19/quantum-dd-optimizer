@@ -276,6 +276,58 @@ strong { font-weight: 600; }
 .cites { white-space: nowrap; font-size: 0.92em; }
 .cite { text-decoration: none; font-variant-numeric: tabular-nums; }
 
+/* hero: report front matter */
+.subtitle { margin: 16px auto 0; max-width: 46ch; font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.3rem); line-height: 1.4; color: var(--ink-2); text-wrap: balance; }
+.authors { list-style: none; padding: 0; margin: 30px auto 0; max-width: 900px; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 30px; }
+.authors li { display: flex; flex-direction: column; align-items: center; min-width: 0; max-width: 220px; }
+.author-name { font-weight: 600; font-size: 15px; color: var(--ink); }
+.author-aff { font-size: 12.5px; line-height: 1.45; color: var(--muted); text-align: center; }
+.keywords { margin-top: 14px !important; font-size: 14.5px !important; color: var(--ink-2) !important; }
+.label-inline { font: 500 11px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-right: 6px; }
+.abstract p + p { margin-top: 12px; }
+
+/* parts (paper, appendix, website sections) */
+.part { margin-bottom: 56px; }
+.part-header { padding: 28px 0 18px; margin-bottom: 8px; border-top: 1px solid var(--line-2); }
+.paper > .part:first-child .part-header { border-top: 0; padding-top: 0; }
+.part-kicker { margin: 0 0 6px !important; font: 500 11.5px/1 var(--mono) !important; text-transform: uppercase; letter-spacing: 0.09em; color: var(--accent) !important; }
+.paper .part-title { margin: 0; padding: 0; border: 0; font-size: 30px; letter-spacing: -0.025em; }
+.part-subtitle { margin: 6px 0 0 !important; color: var(--ink-2) !important; font-size: 15.5px; }
+.part-links { margin: 8px 0 0 !important; font-size: 13.5px; color: var(--muted) !important; }
+.rendered h2 { font-size: 22px; }
+.rendered h2 .sec-n, .rendered h3 .sec-n { font: 500 14px/1 var(--mono); color: var(--muted); min-width: 0; margin-right: 10px; }
+.rendered h3 { display: block; }
+.rendered h2.refs-heading { font-size: 19px; }
+.rendered dl { margin: 12px 0 18px; max-width: 760px; }
+.rendered dt { font: 600 13px/1.6 var(--mono); color: var(--accent); }
+.rendered dd { margin: 0 0 8px 0; padding-left: 16px; border-left: 2px solid var(--line); }
+.math.display, .math.inline { position: relative; }
+.rendered .math.display { display: block; overflow-x: auto; overflow-y: hidden; max-width: 760px; padding: 4px 0; }
+.rendered p > .math.display:only-child { margin: 0; }
+.rendered .math.display .katex-display { margin: 0.4em 0; }
+.math.inline .katex { white-space: normal; }
+.paper-figure { margin: 22px 0 26px; padding: 14px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); max-width: 900px; }
+.paper-figure img { display: block; width: 100%; height: auto; border-radius: 6px; }
+.paper-figure figcaption { margin-top: 10px; padding-top: 10px; border-top: 1px solid #e8e7e1; font-size: 14px; line-height: 1.6; color: #47463f; }
+.paper-figure .fig-label { color: #0b0b0b; }
+.paper-figure a { color: #4b45d1; }
+.fig-interactive { white-space: nowrap; font-weight: 500; }
+.fig-interactive::before { content: "· "; color: #66655f; }
+.paper-table figcaption { font-size: 13.5px; }
+.paper-table td, .paper-table th { text-align: center; }
+.paper-table td:first-child, .paper-table th:first-child { text-align: left; }
+.references.csl-bib-body { max-width: 760px; }
+.csl-entry { display: grid; grid-template-columns: 2.6em minmax(0, 1fr); gap: 0 6px; margin: 0 0 12px; font-size: 14.5px; line-height: 1.55; }
+.csl-entry:target { background: var(--accent-soft); border-radius: 6px; }
+.csl-left-margin { font: 500 13px/1.75 var(--mono); color: var(--muted); }
+.csl-right-inline { min-width: 0; overflow-wrap: anywhere; }
+.csl-entry .ref-status { margin-top: 4px; }
+.citation a { text-decoration: none; }
+.site-note { color: var(--muted); }
+.toc-part { margin: 14px 0 4px; padding: 0 8px; font: 600 11.5px/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.toc-part a { display: inline; padding: 0; color: inherit; }
+.toc nav > .toc-part:first-child { margin-top: 0; }
+
 /* math */
 .tex { font-family: var(--mono); font-size: 0.88em; overflow-wrap: anywhere; }
 /* rendered inline math: allow breaking at relations/operators instead of overflowing narrow screens */
@@ -477,3 +529,4 @@ table.hw th { width: 32%; }
   .refs a[href^="http"]::after { content: " <" attr(href) ">"; font-size: 8pt; color: #444; }
   .site-footer { background: #fff; }
 }
+.paper-table .math.inline .katex { white-space: nowrap; }
