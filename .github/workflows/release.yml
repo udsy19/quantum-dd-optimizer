@@ -33,10 +33,12 @@ jobs:
       - name: Build sdist and wheel
         run: python -m build
       - name: Build paper PDF
+        timeout-minutes: 25
         continue-on-error: true
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base texlive-latex-recommended \
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends latexmk texlive-latex-base texlive-latex-recommended \
             texlive-latex-extra texlive-publishers texlive-fonts-recommended lmodern poppler-utils
           PYTHON=python bash scripts/build_report.sh
           cp report/main.pdf dist/quantum-dd-optimizer-paper.pdf
