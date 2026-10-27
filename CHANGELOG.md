@@ -7,6 +7,15 @@ the pinned runs in `report/runs.json`, not by the package version.
 
 ## [Unreleased]
 
+### Fixed
+- Report wording that overstated the data: Scenario A gains are "at most about 1%" (largest ratio
+  1.011), not "sub-percent"; CMA-ES gained under 0.5% over XY8 at n = 8 in two ablations rather than
+  never beating it; the limitations now name all 5 of 11 pinned runs recorded from a dirty tree.
+- Report figures: main Fig. 2 is a held-out ratio plot with bootstrap intervals, all figures embed
+  TrueType fonts (no Type 3), panels are labelled, text is legible at print size.
+- IEEE layout: 2x2 author block, date in the title block, run-in headings without doubled
+  punctuation, S-prefixed supplement numbering, breakable run ids, paths and URLs.
+
 ## [0.1.0] - 2026-10-27
 
 ### Added
