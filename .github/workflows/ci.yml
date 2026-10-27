@@ -1,5 +1,5 @@
 # CI for quantum-dd-optimizer.
-# NOTE: this workflow has not yet been observed to run on GitHub; no CI pass is claimed.
+# Runs smoke tests, evidence validation, and the IEEE main-paper plus appendix build.
 name: ci
 on: [push, pull_request]
 
