@@ -1,8 +1,13 @@
-# Release automation: push a tag vX.Y.Z (see RELEASING.md).
+# Release automation: push a tag vX.Y.Z, or run this workflow by hand on main with the tag to create (see RELEASING.md).
 name: release
 on:
   push:
     tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to create on the selected commit, e.g. v0.1.0"
+        required: true
 
 permissions:
   contents: write
@@ -10,6 +15,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,7 +36,7 @@ jobs:
       - name: Check version matches tag
         run: |
           v=$(python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-          test "v$v" = "${GITHUB_REF_NAME}" || { echo "pyproject version v$v != tag ${GITHUB_REF_NAME}"; exit 1; }
+          test "v$v" = "${TAG}" || { echo "pyproject version v$v != tag ${TAG}"; exit 1; }
       - name: Build sdist and wheel
         run: python -m build
       - name: Build paper PDF
@@ -48,7 +55,7 @@ jobs:
         run: |
           python - <<'PY'
           import os, re
-          tag = os.environ["GITHUB_REF_NAME"].lstrip("v")
+          tag = os.environ["TAG"].lstrip("v")
           text = open("CHANGELOG.md").read()
           m = re.search(rf"^## \[{re.escape(tag)}\].*?(?=^## \[|\Z)", text, re.S | re.M)
           body = (m.group(0) if m else f"Release {tag}") + "\n\nAll results are synthetic simulations; no hardware data.\n"
@@ -59,9 +66,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         # a release published from the GitHub web UI creates the tag first; attach the assets to it instead
         run: |
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" dist/* --clobber
-            gh release edit "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+            gh release edit "$TAG" --title "$TAG" --notes-file RELEASE_NOTES.md
           else
-            gh release create "$GITHUB_REF_NAME" dist/* --title "$GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md
+            # on a manual run the tag does not exist yet: create it at the commit that was tested
+            gh release create "$TAG" dist/* --target "$GITHUB_SHA" --title "$TAG" --notes-file RELEASE_NOTES.md
           fi
