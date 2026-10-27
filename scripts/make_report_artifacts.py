@@ -42,10 +42,17 @@ LABEL = {"free": "Free (Ramsey)", "cpmg": "CPMG", "xy4": "XY4", "xy8": "XY8", "u
          "optimized": "CMA-ES", "hahn": "Hahn (n=1 ref.)"}
 MODE_LABEL = {"timing": "timing-only", "phase": "phase-only", "both": "timing+phase"}
 
-plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.right": False,
-                     "axes.grid": True, "grid.color": "#e6e6e3", "grid.linewidth": 0.6,
-                     "lines.linewidth": 1.5, "legend.frameon": False, "savefig.bbox": "tight",
-                     "font.family": "serif"})
+# Figures are drawn at their printed size (IEEE column 3.5 in, page 7.16 in), so these sizes are the
+# printed sizes (>= 7 pt). TrueType embedding (fonttype 42) avoids Type 3 fonts in the PDF; STIX is a
+# Times-like face bundled with matplotlib, so the output does not depend on system fonts.
+COL_W, PAGE_W = 3.45, 7.0
+plt.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8, "xtick.labelsize": 7.5,
+                     "ytick.labelsize": 7.5, "legend.fontsize": 7.5, "axes.spines.top": False,
+                     "axes.spines.right": False, "axes.grid": True, "grid.color": "#e6e6e3",
+                     "grid.linewidth": 0.6, "lines.linewidth": 1.4, "legend.frameon": False,
+                     "savefig.bbox": "tight", "savefig.pad_inches": 0.02,
+                     "font.family": "serif", "font.serif": ["STIXGeneral", "DejaVu Serif"],
+                     "mathtext.fontset": "stix", "pdf.fonttype": 42, "ps.fonttype": 42})
 
 CLAIMS: list[dict] = []
 MACROS: dict[str, str] = {}
@@ -80,8 +87,8 @@ def macro(name: str, value: str, claim: str, run: dict, section: str, seed="") -
 
 def save(fig, name: str) -> None:
     FIG.mkdir(exist_ok=True)
-    fig.savefig(FIG / f"{name}.pdf")
-    fig.savefig(FIG / f"{name}.png", dpi=160)
+    fig.savefig(FIG / f"{name}.pdf", metadata={"CreationDate": None})
+    fig.savefig(FIG / f"{name}.png", dpi=200)
     plt.close(fig)
 
 
@@ -209,15 +216,21 @@ Scenario & $n$ & Free & CPMG & XY4 & XY8 & UDD & Sel. & timing-only & phase-only
 """ % (100 * se[0], 100 * se[1], ids, "\n".join(rows[:-1])))
 
 
+def panel_label(ax, s: str) -> None:
+    ax.text(-0.02, 1.02, f"({s})", transform=ax.transAxes, ha="right", va="bottom", fontsize=8,
+            fontweight="bold")
+
+
 def bench_figure(summs: dict[str, dict], floors: dict[str, float], name: str) -> None:
-    fig, axes = plt.subplots(1, len(summs), figsize=(7.0, 2.6), sharey=True)
+    """Absolute held-out infidelity of every arm, including timing-only CMA-ES (supplement)."""
+    fig, axes = plt.subplots(1, len(summs), figsize=(PAGE_W - 1.45, 2.5), sharey=True)
     axes = np.atleast_1d(axes)
+    keys = ["free", "cpmg", "xy4", "xy8", "udd", "opt_timing", "opt_phase", "opt_both"]
+    width = 0.1
     for ax, (title, summ) in zip(axes, summs.items()):
         ns = sorted(summ)
         xs = np.arange(len(ns))
-        fams = ["free", "cpmg", "xy4", "xy8", "udd"]
-        width = 0.11
-        for j, k in enumerate(fams + ["opt_both", "opt_phase"]):
+        for j, k in enumerate(keys):
             ys, xx = [], []
             for i, n in enumerate(ns):
                 e = summ[n]
@@ -225,22 +238,57 @@ def bench_figure(summs: dict[str, dict], floors: dict[str, float], name: str) ->
                     rs = e["modes"].get(k[4:], [])
                     if rs:
                         ys.append(np.mean([x["eps_opt"] for x in rs]))
-                        xx.append(xs[i] + (j - 3) * width)
+                        xx.append(xs[i] + (j - 3.5) * width)
                 elif k in e["baselines"]:
                     ys.append(e["baselines"][k])
-                    xx.append(xs[i] + (j - 3) * width)
+                    xx.append(xs[i] + (j - 3.5) * width)
             key = "optimized" if k.startswith("opt_") else k
-            lab = (f"CMA-ES {MODE_LABEL[k[4:]]}" if k.startswith("opt_") else LABEL[k])
-            ax.scatter(xx, ys, s=22 if key != "optimized" else 40, marker=MARKERS[key] if k != "opt_phase" else "P",
-                       color=COLORS[key], label=lab, zorder=3, edgecolor="white", linewidth=0.5)
+            lab = f"CMA-ES {MODE_LABEL[k[4:]]}" if k.startswith("opt_") else LABEL[k]
+            mk = {"opt_timing": "X", "opt_phase": "P", "opt_both": "*"}.get(k, MARKERS[key])
+            col = {"opt_timing": "#7a7a74", "opt_phase": COLORS["udd"]}.get(k, COLORS[key])
+            ax.scatter(xx, ys, s=40 if k == "opt_both" else 26, marker=mk, color=col, label=lab, zorder=3,
+                       edgecolor="white", linewidth=0.4)
         ax.axhline(floors[title], color="#55554f", ls="--", lw=1)
-        ax.text(-0.45, floors[title] * 1.06, "$T_1$ + white-noise floor", ha="left", va="bottom", fontsize=7,
+        ax.text(-0.45, floors[title] * 0.96, "$T_1$ + white-noise floor", ha="left", va="top", fontsize=7.5,
                 color="#55554f")
-        ax.set_xticks(xs, [f"n={n}" for n in ns])
+        ax.set_ylim(floors[title] * 0.78, None)
+        ax.set_xticks(xs, [f"$n={n}$" for n in ns])
         ax.set_yscale("log")
-        ax.set_title(title, fontsize=8)
-    axes[0].set_ylabel(r"held-out infidelity $\epsilon$ (mean over 5 test seeds)")
-    axes[-1].legend(loc="upper left", bbox_to_anchor=(1.0, 1.0), fontsize=7)
+        ax.set_title(title)
+    axes[0].set_ylabel(r"held-out infidelity $\epsilon$")
+    axes[-1].legend(loc="upper left", bbox_to_anchor=(1.0, 1.02), handletextpad=0.2)
+    save(fig, name)
+
+
+def bench_ratio_figure(summs: dict[str, dict], name: str) -> None:
+    """Ratio eps_selected / eps_CMA with the pooled paired-bootstrap 95% interval, per training run.
+
+    Timing-only CMA-ES is not drawn: its ratios are far below 1 (see the benchmark table)."""
+    fig, axes = plt.subplots(1, len(summs), figsize=(COL_W, 2.45), sharey=True)
+    axes = np.atleast_1d(axes)
+    style = {"phase": (COLORS["udd"], "P", -0.17), "both": (COLORS["optimized"], "*", 0.17)}
+    for ax, (title, summ) in zip(axes, summs.items()):
+        ns = sorted(summ)
+        ax.axhline(1.0, color="#55554f", lw=1, ls="--", zorder=1)
+        for i, n in enumerate(ns):
+            for mode, (col, mk, off) in style.items():
+                rs = sorted(summ[n]["modes"].get(mode, []), key=lambda x: x["train_seed"])
+                for k, x in enumerate(rs):
+                    xpos = i + off + (k - 1) * 0.08
+                    err = [[x["ratio"] - x["ratio_ci"][0]], [x["ratio_ci"][1] - x["ratio"]]]
+                    ax.errorbar([xpos], [x["ratio"]], yerr=err, fmt=mk, color=col,
+                                ms=5.5 if mode == "both" else 4.5, elinewidth=0.9, capsize=1.5,
+                                mec="white", mew=0.3, zorder=3,
+                                label=f"CMA-ES {MODE_LABEL[mode]}" if (i == 0 and k == 0) else None)
+        ax.set_xticks(range(len(ns)), [f"$n={n}$\n{sel_label(summ[n])}" for n in ns])
+        ax.set_xlim(-0.5, len(ns) - 0.5)
+        ax.set_title(title)
+        ax.grid(axis="x", visible=False)
+    axes[0].set_ylabel(r"$\epsilon_{\rm sel}/\epsilon_{\rm CMA}$ ($>$1 favours CMA-ES)")
+    h, lab = axes[0].get_legend_handles_labels()
+    fig.legend(h, lab, loc="lower center", ncol=2, bbox_to_anchor=(0.55, -0.04), handletextpad=0.2,
+               columnspacing=1.2)
+    fig.tight_layout(rect=(0, 0.07, 1, 1), w_pad=0.6)
     save(fig, name)
 
 
@@ -284,11 +332,11 @@ $T$ ($\mu$s) & $n$ & Feasible & Infeasible & Max shift (ns) & Min gap (ns)\\\mid
 
 def convergence(run: dict) -> None:
     p = run["payload"]
-    fig, ax = plt.subplots(figsize=(3.4, 2.4))
+    fig, ax = plt.subplots(figsize=(COL_W, 2.6))
     for (mode, base), color, mk in ((("both", "cpmg"), COLORS["optimized"], "*"), (("timing", "xy"), COLORS["udd"], "D")):
         rs = sorted([r for r in p["rows"] if r["mode"] == mode and r["base_phases"] == base], key=lambda r: r["budget"])
         b = [r["n_evaluations"] for r in rs]
-        lab = "timing+phase (from CPMG)" if mode == "both" else "timing-only (XY phases)"
+        lab = "timing+phase" if mode == "both" else "timing-only"
         ax.plot(b, [r["train"] for r in rs], color=color, ls="--", marker=mk, ms=4, label=f"{lab}: train")
         ax.plot(b, [np.mean(r["val_per_seed"]) for r in rs], color=color, marker=mk, ms=4, label=f"{lab}: validation")
     best = min(("xy4", "xy8"), key=lambda k: np.mean(p["baselines"][k]["val_per_seed"]))
@@ -299,7 +347,7 @@ def convergence(run: dict) -> None:
     ax.set_yscale("log")
     ax.set_xlabel("CMA-ES objective evaluations")
     ax.set_ylabel(r"infidelity $\epsilon$")
-    ax.legend(fontsize=6)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.45, -0.22), ncol=2, columnspacing=1.0, handlelength=2.2)
     save(fig, "fig_convergence")
     last = [r for r in p["rows"] if r["mode"] == "both" and r["budget"] == max(x["budget"] for x in p["rows"])][0]
     macro("ConvTrainFinal", f"{fmt(last['train'])}", "convergence n=8 timing+phase final training infidelity", run, "Results")
@@ -322,8 +370,8 @@ def scen_b(run: dict) -> None:
     # figure at n = 4 (where the nominal comparison favoured CMA-ES)
     n_show = 4
     rs4 = sorted([r for r in runs if r["n"] == n_show], key=lambda r: (r["mode"], r["seeds"]["train"]))
-    fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6), sharey=True)
-    for ax, key, xlabel in ((axes[0], "amp", "Stark amplitude / nominal"), (axes[1], "shift", "readout timing shift (ns)")):
+    fig, axes = plt.subplots(1, 2, figsize=(COL_W, 2.3), sharey=True)
+    for ax, key, xlabel in ((axes[0], "amp", "Stark amplitude / nominal"), (axes[1], "shift", "timing shift (ns)")):
         x, y = series(rs4[0], "2", key)
         ax.plot(x, y, color=COLORS["cpmg"], marker="o", ms=3, label="virtual-Z only")
         x, y = series(rs4[0], "3", key)
@@ -333,11 +381,14 @@ def scen_b(run: dict) -> None:
             both = r["mode"] == "both"
             ax.plot(x, y, color=COLORS["optimized"] if both else COLORS["udd"], ls="--" if both else ":", marker="*" if both else "P",
                     ms=4, lw=1, label=(f"CMA-ES {MODE_LABEL[r['mode']]} + VZ (3 runs)" if r["seeds"]["train"] == 101 else None))
-        ax.set_xlabel(xlabel, fontsize=9)
+        ax.set_xlabel(xlabel)
         ax.set_yscale("log")
-        ax.tick_params(labelsize=8)
-    axes[0].set_ylabel(r"held-out $\epsilon$ (n=%d)" % n_show, fontsize=9)
-    axes[1].legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.0, 1.0))
+    panel_label(axes[0], "a")
+    panel_label(axes[1], "b")
+    axes[0].set_ylabel(r"held-out $\epsilon$ ($n=%d$)" % n_show)
+    h, lab = axes[0].get_legend_handles_labels()
+    fig.legend(h, lab, loc="upper center", bbox_to_anchor=(0.53, 0.0), ncol=2, columnspacing=1.0, handlelength=2.2)
+    fig.tight_layout(w_pad=0.5)
     save(fig, "fig_robustness_b")
 
     # worst-case table over the 10 perturbations
@@ -385,7 +436,7 @@ $n$ & CMA-ES mode & VZ only & DD+VZ & CMA-ES+VZ (runs) & wins/10\\\midrule
 def spectroscopy(run: dict) -> None:
     p = run["payload"]
     fg = p["figure"]
-    fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.5))
+    fig, axes = plt.subplots(2, 1, figsize=(COL_W, 4.1))
     ps = fg["psd"]
     f = np.asarray(ps["omega"]) / (2 * np.pi)
     ax = axes[0]
@@ -394,7 +445,8 @@ def spectroscopy(run: dict) -> None:
     ax.loglog(f, ps["truth"], color="#1a1a19", ls="--", lw=1, label="truth")
     ax.set_xlabel(r"$\omega/2\pi$ (Hz)")
     ax.set_ylabel(r"two-sided $S_2(\omega)$ (rad$^2$/s)")
-    ax.legend(fontsize=6)
+    ax.legend(loc="lower left")
+    panel_label(ax, "a")
     ax = axes[1]
     cols = {"ramsey": COLORS["free"], "hahn": COLORS["cpmg"], "cpmg4": COLORS["xy4"], "cpmg16": COLORS["udd"]}
     names = {"ramsey": "Ramsey", "hahn": "Hahn", "cpmg4": "CPMG-4", "cpmg16": "CPMG-16 (held-out n)"}
@@ -404,12 +456,16 @@ def spectroscopy(run: dict) -> None:
         ax.plot(T, c["mle"], color=cols[k], label=names[k])
         lab = k
         pts = [d for d in fg["heldout"] if d["label"] == lab]
-        ax.scatter([d["T"] * 1e6 for d in pts], [d["p_hat"] for d in pts], s=8, color=cols[k], marker="o",
+        ax.scatter([d["T"] * 1e6 for d in pts], [d["p_hat"] for d in pts], s=12, edgecolor=cols[k], marker="o",
                    facecolor="white", linewidth=0.8, zorder=3)
     ax.set_xscale("log")
     ax.set_xlabel(r"idle time $T$ ($\mu$s)")
     ax.set_ylabel(r"measured $P(+)$ (with SPAM)")
-    ax.legend(fontsize=6, loc="lower left")
+    ax.scatter([], [], s=12, marker="o", facecolor="white", edgecolor="#55554f", linewidth=0.8,
+               label="held-out data")
+    ax.legend(loc="lower left")
+    panel_label(ax, "b")
+    fig.tight_layout(h_pad=0.8)
     save(fig, "fig_spectroscopy")
     rep = p["pipeline"]["repeats"][0]
     rows = []
@@ -502,7 +558,7 @@ def model_based(run: dict) -> None:
     write("model_based_table.tex", r"""\begin{table}[t]
 \centering\scriptsize\setlength{\tabcolsep}{3pt}
 \caption{Model-based pipeline: baseline selection and CMA-ES (timing+phase) trained on the noise
-model in column 1, all arms evaluated on the \emph{true} Scenario~A model (test seeds 9001--9005).
+model in column 1, all arms evaluated on the \textnormal{\emph{true}} Scenario~A model (test seeds 9001--9005).
 Fitted models come from run \texttt{%s}. Ratio as in Table~\ref{tab:ablation}; CI = envelope of pooled
 paired-bootstrap 95\%% intervals over the 3 training runs. Run \texttt{%s}.}
 \label{tab:model_based}
@@ -513,9 +569,47 @@ Training model & $n$ & Sel. & $10^3\epsilon_{\rm sel}$ & $10^3\epsilon_{\rm CMA}
 """ % (p["spectroscopy_run"].replace("_", r"\_"), run["run_id"].replace("_", r"\_"), "\n".join(rows)))
 
 
+# Reader-facing names of pinned run roles (report/runs.json keys), used in the dirty-run disclosure.
+ROLE_TEXT = {"g3": "G3 simulator validation", "bench_a": "pre-registered Scenario~A benchmark",
+             "bench_b": "pre-registered Scenario~B benchmark",
+             "spectroscopy": "pre-registered spectroscopy (G4) run",
+             "bench_a_T4": "pre-registered $T=4\\,\\mu$s benchmark", "convergence": "convergence diagnostic",
+             "model_based": "model-based pipeline", "abl_colored": "colored-only ablation",
+             "abl_noamp": "no-amplitude-error ablation", "abl_noT1": "no-$T_1$ ablation",
+             "tests": "historical test-suite record"}
+
+
+def role_listing(roles: list[str]) -> str:
+    """Reader-facing list of run roles, e.g. "a, b, and c"."""
+    names = [ROLE_TEXT.get(k, k.replace("_", " ")) for k in roles]
+    if len(names) <= 2:
+        return " and ".join(names) or "none"
+    return ", ".join(names[:-1]) + ", and " + names[-1]
+
+
+def provenance_summary(runs: dict) -> None:
+    """Count pinned runs whose manifest records a dirty git working tree; list them by role.
+
+    One ledger row (GEN-ProvenanceDirtyRuns) backs \\PinnedRunsTotal, \\PinnedRunsDirty and the list."""
+    dirty = [(k, r) for k, r in runs.items() if r["manifest"].get("git", {}).get("dirty")]
+    MACROS["PinnedRunsTotal"] = str(len(runs))
+    MACROS["PinnedRunsDirty"] = str(len(dirty))
+    MACROS["PinnedRunsDirtyList"] = role_listing([k for k, _ in dirty])
+    CLAIMS.append({"claim_id": "GEN-ProvenanceDirtyRuns", "paper_section": "Discussion",
+                   "exact_claim": f"{len(dirty)} of the {len(runs)} pinned runs in report/runs.json record "
+                                  f"git.dirty=true in their manifest: " + ", ".join(k for k, _ in dirty),
+                   "provenance_type": "model",
+                   "artifact_path": ";".join(f"results/{r['run_id']}/manifest.json" for _, r in dirty),
+                   "command": CMD,
+                   "commit_sha": ";".join((r["manifest"]["git"].get("sha") or "")[:12] + "+dirty" for _, r in dirty),
+                   "run_id": ";".join(r["run_id"] for _, r in dirty), "seed": "", "reviewer": "PENDING",
+                   "verification_status": "UNVERIFIED"})
+
+
 def main() -> None:
     runs_map = json.loads((ROOT / "report" / "runs.json").read_text())
     runs = {k: load_run(ROOT / "results" / v) for k, v in runs_map.items() if not k.startswith("_")}
+    provenance_summary(runs)
     cfg_a = load_scenario("scenario_a")
     if "g3" in runs:
         g3(runs["g3"])
@@ -558,6 +652,8 @@ def main() -> None:
                 macro(f"BenchB{tag}{ml}CIHi", f"{max(x['ratio_ci'][1] for x in rs):.3f}", f"Scenario B n={n} {m}: highest CI bound", runs["bench_b"], "Results", "9001-9005")
     if summs:
         bench_figure(summs, floors, "fig_benchmark")
+        bench_ratio_figure({("Scenario A" if t.startswith("Scenario A") else "Scenario B (virtual-Z)"): s
+                            for t, s in summs.items()}, "fig_benchmark_ratio")
         se_ = [max_rel_se(runs[r]) for r in ("bench_a", "bench_b") if r in runs]
         bench_table([(t, sm, runs[r]["run_id"]) for (t, sm), r in zip(summs.items(), ("bench_a", "bench_b"))],
                     (max(x[0] for x in se_), max(x[1] for x in se_)))
