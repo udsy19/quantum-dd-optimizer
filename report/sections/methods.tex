@@ -8,8 +8,10 @@ fixed in a pre-registered plan (\repopath{docs/EXPERIMENT\_PLAN.md}) before any 
 The idle window is $T=2\,\mu$s (alternate $4\,\mu$s), with square $\pi$ pulses of width
 $w=32$\,ns, a 4\,ns guard and pulse starts on a 4\,ns grid (an assumed controller tick).
 The dephasing PSD is the sum of a band-limited $1/f$ term ($2\pi\cdot1$\,Hz--$2\pi\cdot10$\,MHz,
-scaled so that the analytic Ramsey coherence is $e^{-1}$ at $10\,\mu$s), a Gaussian
-Ornstein--Uhlenbeck (Lorentzian) term with $\tau_c=0.5\,\mu$s, and a white floor
+with $S_2(\omega)=A/|\omega|$, $A=5.929\times10^9$, calibrated so that its
+isolated Ramsey coherence is $e^{-1}$ at $10\,\mu$s), a Gaussian
+Ornstein--Uhlenbeck (Lorentzian) term with $\sigma=1.236\times10^5$\,rad/s
+and $\tau_c=0.5\,\mu$s, and a white floor
 $S_0=10^4$\,rad$^2$/s; $T_1=100\,\mu$s; and each trajectory draws a relative Rabi-amplitude error
 $\epsilon\sim\mathcal N(0,0.02^2)$. Scenario~B adds a deterministic Stark-like shift of
 $2\pi\cdot0.2$\,MHz between 0.6 and 1.6\,$\mu$s (20\,ns tanh edges) as a stand-in for a
@@ -17,8 +19,10 @@ neighbouring readout; it models a known frequency shift only, not measurement-in
 dephasing.
 
 \paragraph{Finite-pulse Monte-Carlo simulator} Gaussian noise trajectories are sampled on a
-1\,ns grid by spectral synthesis (exact Ornstein--Uhlenbeck recursion for the Lorentzian; exact
-Markov jumps for telegraph noise). Free segments are exact $z$ rotations by the integrated
+1\,ns grid using hybrid spectral synthesis: a long periodic FFT for higher
+frequencies and explicit low-frequency random-phase quadrature below the
+inverse trajectory window (exact Ornstein--Uhlenbeck recursion for the Lorentzian;
+exact Markov jumps for telegraph noise). Free segments are exact $z$ rotations by the integrated
 detuning; pulses are propagated in 8 piecewise-constant sub-steps, including detuning during the
 pulse. Amplitude damping is composed per free segment (exact, as it is phase-covariant) and
 approximated as $\mathrm{AD}(w/2)\,U\,\mathrm{AD}(w/2)$ during pulses. The noise-averaged Pauli
@@ -45,8 +49,10 @@ coordinates, giving gaps $g_k=g_{\min}+(T-nw-(n+1)g_{\min})\,\mathrm{softmax}([0
 redundant shift; starts are snapped to the grid, and candidates that cannot be repaired are
 rejected. Pulse phases are offsets from the base phases, projected so that the ideal net unitary
 stays equal to the base sequence's ($\propto I$ or a Pauli). Fidelity is therefore never graded
-against the wrong target. Three modes are run: timing-only and phase-only (both starting from
-CPMG with $Y$ pulses) and timing+phase. Each run has a budget of 2000 objective evaluations on
+against the wrong target. Three modes are run: timing-only, phase-only and timing+phase, all initialized
+at CPMG timing with $Y$ pulse axes in the pre-registered benchmarks.
+The convergence diagnostic separately examines a different XY-phase timing-only
+configuration and should not be conflated with that benchmark arm. Each run has a budget of 2000 objective evaluations on
 256 frozen training trajectories (common random numbers). There are three independent training
 runs (training seeds 101--103 with optimizer seeds 1--3).
 
