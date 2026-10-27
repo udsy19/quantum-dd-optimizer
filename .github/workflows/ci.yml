@@ -55,7 +55,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base \
-            texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+            texlive-latex-recommended texlive-latex-extra texlive-publishers texlive-fonts-recommended lmodern poppler-utils
       - name: Build report PDF
         if: steps.src.outputs.present == 'true'
         run: bash scripts/build_report.sh
