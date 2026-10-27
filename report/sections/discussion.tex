@@ -1,12 +1,15 @@
 \section{Discussion, limitations and roadmap}
 \label{sec:discussion}
 
-\paragraph{Interpretation} Under the pre-registered model the answer to RQ3 is negative. XY4/XY8
+\paragraph{Interpretation} The primary pre-registered comparison has limited discriminatory power: under the
+assumed model, the canonical XY4/XY8 sequences already approach the
+pulse-independent relaxation and white-noise floor. Thus the small maximum
+possible improvement should be assessed before searching. Under this
+pre-registered model the answer to RQ3 is negative. XY4/XY8
 already suppress the decouplable colored noise, and the remaining infidelity is set by $T_1$
 and white dephasing, which ideal refocusing pulses do not suppress in this model. Where headroom exists (the
 colored-only ablation), our CMA-ES setup gained under 0.5\% over XY8 at $n=8$ on held-out noise
-and lost substantially at $n=16$. Its training
-improvements came from fitting the finite set of frozen trajectories, and the timing+phase
+and lost substantially at $n=16$. The observed training improvements are consistent with fitting the finite set of frozen trajectories, and the timing+phase
 search starting from CPMG did not reach XY8's robustness to amplitude errors within 2000
 evaluations. These are statements about this parameterization, budget and synthetic model, not
 about CMA-ES or learned DD in general. The one positive signal (Scenario~B, $n=4$) is a few
