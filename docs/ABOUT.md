@@ -22,5 +22,5 @@ Set in the repository's *About* panel (gear icon on the GitHub repository page):
 ## Status
 
 Software, recorded synthetic runs, paper draft and website: complete for v0.1.0.
-Open: human review of the evidence ledger, citation metadata verification, team authorship,
+Open: human review of the evidence ledger, publisher-level citation metadata (arXiv identities are checked), team authorship,
 CI observed on GitHub, and any hardware work (not authorized).

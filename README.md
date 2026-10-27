@@ -155,7 +155,7 @@ derivations and measured tolerances: [`docs/PHYSICS.md`](docs/PHYSICS.md).
 - **Pre-registration:** scenarios, seeds, baselines, selection rule and metrics were committed before any optimization run ([`docs/EXPERIMENT_PLAN.md`](docs/EXPERIMENT_PLAN.md)); deviations are logged there, including one plumbing smoke run that touched held-out seeds and the post-hoc exploratory ablations.
 - **No mutable "latest":** the report and website read only runs pinned in [`report/runs.json`](report/runs.json), verified by checksum.
 - **Independent review:** an AI red-team pass re-derived the conventions, reproduced numbers bit-for-bit and found no critical defect; its high-severity finding is incorporated ([`docs/REVIEW_FINDINGS.md`](docs/REVIEW_FINDINGS.md)). Human review of the evidence ledger is pending.
-- **Known limitations:** synthetic Gaussian stationary noise; Scenario B models a deterministic shift only (no measurement-induced dephasing); T1 during pulses approximated; bibliography metadata unverified because primary sources were unreachable from the build environment ([`docs/CITATION_AUDIT.md`](docs/CITATION_AUDIT.md)).
+- **Known limitations:** synthetic Gaussian stationary noise; Scenario B models a deterministic shift only (no measurement-induced dephasing); T1 during pulses approximated. The 12 public references were identity-checked against their arXiv records (title, authors, year, abstract); publisher pagination/DOIs are not fully audited ([`docs/CITATION_AUDIT.md`](docs/CITATION_AUDIT.md)).
 
 ## Hardware status
 
