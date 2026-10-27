@@ -17,7 +17,7 @@ authors:
   - family-names: "Vijay Anand"
     given-names: "Udaya"
     affiliation: "Columbia University"
-version: 0.1.0
+version: 0.1.1
 date-released: 2026-10-27
 license: MIT
 repository-code: "https://github.com/udsy19/quantum-dd-optimizer"

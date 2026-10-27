@@ -44,14 +44,32 @@ jobs:
           test "v$v" = "${TAG}" || { echo "pyproject version v$v != tag ${TAG}"; exit 1; }
       - name: Build sdist and wheel
         run: python -m build
-      - name: Build paper PDF
+      - name: Restore TeX package cache
+        id: texcache
+        uses: actions/cache/restore@v4
+        with:
+          path: .apt-archives/*.deb
+          key: apt-tex-${{ runner.os }}-${{ hashFiles('scripts/ci_install_tex.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: apt-tex-${{ runner.os }}-${{ hashFiles('scripts/ci_install_tex.sh') }}-
+      - name: Hash cached TeX packages
+        id: texbefore
+        run: echo "hash=${{ hashFiles('.apt-archives/*.deb') }}" >> "$GITHUB_OUTPUT"
+      - name: Install TeX Live (apt)
         timeout-minutes: 25
+        id: tex
+        continue-on-error: true
+        run: bash scripts/ci_install_tex.sh
+      - name: Save TeX package cache
+        # also after a timeout: the packages fetched so far are kept for the next run
+        if: always() && hashFiles('.apt-archives/*.deb') != '' && hashFiles('.apt-archives/*.deb') != steps.texbefore.outputs.hash
+        uses: actions/cache/save@v4
+        with:
+          path: .apt-archives/*.deb
+          key: apt-tex-${{ runner.os }}-${{ hashFiles('scripts/ci_install_tex.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Build paper PDF
+        if: steps.tex.outcome == 'success'
         continue-on-error: true
         run: |
-          sudo rm -f /var/lib/man-db/auto-update
-          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
-          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends latexmk texlive-latex-base texlive-latex-recommended \
-            texlive-latex-extra texlive-publishers texlive-fonts-recommended lmodern poppler-utils
           PYTHON=python bash scripts/build_report.sh
           cp report/main.pdf dist/quantum-dd-optimizer-paper.pdf
           cp report/appendix.pdf dist/quantum-dd-optimizer-appendix.pdf

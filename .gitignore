@@ -25,3 +25,4 @@ report/*.bbl
 report/*.blg
 report/*.synctex.gz
 .claude/worktrees/
+.apt-archives/

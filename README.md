@@ -263,7 +263,7 @@ Use GitHub's **"Cite this repository"** button, which is generated from [`CITATI
   title   = {Quantum DD Optimizer: model-based dynamical decoupling under hardware timing constraints (synthetic study)},
   author  = {De Zabala F., Christian and Feldner, Madeline and Haider, Zarar and Vijay Anand, Udaya},
   year    = {2026},
-  version = {0.1.0},
+  version = {0.1.1},
   url     = {https://github.com/udsy19/quantum-dd-optimizer}
 }
 ```

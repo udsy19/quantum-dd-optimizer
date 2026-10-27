@@ -5,9 +5,9 @@
 
 All results are \emph{simulation predictions for the synthetic model} of
 Sec.~\ref{sec:methods}; none is a measurement. Each table and figure names the recorded
-run it comes from; the full claim-to-artifact ledger is \texttt{report/evidence\_map.csv}.
+run it comes from; the full claim-to-artifact ledger is \repopath{report/evidence\_map.csv}.
 
-\paragraph{RQ1: Monte Carlo versus filter function (gate G3).}
+\paragraph{RQ1: Monte Carlo versus filter function (gate G3)}
 Table~\ref{tab:g3} lists five predetermined configurations: free evolution, Hahn and CPMG-8, the
 last two with both 32\,ns and instantaneous pulses. In every configuration the finite-pulse
 Monte-Carlo infidelity agrees with the analytic prediction within $1.96$ standard errors
@@ -19,7 +19,7 @@ evidence about any device.
 
 \input{generated/g3_table.tex}
 
-\paragraph{RQ2: spectroscopy and held-out prediction (gate G4).}
+\paragraph{RQ2: spectroscopy and held-out prediction (gate G4)}
 Figure~\ref{fig:spec} and Table~\ref{tab:spectroscopy} summarize the pre-registered spectroscopy
 run. With the correctly specified full Gaussian model, every fitted parameter's 95\% bootstrap
 interval contains the truth. On 106 held-out points (new pulse counts and unseen idle times) the
@@ -56,8 +56,8 @@ spectrum. (b) Fitted decay curves with 95\% bands; open circles are \emph{held-o
 
 \input{generated/spectroscopy_table.tex}
 
-\paragraph{RQ3: CMA-ES versus canonical DD, Scenario~A (pre-registered).}
-Table~\ref{tab:bench} and Fig.~\ref{fig:bench} report held-out infidelities. The training-only
+\paragraph{RQ3: CMA-ES versus canonical DD, Scenario~A (pre-registered)}
+Table~\ref{tab:bench} and Figs.~\ref{fig:bench} and~\ref{fig:benchratio} report held-out infidelities. The training-only
 rule selects XY4 at $n=4$ and XY8 at $n=8,16$, with
 $\epsilon=\BenchAFourSelEps$, $\BenchAEightSelEps$ and $\BenchASixteenSelEps$. No CMA-ES mode
 gives a practically relevant improvement: the best single run (timing+phase, $n=4$) has ratio
@@ -87,14 +87,25 @@ Table~\ref{tab:ablation}).
 \caption{Held-out infidelity at equal $n$, $T=2\,\mu$s, $w=32$\,ns (mean over test seeds
 9001--9005, 1024 trajectories each; CMA-ES: mean over 3 training runs; MC standard errors are
 smaller than the markers). The dashed line is the analytic floor from $T_1$ and white noise.
-Scenario~B arms use virtual-$Z$ from the nominal Stark profile. Timing-only CMA-ES (off-scale
-for $n\ge8$) is omitted; see Table~\ref{tab:bench}.}
+Scenario~B arms use virtual-$Z$ from the nominal Stark profile. Near the floor the markers
+overlap; Fig.~\ref{fig:benchratio} shows the comparison with the selected baseline as a ratio.}
 \label{fig:bench}
 \end{figure*}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{../figures/fig_benchmark_ratio.pdf}
+\caption{Held-out ratio $\epsilon_{\rm sel}/\epsilon_{\rm CMA}$ ($>1$ favours CMA-ES) for each
+of the three training runs, with pooled paired-bootstrap 95\% intervals; the training-selected
+baseline is named under each $n$. Timing-only CMA-ES (ratios
+$\BenchASixteenTimingRatioLo$--$\BenchBFourTimingRatioHi$) is omitted for clarity; see
+Table~\ref{tab:bench}.}
+\label{fig:benchratio}
+\end{figure}
+
 \input{generated/bench_table.tex}
 
-\paragraph{Overfitting diagnostic.} For a single training run at $n=8$ (exploratory; validation
+\paragraph{Overfitting diagnostic} For a single training run at $n=8$ (exploratory; validation
 seeds 8001--8002 are disjoint from the test seeds), the training infidelity of timing+phase
 CMA-ES falls to $\ConvTrainFinal$, below XY8's training value. The validation infidelity stays at
 $\ConvValFinal$, against $\ConvBestBaselineVal$ for XY8 (Fig.~\ref{fig:conv}). The apparent
@@ -102,14 +113,15 @@ training gain comes from fitting the 256 frozen noise trajectories and does not 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.75\linewidth]{../figures/fig_convergence.pdf}
+\includegraphics[width=\linewidth]{../figures/fig_convergence.pdf}
 \caption{Training (dashed) versus validation (solid) infidelity of the best-so-far CMA-ES
-candidate as a function of evaluation budget; Scenario~A, $n=8$, training seed 101. The
+candidate as a function of evaluation budget; Scenario~A, $n=8$, training seed 101.
+Timing+phase starts from CPMG; timing-only keeps XY phases. The
 horizontal lines show XY8. Exploratory diagnostic.}
 \label{fig:conv}
 \end{figure}
 
-\paragraph{RQ4: Scenario~B (deterministic Stark-like shift).}
+\paragraph{RQ4: Scenario~B (deterministic Stark-like shift)}
 At $n=8$, the four pre-registered arms reach $\epsilon=\BArmNoDD$ (no DD, no frame correction),
 $\BArmVzOnly$ (virtual-$Z$ only), $\BArmDDVz$ (best canonical DD + virtual-$Z$) and
 $\BArmCMAVz$ (CMA-ES + virtual-$Z$). Most of the benefit comes from frame correction plus any
@@ -138,13 +150,13 @@ is unchanged.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{../figures/fig_robustness_b.pdf}
-\caption{Scenario~B robustness at $n=4$, all three training runs: Stark amplitude (left) and
-timing shift (right) perturbed in evaluation while every virtual-$Z$ angle uses the nominal
+\caption{Scenario~B robustness at $n=4$, all three training runs: (a) Stark amplitude and
+(b) readout timing shift perturbed in evaluation while every virtual-$Z$ angle uses the nominal
 profile. Timing+phase CMA-ES (dashed) degrades under timing shifts; phase-only (dotted) does not.}
 \label{fig:rob}
 \end{figure}
 
-\paragraph{RQ5: robustness, ablations and model mismatch.}
+\paragraph{RQ5: robustness, ablations and model mismatch}
 Table~\ref{tab:ablation} adds post-hoc ablations, labelled exploratory. Removing $T_1$ and the
 white floor (``colored only'') opens two orders of magnitude of headroom, since XY8 then reaches
 $\AblColoredSixteenSelEps$ at $n=16$. Even so, timing+phase CMA-ES under the same 2000-evaluation
