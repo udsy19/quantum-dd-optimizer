@@ -17,7 +17,7 @@ the pinned runs in `report/runs.json`, not by the package version.
 - Pre-registered experiment plan, Scenario A/B configs and ablation configs.
 - Recorded runs: G3 validation, Scenario A/B benchmarks, T = 4 µs window, spectroscopy,
   model-based pipeline, ablations, convergence diagnostic, test-suite record.
-- LaTeX paper draft generated from recorded runs; claims ledger (`report/evidence_map.csv`).
+- IEEE conference-format paper (≤ 6 pages; four Columbia authors) and separate supplementary appendix, generated from recorded runs; claims ledger (`report/evidence_map.csv`).
 - Independent red-team review (`docs/REVIEW_FINDINGS.md`) and citation audit.
 - SDK-free QUA schedule adapter (not hardware tested) and hardware protocol.
 - Website (online paper) and GitHub Pages workflow; CI and release workflows.

@@ -37,9 +37,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base texlive-latex-recommended \
-            texlive-latex-extra texlive-fonts-recommended
+            texlive-latex-extra texlive-publishers texlive-fonts-recommended lmodern poppler-utils
           PYTHON=python bash scripts/build_report.sh
           cp report/main.pdf dist/quantum-dd-optimizer-paper.pdf
+          cp report/appendix.pdf dist/quantum-dd-optimizer-appendix.pdf
       - name: Extract changelog section
         run: |
           python - <<'PY'

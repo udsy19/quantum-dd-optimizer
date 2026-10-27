@@ -4,6 +4,8 @@
 
 **Model-based dynamical decoupling under hardware timing constraints for idle superconducting qubits**
 
+Christian De Zabala F. · Madeline Feldner · Zarar Haider · Udaya Vijay Anand — Columbia University
+
 A pre-registered, held-out synthetic benchmark of CMA-ES–optimized dynamical-decoupling (DD) sequences against canonical DD, with explicit noise floors, full provenance and an honest negative result.
 
 [![CI](https://github.com/udsy19/quantum-dd-optimizer/actions/workflows/ci.yml/badge.svg)](https://github.com/udsy19/quantum-dd-optimizer/actions/workflows/ci.yml)
@@ -13,7 +15,7 @@ A pre-registered, held-out synthetic benchmark of CMA-ES–optimized dynamical-d
 ![Status](https://img.shields.io/badge/results-synthetic%20only-orange.svg)
 
 [**Website / online paper**](https://udsy19.github.io/quantum-dd-optimizer/) ·
-[Report source](report/) ·
+[Paper source (IEEE)](report/) ·
 [Experiment plan](docs/EXPERIMENT_PLAN.md) ·
 [Red-team review](docs/REVIEW_FINDINGS.md) ·
 [Progress log](docs/PROGRESS.md)
@@ -172,7 +174,9 @@ on pushes to `main`. One-time setup: *Settings → Pages → Build and deploymen
 
 ## Citing
 
-See [`CITATION.cff`](CITATION.cff) (GitHub shows a "Cite this repository" button). Author list is pending team confirmation.
+See [`CITATION.cff`](CITATION.cff) (GitHub shows a "Cite this repository" button). The paper (IEEE conference format, ≤ 6 pages)
+and its separate supplementary appendix are built by `scripts/build_report.sh` (`report/main.pdf`, `report/appendix.pdf`).
+Individual contribution attributions await confirmation by all four authors.
 
 ## Contributing, releases, security
 

@@ -9,7 +9,12 @@ description = "Pre-registered synthetic benchmark of model-based dynamical decou
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
-authors = [{ name = "Udaya Vijay Anand" }]
+authors = [
+  { name = "Christian De Zabala F." },
+  { name = "Madeline Feldner" },
+  { name = "Zarar Haider" },
+  { name = "Udaya Vijay Anand" },
+]
 keywords = ["dynamical decoupling", "superconducting qubits", "filter function", "noise spectroscopy", "CMA-ES", "quantum control"]
 classifiers = [
   "Development Status :: 3 - Alpha",

@@ -727,8 +727,7 @@ def make_bibtex(cff: dict, build_sha: str) -> str:
              f"  version = {{{cff.get('version', '')}}},",
              f"  year    = {{{year}}},",
              f"  url     = {{{cff.get('url', '')}}},",
-             f"  note    = {{Synthetic simulations only; no hardware data. Author list pending team "
-             f"confirmation. Metadata from CITATION.cff; unreviewed.}}",
+             "  note    = {Synthetic simulations only; no hardware data. Metadata from CITATION.cff.}",
              "}"]
     return "\n".join(lines)
 

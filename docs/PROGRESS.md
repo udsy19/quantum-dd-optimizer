@@ -61,3 +61,9 @@ Agent G review: `docs/REVIEW_FINDINGS.md` (no critical finding; reproduced XY8/C
 - No IQCC/hardware access or authorization; QUA adapter is a template, SDK not installed, nothing executed.
 - Author list, affiliations, contributions and AI-use statement: PENDING team.
 - Gate G9 requires human sign-off of the evidence ledger.
+
+## 2026-10-27 Website, repository polish and reconciliation with `main` (lead)
+- Website (online paper) `site/` + `scripts/build_site.py` + `.github/workflows/pages.yml`; `tests/test_site.py` (8 tests). Lead screenshot QA at 375/390/1440 px light/dark: fixed a 65 px horizontal overflow from unrendered inline math; no console errors.
+- Repo docs: README, CONTRIBUTING, SECURITY, CHANGELOG, RELEASING, CITATION.cff, docs/ABOUT.md, issue/PR templates, release workflow, packaging metadata.
+- GitHub Actions observed for the first time: CI run 72 on this branch FAILED on Python 3.11 (`SyntaxError: f-string expression part cannot include a backslash` in `scripts/make_report_artifacts.py`, a 3.12+-only construct). Fixed; all files compile with python3.11 and the full suite passes under a fresh 3.11 venv (257 passed, 1 skipped) and 3.13 (257 passed, 1 skipped).
+- Merged `origin/main` (IEEE report work by the owner, squashed history): report/*, `scripts/build_report.sh`, `ci.yml` taken from main; README/pyproject/generator fix kept from this branch. Author list (Christian De Zabala F., Madeline Feldner, Zarar Haider, Udaya Vijay Anand; Columbia) propagated to CITATION.cff, pyproject, README and site. `bash scripts/build_report.sh` → main.pdf 5 pages (limit 6), appendix.pdf 6 pages. Pages/release workflows now install `texlive-publishers` (IEEEtran) and `poppler-utils`.

@@ -1,12 +1,22 @@
 cff-version: 1.2.0
 message: >-
   If you use this software or its synthetic benchmark, please cite it as below.
-  Results are synthetic simulations; no hardware data. Author list pending team confirmation.
+  Results are synthetic simulations; no hardware data.
 title: "Quantum DD Optimizer: model-based dynamical decoupling under hardware timing constraints (synthetic study)"
 type: software
 authors:
+  - family-names: "De Zabala F."
+    given-names: "Christian"
+    affiliation: "Columbia University"
+  - family-names: "Feldner"
+    given-names: "Madeline"
+    affiliation: "Columbia University"
+  - family-names: "Haider"
+    given-names: "Zarar"
+    affiliation: "Columbia University"
   - family-names: "Vijay Anand"
     given-names: "Udaya"
+    affiliation: "Columbia University"
 version: 0.1.0
 date-released: 2026-10-27
 license: MIT

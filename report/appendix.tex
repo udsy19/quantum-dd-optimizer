@@ -1,0 +1,26 @@
+% Supplementary appendix. Does not count toward the 5--6-page main paper.
+\documentclass[conference]{IEEEtran}
+\usepackage{amsmath,amssymb,graphicx,booktabs}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\runid}[1]{{\ttfamily #1}}
+\input{generated/status.tex}
+\input{generated/numbers.tex}
+\title{Supplementary Material: Model-Based Dynamical Decoupling\\
+Detailed Synthetic Results and Reproducibility Evidence}
+\author{Christian De Zabala F., Madeline Feldner, Zarar Haider, and Udaya Vijay Anand\\
+Columbia University}
+\begin{document}
+\maketitle
+\section*{Scope}
+This appendix preserves the extended numerical tables, plots, ablation analyses and
+run identifiers of the synthetic computational study. It is not evidence of
+experimental measurements on IQCC hardware. All numbers are generated from
+versioned computation artifacts; see the repository evidence ledger.
+\input{sections/model.tex}
+\input{sections/methods.tex}
+\input{sections/results_full.tex}
+\input{sections/discussion.tex}
+\bibliographystyle{IEEEtranN}
+\bibliography{refs}
+\end{document}

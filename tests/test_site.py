@@ -148,7 +148,7 @@ def test_external_scripts_are_pinned_with_sri(index):
 
 def test_status_and_seo(index, site):
     for s in ("Synthetic simulation", "Pre-registered", "No hardware data", "Results negative",
-              "Team author list — pending confirmation", "NOT RUN", 'rel="canonical"', 'property="og:image"',
+              "Christian De Zabala F. · Madeline Feldner · Zarar Haider · Udaya Vijay Anand", "NOT RUN", 'rel="canonical"', 'property="og:image"',
               'name="twitter:card"', 'name="description"', "identity-verified (arXiv)", "CITATION.cff"):
         assert s in index, s
     assert "Sitemap: https://udsy19.github.io/quantum-dd-optimizer/sitemap.xml" in (site[0] / "robots.txt").read_text()
