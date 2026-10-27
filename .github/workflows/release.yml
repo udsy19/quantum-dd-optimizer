@@ -28,6 +28,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip build
           pip install -e ".[test]"
+      - name: Install pandoc (tests/test_site.py renders the paper from report/)
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends pandoc
       - name: Test
         run: python -m pytest -q
       - name: Verify recorded runs
