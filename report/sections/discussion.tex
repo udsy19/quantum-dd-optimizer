@@ -31,10 +31,12 @@ a new pre-registered test before any claim.
   \item Robustness of the optimized sequences to calibration drift, Stark rise time and
     timing-grid quantization (plan item P5.2) was not evaluated. The exploratory ablations reused
     the held-out test seeds, and the spectroscopy and benchmark bootstraps share one seed.
-  \item Run manifests record the git commit at the end of each run, and five of eleven runs were
-    executed with uncommitted changes in the tree (recorded as \emph{dirty}, without a stored
-    diff). The red-team review checked that the benchmark code was unchanged
-    (\texttt{docs/REVIEW\_FINDINGS.md}).
+  \item Earlier runs recorded the git state at manifest write time rather than run
+    start; several exploratory runs were marked dirty without preserving their
+    uncommitted diffs. The provenance implementation has since been changed to
+    record the start-of-run git state and diff. That change improves \emph{future}
+    runs but cannot retroactively recover earlier uncommitted code, so historical
+    reconstruction remains limited (\texttt{docs/REVIEW\_FINDINGS.md}).
   \item Bibliographic metadata could not be verified against primary sources from our
     environment (\texttt{docs/CITATION\_AUDIT.md}).
   \item No quantum-hardware execution was performed (claim PROV-01). The QUA adapter is an
