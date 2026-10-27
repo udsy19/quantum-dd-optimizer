@@ -10,3 +10,5 @@
 *.synctex.gz
 main.pdf
 build/
+appendix.pdf
+combined_report.pdf
