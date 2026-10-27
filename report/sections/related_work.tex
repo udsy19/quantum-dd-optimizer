@@ -12,6 +12,11 @@ and \citet{Cywinski2008} analysed how to enhance dephasing times in superconduct
 % LIT-04
 \citet{Biercuk2009} studied optimized DD in a model quantum memory.
 % LIT-05, LIT-06
+Biercuk, Doherty, and Uys described DD optimization as a filter-design
+problem \citep{BiercukDohertyUys2011}, while Green and coauthors developed
+higher-order filter methods for driven gates \citep{GreenUysBiercuk2012}.
+These approaches directly motivate deterministic model-based objectives,
+which differ from the finite-trajectory CMA-ES objective used here.
 DD has also been used for noise spectroscopy: \citet{Bylander2011} with a superconducting flux
 qubit and \citet{Alvarez2011} for colored noise.
 % LIT-07
@@ -19,17 +24,18 @@ Robust DD was studied by \citet{Souza2011},
 % LIT-08
 and \citet{Ezzell2023} surveyed DD performance on superconducting qubits.
 % LIT-09, LIT-10, LIT-11
-Learning-based approaches to choosing DD sequences include \citet{Rahman2024}, \citet{Tong2025}
+Empirical or hardware-tailored learning approaches include \citet{Rahman2024}, \citet{Tong2025}
 and \citet{Tong2026}.
 
 \paragraph{Empirical versus model-based}
 % LIT-10 (title only)
-Of the learning-based works, only the title of \citet{Tong2025} states the setting: its learning
-is described as empirical and carried out on quantum processors, i.e.\ hardware in the loop.
-% LIT-09, LIT-11
-The published abstract of \citet{Tong2026} describes empirical optimization of
-DD in dynamic quantum circuits, including measurement and feedforward; the present work,
-by contrast, is synthetic and model-based. Publisher-version metadata and citation details remain separately tracked (\repopath{docs/CITATION\_AUDIT.md}).
+\citet{Rahman2024}, \citet{Tong2025}, and \citet{Tong2026} study
+empirical or hardware-tailored dynamical decoupling. In particular,
+\citet{Rahman2024} optimizes rotational gates for superconducting
+hardware, while \citet{Tong2026} studies empirical suppression in dynamic
+circuits. The present approach instead uses a fitted or assumed synthetic
+noise model as the optimization objective. Such a model-based approach
+reduces direct hardware calls but depends on model fidelity.
 
 \paragraph{Positioning}
 % No LIT claim: describes this project only. Novelty claim deliberately limited.
