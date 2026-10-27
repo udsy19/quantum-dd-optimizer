@@ -212,3 +212,38 @@ These checks corroborate the named records but **do not verify the remaining eig
 reference entries, every bibliographic field, every paper claim, or published-version
 metadata**. The initial audit above remains preserved as an accurate account of
 its restricted network environment. Human review and final citation audit are outstanding.
+
+
+## Follow-up completion: all 12 publicly accessible arXiv reference identities checked
+
+A second independent research pass opened the canonical arXiv entries and checked
+title, authors, year and abstracts for each of the 12 public literature entries.
+This supersedes the earlier **network blocked** status for identity-level verification;
+that earlier account is retained above as audit history. Journal title variants are
+preserved where the report cites a journal version rather than the arXiv title.
+
+| Key | Primary source opened | Verified scope |
+|---|---|---|
+| Viola1999 | https://arxiv.org/abs/quant-ph/9809071 | title, Viola/Knill/Lloyd, journal reference PRL 82, 2417 |
+| Uhrig2007 | https://arxiv.org/abs/quant-ph/0609203 | title, Uhrig, 2007 journal-era entry |
+| Cywinski2008 | https://arxiv.org/abs/0712.2225 | title, 4 authors, 2008 revision |
+| Biercuk2009 | https://arxiv.org/abs/0812.5095 | title, 6 authors, experiments described in abstract |
+| Bylander2011 | https://arxiv.org/abs/1101.4707 | original arXiv title **differs** from published journal title; Nature Physics 7 565--570 |
+| Alvarez2011 | https://arxiv.org/abs/1106.3463 | original arXiv title **differs** from published journal title; PRL 107 230501 |
+| Souza2011 | https://arxiv.org/abs/1103.4563 | title, 3 authors, robustness context |
+| Ezzell2023 | https://arxiv.org/abs/2207.03670 | five authors, survey of 60 DD sequences |
+| Rahman2024 | https://arxiv.org/abs/2405.08689 | three authors, gate-level tailored DD |
+| Tong2025 | https://arxiv.org/abs/2403.02294 | three authors, empirical DD on quantum processors; publisher https://journals.aps.org/prxquantum/abstract/10.1103/h7pq-s159 |
+| Tong2026 | https://arxiv.org/abs/2604.18734 | five authors, 2026 dynamic-circuit empirical study |
+| Hansen2016 | https://arxiv.org/abs/1604.00772 | author, CMA-ES tutorial and scope |
+
+**Audit precision:** Verified that each publicly cited work exists and describes the
+relevant field, based on primary arXiv record and abstracts. This is not an audit of every
+mathematical statement or every publisher pagination/DOI. QMBrief2026 is a supplied
+non-public educational document, not a public arXiv reference.
+
+**Important corrections:** Bylander and Alvarez titles on arXiv differ from the
+corresponding journal titles. Do not replace a journal-version title with its
+arXiv preprint title unless explicitly citing that version. Citation claims can be
+classified identity-verified, but the experimental findings in this repository
+still require independent code and data reproduction.
