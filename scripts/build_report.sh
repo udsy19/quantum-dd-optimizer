@@ -55,4 +55,21 @@ if [[ "$combined_pages" -ne "$((pages_main + appendix_pages))" ]]; then
   status=1
 fi
 echo "built report/combined_report.pdf (${combined_pages} pages; main ${pages_main}, appendix ${appendix_pages})"
+# Build the standalone editable Overleaf source and its corresponding unified PDF.
+"$PY" "$ROOT/scripts/make_merged_overleaf.py"
+latexmk -pdf -halt-on-error -interaction=nonstopmode -file-line-error merged.tex
+if grep -E "There were undefined (references|citations)|Citation .* undefined|Reference .* undefined" merged.log; then
+  echo "error: merged.tex contains unresolved references" >&2
+  status=1
+fi
+"$PY" - <<'PY'
+from pathlib import Path
+import zipfile
+root=Path.cwd()
+with zipfile.ZipFile(root/"overleaf-project.zip","w",zipfile.ZIP_DEFLATED) as z:
+    z.write(root/"merged.tex","merged.tex")
+    for p in sorted((root/"figures").glob("*.pdf")):
+        z.write(p,"figures/"+p.name)
+PY
+echo "built report/merged.tex, report/merged.pdf, report/overleaf-project.zip"
 exit "$status"
