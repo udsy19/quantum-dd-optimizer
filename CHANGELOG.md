@@ -7,6 +7,8 @@ the pinned runs in `report/runs.json`, not by the package version.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-27
+
 ### Fixed
 - Report wording that overstated the data: Scenario A gains are "at most about 1%" (largest ratio
   1.011), not "sub-percent"; CMA-ES gained under 0.5% over XY8 at n = 8 in two ablations rather than
@@ -15,6 +17,11 @@ the pinned runs in `report/runs.json`, not by the package version.
   TrueType fonts (no Type 3), panels are labelled, text is legible at print size.
 - IEEE layout: 2x2 author block, date in the title block, run-in headings without doubled
   punctuation, S-prefixed supplement numbering, breakable run ids, paths and URLs.
+
+### Changed
+- CI: the release workflow can be run by hand with a tag input, attaches assets to a release made
+  in the web UI and installs pandoc; TeX Live packages are cached so a slow Ubuntu mirror cannot
+  time out the report build.
 
 ## [0.1.0] - 2026-10-27
 
@@ -34,5 +41,6 @@ the pinned runs in `report/runs.json`, not by the package version.
 ### Findings
 - Synthetic, pre-registered: CMA-ES did not beat XY4/XY8 on held-out noise; see the paper.
 
-[Unreleased]: https://github.com/udsy19/quantum-dd-optimizer/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/udsy19/quantum-dd-optimizer/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/udsy19/quantum-dd-optimizer/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/udsy19/quantum-dd-optimizer/releases/tag/v0.1.0
