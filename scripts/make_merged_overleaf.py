@@ -36,7 +36,6 @@ def build():
         appendix = appendix.replace(r"\label{" + label + "}", r"\label{supp:" + label + "}")
         appendix = appendix.replace(r"\ref{" + label + "}", r"\ref{supp:" + label + "}")
     appendix = appendix.replace(r"\section{Experiments and results}",r"\section{Detailed Synthetic Experiments and Results}")
-    appendix = re.sub(r"\\label\{supp:sec:results\}",r"\\label{supp:sec:results}",appendix)
     tail = r"""
 \clearpage
 \appendices
