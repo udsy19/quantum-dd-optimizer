@@ -6,5 +6,9 @@
  "spectroscopy": "spectroscopy_scenario_a_20261026T235246Z_8b272601c344",
  "bench_a_T4": "benchmark_scenario_a_T4us_20261026T235309Z_da0c18904bc7",
  "convergence": "convergence_scenario_a_n8_20261026T235358Z_a8cb70bbe957",
- "model_based": "model_based_scenario_a_20261026T235628Z_373dfea37a30"
+ "model_based": "model_based_scenario_a_20261026T235628Z_373dfea37a30",
+ "abl_colored": "ablation_colored_20261026T235750Z_91695709bda1",
+ "abl_noamp": "ablation_noamp_20261027T000041Z_323cd5f2b975",
+ "abl_noT1": "ablation_noT1_20261027T000317Z_20454f2f5af9",
+ "tests": "test_suite_20261027T000401Z_2fc21cc36501"
 }

@@ -1,26 +1,145 @@
 \section{Experiments and results}
 \label{sec:results}
-% ~1.25--1.75 pages once results exist. Only executed experiments may be reported, each with
-% run ID, seeds and a row in report/evidence_map.csv. Figures must be produced by scripts from
-% stored results; no hand-made or placeholder plots.
+% Every number below is a macro from report/generated/numbers.tex (scripts/make_report_artifacts.py),
+% traced in report/evidence_map.csv to a results/<run_id>/ artifact. All results are SYNTHETIC.
 
-\textbf{NOT RUN.} No experiment has been executed for this draft (claim PROV-02). The tables
-below are stubs from \texttt{report/generated/} and contain no values. Recorded run IDs:
-\GenRunIDs.
+All results are \emph{simulation predictions for the synthetic model} of
+Sec.~\ref{sec:methods}; none is a measurement. Each table and figure names the recorded
+run it comes from; the full claim-to-artifact ledger is \texttt{report/evidence\_map.csv}.
 
+\paragraph{RQ1: Monte Carlo versus filter function (gate G3).}
+Table~\ref{tab:g3} lists five predetermined configurations: free evolution, Hahn and CPMG-8, the
+last two with both 32\,ns and instantaneous pulses. In every configuration the finite-pulse
+Monte-Carlo infidelity agrees with the analytic prediction within $1.96$ standard errors
+($\GthreeNtraj$ trajectories per case; largest $|z|=\GthreeMaxZ$). Halving the noise step changes
+each estimate by less than the combined statistical error of the two runs. The PSD normalization, filter function,
+noise sampler and propagator are therefore mutually consistent at the $\sim\!10^{-3}$ relative
+level. This is a consistency check between two implementations of the same model, not
+evidence about any device.
+
+\input{generated/g3_table.tex}
+
+\paragraph{RQ2: spectroscopy and held-out prediction (gate G4).}
+Figure~\ref{fig:spec} and Table~\ref{tab:spectroscopy} summarize the pre-registered spectroscopy
+run. With the correctly specified full Gaussian model, every fitted parameter's 95\% bootstrap
+interval contains the truth. On 106 held-out points (new pulse counts and unseen idle times) the
+RMSE is $\SpecGaussFullRmseRatio\times$ the shot-noise floor and the 95\% predictive coverage is
+$\SpecGaussFullCov$. The reduced model (no Lorentzian) predicts worse
+($\SpecGaussRedRmseRatio\times$ floor, coverage $\SpecGaussRedCov$), but our pre-set failure
+thresholds do not flag it. For this seed the bootstrap intervals for $T_2^\ast$ and
+$T_2^{\rm Hahn}$ narrowly exclude the true values ($\SpecTruthTtwoStar$ and
+$\SpecTruthTtwoHahn\,\mu$s), even though each parameter interval covers. With a single recorded
+seed we cannot tell whether this is chance or a systematic bias of the derived-time intervals;
+a multi-seed coverage study is future work.
+
+The spectrum is \emph{not} uniquely reconstructed. The Lorentzian $(\sigma,\tau_c)$ is strongly
+correlated and weakly identified; the band above $\sim\!1$\,MHz spans orders of magnitude
+(Fig.~\ref{fig:spec}a); white dephasing and $1/T_1$ are degenerate; and the $1/f$ low cutoff
+is not identifiable. The telegraph misspecification control is nearly Gaussian at Scenario~A
+parameters (motional narrowing), so it does not stress the Gaussian assumption; the full model
+fits it well (RMSE $\SpecTelFullRmseRatio\times$ floor). This control is therefore weak.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{../figures/fig_spectroscopy.pdf}
+\caption{Synthetic spectroscopy. (a) True versus fitted two-sided PSD (full Gaussian model, MLE)
+with a 95\% parametric-bootstrap band; above $\sim$1\,MHz the data barely constrain the
+spectrum. (b) Fitted decay curves with 95\% bands; open circles are \emph{held-out} data only
+(CPMG-16 at all times; other families at unseen times). Run as in Table~\ref{tab:spectroscopy}.}
+\label{fig:spec}
+\end{figure}
+
+\input{generated/spectroscopy_table.tex}
+
+\paragraph{RQ3: CMA-ES versus canonical DD, Scenario~A (pre-registered).}
+Table~\ref{tab:bench} and Fig.~\ref{fig:bench} report held-out infidelities. The training-only
+rule selects XY4 at $n=4$ and XY8 at $n=8,16$, with
+$\epsilon=\BenchAFourSelEps$, $\BenchAEightSelEps$ and $\BenchASixteenSelEps$. No CMA-ES mode
+improves on the selected baseline:
+\begin{itemize}
+  \item \textbf{Phase-only:} ratios $\BenchASixteenPhaseRatioLo$--$\BenchAFourPhaseRatioHi$
+    (\(\approx1\)); it rediscovers XY4/XY8-like axes.
+  \item \textbf{Timing+phase:} ratios $\BenchAFourBothRatioLo$--$\BenchAFourBothRatioHi$ at $n=4$
+    and at most $\BenchASixteenBothRatioHi$ at $n=8,16$.
+  \item \textbf{Timing-only:} ratios as low as $\BenchASixteenTimingRatioLo$. This mode keeps
+    CPMG's $Y$ axes, and CPMG with a 2\% amplitude error is far worse than XY4/XY8 under
+    gate-fidelity grading (Table~\ref{tab:bench}).
+\end{itemize}
+The reason there is nothing to gain is physical. XY8 reaches $\BenchASixteenSelEps$, essentially
+the pulse-independent floor of $\FloorA$ set by $T_1$ and the white dephasing component
+(dashed line in Fig.~\ref{fig:bench}). Under the pre-registered model, no DD sequence can do
+much better than XY8. At $T=4\,\mu$s, timing+phase is worse than XY8 (ratio
+$\BenchATfourSixteenBothRatioLo$--$\BenchATfourSixteenBothRatioHi$ at $n=16$;
+Table~\ref{tab:ablation}).
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{../figures/fig_benchmark.pdf}
+\caption{Held-out infidelity at equal $n$, $T=2\,\mu$s, $w=32$\,ns (mean over test seeds
+9001--9005, 1024 trajectories each; CMA-ES: mean over 3 training runs; MC standard errors are
+smaller than the markers). The dashed line is the analytic floor from $T_1$ and white noise.
+Scenario~B arms use virtual-$Z$ from the nominal Stark profile. Timing-only CMA-ES (off-scale
+for $n\ge8$) is omitted; see Table~\ref{tab:bench}.}
+\label{fig:bench}
+\end{figure*}
+
+\input{generated/bench_table.tex}
+
+\paragraph{Overfitting diagnostic.} For a single training run at $n=8$ (exploratory; validation
+seeds 8001--8002 are disjoint from the test seeds), the training infidelity of timing+phase
+CMA-ES falls to $\ConvTrainFinal$, below XY8's training value. The validation infidelity stays at
+$\ConvValFinal$, against $\ConvBestBaselineVal$ for XY8 (Fig.~\ref{fig:conv}). The apparent
+training gain comes from fitting the 256 frozen noise trajectories and does not generalize.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.75\linewidth]{../figures/fig_convergence.pdf}
+\caption{Training (dashed) versus validation (solid) infidelity of the best-so-far CMA-ES
+candidate as a function of evaluation budget; Scenario~A, $n=8$, training seed 101. The
+horizontal lines show XY8. Exploratory diagnostic.}
+\label{fig:conv}
+\end{figure}
+
+\paragraph{RQ4: Scenario~B (deterministic Stark-like shift).}
+At $n=8$, the four pre-registered arms reach $\epsilon=\BArmNoDD$ (no DD, no frame correction),
+$\BArmVzOnly$ (virtual-$Z$ only), $\BArmDDVz$ (best canonical DD + virtual-$Z$) and
+$\BArmCMAVz$ (CMA-ES + virtual-$Z$). Most of the benefit comes from frame correction plus any
+XY-type DD. The only CMA-ES gain we observe that holds in all three training runs is at $n=4$,
+where timing+phase gives ratios $\BenchBFourBothRatioLo$--$\BenchBFourBothRatioHi$ over
+XY4+virtual-$Z$ (pooled 95\% MC intervals $\BenchBFourBothCILo$--$\BenchBFourBothCIHi$). At
+$n=8,16$ the ratios are $\BenchBEightBothRatioLo$--$\BenchBEightBothRatioHi$ and
+$\BenchBSixteenBothRatioLo$--$\BenchBSixteenBothRatioHi$, i.e.\ no gain (Table~\ref{tab:bench}).
+Phase-only CMA-ES at $n=4$ shows a similar small effect
+($\BenchBFourPhaseRatioLo$--$\BenchBFourPhaseRatioHi$).
+We regard the $n=4$ effect as small and specific to this synthetic model. In the robustness sweep
+(Fig.~\ref{fig:rob}) virtual-$Z$ alone degrades from $\RobVzAmpLo$ to $\RobVzAmpHi$ under a
+$\pm20\%$ Stark-amplitude error, while DD+virtual-$Z$ stays within $\RobDDVzAmpLo$--$\RobDDVzAmpHi$.
+Timing shifts of $\pm100$\,ns leave virtual-$Z$ unaffected because the integrated phase is
+unchanged.
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{../figures/fig_robustness_b.pdf}
+\caption{Scenario~B robustness at $n=8$ (training run 1): Stark amplitude (left) and timing
+shift (right) perturbed in evaluation while the virtual-$Z$ angle uses the nominal profile.}
+\label{fig:rob}
+\end{figure}
+
+\paragraph{RQ5: robustness, ablations and model mismatch.}
+Table~\ref{tab:ablation} adds post-hoc ablations, labelled exploratory. Removing $T_1$ and the
+white floor (``colored only'') opens two orders of magnitude of headroom, since XY8 then reaches
+$\AblColoredSixteenSelEps$ at $n=16$. Even so, timing+phase CMA-ES under the same 2000-evaluation
+budget loses to XY8 (ratio $\AblColoredSixteenBothRatioLo$--$\AblColoredSixteenBothRatioHi$),
+and phase-only gains at most $\AblColoredFourPhaseRatioHi$ at $n=4$. Within this budget and
+parameterization (starting from CPMG, with $2n$ free coordinates), CMA-ES did not find sequences
+that generalize better than XY-family designs. In the model-based pipeline
+(Table~\ref{tab:model_based}), optimizing on the noise model \emph{fitted} from synthetic
+spectroscopy and testing on the truth gives ratios $\MBFitFullFourRatioLo$--$\MBFitFullFourRatioHi$
+(full model, $n=4$) and $\MBFitRedFourRatioLo$--$\MBFitRedFourRatioHi$ (reduced model): model
+error adds further loss, and with the reduced model the baseline-selection rule sometimes picks
+the weaker family.
+
+\input{generated/ablation_table.tex}
+\input{generated/model_based_table.tex}
 \input{generated/feasibility_table.tex}
-\input{generated/benchmark_table.tex}
-
-\paragraph{Planned exhibits (all \notrun).}
-\begin{enumerate}
-  \item True versus fitted PSD with units and credible interval (RQ2).
-  \item Held-out Ramsey/Hahn/CPMG decay curves with uncertainty (RQ2).
-  \item Monte Carlo versus filter-function agreement across $\ge 3$ predetermined configurations
-    (RQ1, gate G3).
-  \item Equal-$n$, equal-$T$ benchmark with confidence intervals (Table~\ref{tab:benchmark}; RQ3).
-  \item Optimization training versus held-out convergence (RQ3).
-  \item Robustness to readout timing/amplitude, PSD misspecification and pulse imperfections
-    (RQ4, RQ5), including negative findings.
-\end{enumerate}
-Improvement factors, if any, will be reported as
-$\epsilon_{\mathrm{baseline}}/\epsilon_{\mathrm{optimized}}$ together with both raw infidelities.

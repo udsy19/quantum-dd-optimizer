@@ -3,10 +3,10 @@
 % report/generated/*.tex (written by scripts from immutable results/<run_id>/ artifacts)
 % and must have a row in report/evidence_map.csv (scripts/make_evidence_map.py).
 % Build: scripts/build_report.sh   (latexmk -pdf -halt-on-error)
-\documentclass[11pt]{article}
+\documentclass[10pt,twocolumn]{article}
 
 \usepackage[utf8]{inputenc}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=0.7in,columnsep=0.25in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -15,13 +15,16 @@
 
 % --- status markers (use these; never write a number by hand) -----------------
 \newcommand{\notrun}{\textbf{NOT RUN}}
+% run identifiers: typewriter, breakable after underscores
+\newcommand{\runid}[1]{{\ttfamily\begingroup\def\_{\char`\_\allowbreak}#1\endgroup}}
 \newcommand{\pending}[1]{\textbf{PENDING}\,(#1)}
 
 % --- auto-generated numbers / status (stubs until produced by scripts) --------
 \input{generated/status.tex}
+\input{generated/numbers.tex}
 
 \title{Model-Based, Hardware-Aware Dynamical Decoupling\\for Idle Superconducting Qubits\\[0.5ex]
-  \large Midterm report --- DRAFT SKELETON (results \notrun)}
+  \large Midterm report --- synthetic-simulation study (no hardware data)}
 \author{TEAM AUTHOR LIST --- PENDING CONFIRMATION\\
   \small Columbia University (pending confirmation)}
 \date{\GenBuildNote}

@@ -1,0 +1,168 @@
+{
+  "artifacts": {
+    "payload.json": "2766d9a450fbc13d63eff1db672bce4034eff5bb6d1b821b246c248257aa0103"
+  },
+  "command": [
+    "scripts/run_benchmark.py",
+    "--scenario",
+    "scenario_a_colored",
+    "--name",
+    "ablation_colored"
+  ],
+  "command_str": "scripts/run_benchmark.py --scenario scenario_a_colored --name ablation_colored",
+  "config": {
+    "calibration": {
+      "chi_1overf_FID_10us": 2.0,
+      "chi_1overf_FID_2us": 0.09214872940890509,
+      "chi_lorentzian_FID_2us": 0.023037182352226272,
+      "units": "chi dimensionless (rad^2)"
+    },
+    "description": "ABLATION (post-hoc, exploratory) of Scenario A: T1 and white floor removed, i.e. only colored (1/f + Lorentzian) dephasing + 2% amplitude error. SYNTHETIC ASSUMPTIONS.",
+    "noise": {
+      "T1": "inf",
+      "components": [
+        {
+          "kind": "one_over_f",
+          "omega_high": 62831853.071795866,
+          "omega_low": 6.283185307179586,
+          "params": {
+            "A": 5928746911.177706,
+            "alpha": 1.0
+          }
+        },
+        {
+          "kind": "lorentzian",
+          "omega_high": "inf",
+          "omega_low": 0.0,
+          "params": {
+            "sigma": 123551.30895351955,
+            "tau_c": 5e-07
+          }
+        }
+      ],
+      "detuning": {
+        "kind": "none"
+      }
+    },
+    "optimizer": {
+      "max_evals": 2000,
+      "modes": [
+        "timing",
+        "phase",
+        "both"
+      ],
+      "sigma0": 0.3
+    },
+    "overrides": {
+      "T": null,
+      "max_evals": 2000,
+      "modes": [
+        "timing",
+        "phase",
+        "both"
+      ],
+      "n": [
+        4,
+        8,
+        16
+      ],
+      "robustness": false
+    },
+    "produced_by": "python scripts/make_ablation_configs.py",
+    "seeds": {
+      "n_traj_test": 1024,
+      "n_traj_train": 256,
+      "optimizer": [
+        1,
+        2,
+        3
+      ],
+      "spectroscopy": {
+        "bootstrap": 5003,
+        "heldout": 5002,
+        "train": 5001
+      },
+      "test": [
+        9001,
+        9002,
+        9003,
+        9004,
+        9005
+      ],
+      "train": [
+        101,
+        102,
+        103
+      ]
+    },
+    "simulation": {
+      "control_errors": {
+        "amp_rel_bias": 0.0,
+        "amp_rel_std": 0.02,
+        "detuning_offset": 0.0,
+        "phase_std": 0.0
+      },
+      "include_T1": false,
+      "noise_dt": 1e-09,
+      "pulse_steps": 8
+    },
+    "window": {
+      "T": 2e-06,
+      "T_alt": 4e-06,
+      "dt_grid": 4e-09,
+      "guard": 4e-09,
+      "n_values": [
+        4,
+        8,
+        16
+      ],
+      "width": 3.2e-08
+    }
+  },
+  "config_hash": "91695709bda1d77ee9b4059efd8e93c8baffd4fbed22d3fef984d8e788fd69ec",
+  "cpu_count": 4,
+  "created_utc": "2026-10-26T23:57:50.235943Z",
+  "ddopt_version": "0.1.0",
+  "extra": {},
+  "git": {
+    "dirty": false,
+    "sha": "05193d1330aa1360bf12addd2d3bab5d3b53db36"
+  },
+  "manifest_schema_version": "0.1",
+  "packages": {
+    "cma": "4.5.0",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  },
+  "platform": {
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v165-x86_64-with-glibc2.39",
+    "release": "6.18.44-fc-v165",
+    "system": "Linux"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.13.17"
+  },
+  "run_id": "ablation_colored_20261026T235750Z_91695709bda1",
+  "seeds": {
+    "optimizer": [
+      1,
+      2,
+      3
+    ],
+    "test": [
+      9001,
+      9002,
+      9003,
+      9004,
+      9005
+    ],
+    "train": [
+      101,
+      102,
+      103
+    ]
+  }
+}

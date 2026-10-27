@@ -1,11 +1,16 @@
-% Abstract (~150--200 words). SKELETON: no results may appear here until they are
-% generated and listed in report/evidence_map.csv.
-We study model-based, hardware-aware dynamical decoupling (DD) for a superconducting qubit
-that sits idle while neighbouring qubits are measured. The planned study combines
-filter-function analysis of Gaussian stationary dephasing, a finite-pulse simulator,
-synthetic noise spectroscopy with held-out validation, and CMA-ES optimization of pulse
-timings and phases, compared with canonical DD sequences at equal pulse number, duration and
-constraints. \textbf{Status of this draft:} the software is under construction and all
-experiments are \notrun; this report therefore contains no numerical results. No quantum
-hardware has been accessed or used (claim PROV-01). Results: \pending{to be generated from
-recorded runs}.
+% Abstract. Numbers are generated macros (report/generated/numbers.tex).
+An idle superconducting qubit waiting during a neighbour's mid-circuit measurement loses
+coherence to stochastic dephasing and to deterministic frequency shifts. We ask whether
+model-based optimization of dynamical-decoupling (DD) pulse timings and phases with CMA-ES
+outperforms strong canonical sequences. To answer it fairly, we pre-registered a synthetic
+transmon-like model, seeds, baselines and a training-only baseline-selection rule, and scored
+every arm on independent held-out noise. A finite-pulse Monte-Carlo simulator agrees with
+filter-function theory in five predetermined configurations (largest $|z|=\GthreeMaxZ$).
+Synthetic Ramsey/Hahn/CPMG spectroscopy recovers a predictive noise model (held-out RMSE
+$\SpecGaussFullRmseRatio\times$ the shot-noise floor), but the spectrum is not uniquely
+identified. In the pre-registered Scenario~A, no CMA-ES mode beat the selected XY4/XY8 baseline,
+whose infidelity ($\BenchASixteenSelEps$ at $n=16$) is already at the $T_1$-plus-white-noise
+floor ($\FloorA$). With a deterministic Stark-like shift and virtual-$Z$ correction, the only
+consistent gain was small (ratio $\BenchBFourBothRatioLo$--$\BenchBFourBothRatioHi$ at $n=4$).
+Optimizing on fitted models, or with more headroom, did not help, and training gains did not
+generalize. All results are synthetic; no quantum hardware was used.

@@ -1,19 +1,42 @@
 \section{Discussion, limitations and roadmap}
 \label{sec:discussion}
-% ~0.75 page.
 
-\paragraph{Discussion.} \pending{depends on results; none available}.
+\paragraph{Interpretation.} Under the pre-registered model the answer to RQ3 is negative. XY4/XY8
+already suppress the decouplable colored noise, and the remaining infidelity is set by $T_1$
+and white dephasing, which no $\pi$-pulse sequence can remove. Where headroom exists (the
+colored-only ablation), our CMA-ES setup still did not beat XY8 on held-out noise. Its training
+improvements came from fitting the finite set of frozen trajectories, and the timing+phase
+search starting from CPMG did not reach XY8's robustness to amplitude errors within 2000
+evaluations. These are statements about this parameterization, budget and synthetic model, not
+about CMA-ES or learned DD in general. The one positive signal (Scenario~B, $n=4$) is a few
+percent, is specific to one deterministic shift profile, and would need independent
+confirmation before any claim.
 
-\paragraph{Limitations (known in advance).}
+\paragraph{Limitations.}
 \begin{itemize}
-  \item All planned evidence is synthetic; a synthetic model can be optimized against itself, so
-    gains may not transfer to hardware (model mismatch).
-  \item The filter-function infidelity relies on a Gaussian stationary noise assumption;
-    non-Gaussian (e.g.\ telegraph) noise is only approximated.
-  \item Spectroscopy is limited by finite shots and SPAM; fitted spectra are not uniquely
-    identifiable.
-  \item No quantum-hardware execution has been performed (claim PROV-01); access to IQCC
-    hardware is unconfirmed, and SDK compilation, if achieved, is not hardware validation.
+  \item All evidence is synthetic. Device parameters are assumptions, not measurements, and
+    optimizing against a model one also evaluates on is circular; the fitted-model pipeline
+    shows that identification error only adds loss.
+  \item Noise is Gaussian and stationary (except in the telegraph control, which is near-Gaussian
+    at our parameters). Non-stationary, measurement-induced dephasing during readout is
+    \emph{not} modelled; Scenario~B is a known deterministic frequency shift only.
+  \item $T_1$ during pulses is approximated; leakage, crosstalk, finite bandwidth and pulse
+    shaping are absent. Pulse errors are a static per-trajectory amplitude error.
+  \item Monte-Carlo intervals capture sampling uncertainty within the model only; with 5 test
+    seeds the seed-level variability is coarsely resolved. The colored-only, no-$T_1$,
+    no-amplitude-error and convergence analyses were added after seeing the pre-registered
+    results and are exploratory. One plumbing smoke run touched the test seeds before the main
+    run (documented in \texttt{docs/EXPERIMENT\_PLAN.md}).
+  \item Bibliographic metadata could not be verified against primary sources from our
+    environment (\texttt{docs/CITATION\_AUDIT.md}).
+  \item No quantum-hardware execution was performed (claim PROV-01). The QUA adapter is an
+    SDK-free schedule translator marked \emph{not hardware tested}; the QM SDK serialization
+    test was skipped because the SDK is not installed in the project environment.
 \end{itemize}
 
-\paragraph{Roadmap.} \pending{to be written from the actual state of the implementation}.
+\paragraph{Roadmap.} (i) Measure, with authorization, $T_1$, Ramsey, Hahn and CPMG decays and
+spectator phase during neighbour readout on the target device
+(\texttt{docs/HARDWARE\_PROTOCOL.md}), to see whether the decouplable colored component is
+large enough for optimization to matter at all. (ii) Model measurement-induced dephasing as
+non-stationary noise and repeat Scenario~B. (iii) Regularize the optimizer (more training
+trajectories, robust objectives, starting from XY8) and pre-register a new held-out benchmark.
