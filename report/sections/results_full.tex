@@ -27,7 +27,7 @@ RMSE is $\SpecGaussFullRmseRatio\times$ the shot-noise floor and the 95\% predic
 $\SpecGaussFullCov$. The reduced model (no Lorentzian) predicts worse
 ($\SpecGaussRedRmseRatio\times$ floor, coverage $\SpecGaussRedCov$), but our pre-set failure
 thresholds do not flag it. For this seed the bootstrap intervals for $T_2^\ast$ and
-$T_2^{\rm Hahn}$ narrowly exclude the true values ($\SpecTruthTtwoStar$ and
+$T_2^{\rm Hahn}$ exclude the true values ($\SpecTruthTtwoStar$ and
 $\SpecTruthTtwoHahn\,\mu$s), even though each parameter interval covers. With a single recorded
 seed we cannot tell whether this is chance or a systematic bias of the derived-time intervals;
 a multi-seed coverage study is future work. This is a favourable test: the data are
@@ -74,7 +74,7 @@ $\pm0.2\%$ or worse:
     CPMG's $Y$ axes, and CPMG with a 2\% amplitude error is far worse than XY4/XY8 under
     gate-fidelity grading (Table~\ref{tab:bench}).
 \end{itemize}
-The reason there is nothing to gain is physical. XY8 reaches $\BenchASixteenSelEps$, essentially
+A major limitation on possible improvement comes from the assumed model. XY8 reaches $\BenchASixteenSelEps$, essentially
 the pulse-independent floor of $\FloorA$ set by $T_1$ and the white dephasing component
 (dashed line in Fig.~\ref{fig:bench}). Under the pre-registered model, no DD sequence can do
 much better than XY8. At $T=4\,\mu$s, timing+phase is worse than XY8 (ratio
@@ -116,7 +116,10 @@ training gain comes from fitting the 256 frozen noise trajectories and does not 
 \includegraphics[width=\linewidth]{../figures/fig_convergence.pdf}
 \caption{Training (dashed) versus validation (solid) infidelity of the best-so-far CMA-ES
 candidate as a function of evaluation budget; Scenario~A, $n=8$, training seed 101.
-Timing+phase starts from CPMG; timing-only keeps XY phases. The
+Timing+phase starts from CPMG. The timing-only curve in this exploratory plot was labeled with XY phases,
+whereas the pre-registered timing-only arm fixes CPMG-Y phases. Until the
+convergence-plot configuration is independently reconciled, this curve must
+not be used as evidence for the pre-registered timing-only benchmark. The
 horizontal lines show XY8. Exploratory diagnostic.}
 \label{fig:conv}
 \end{figure}
