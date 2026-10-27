@@ -5,13 +5,38 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage[numbers,sort&compress]{natbib}
+\usepackage[hyphens]{url}
+% URL line breaks: after punctuation, '/' or '-', never after ':' (no line ends in "https:");
+% ':' is an "open" atom, which also turns the first '/' of "://" into a non-breaking ordinary atom.
+\makeatletter
+\def\UrlBreaks{\do\.\do\@\do\\\do\/\do\!\do\_\do\|\do\;\do\>\do\]\do\)\do\,\do\?\do\&\do\'\do+\do\=\do\#}
+\def\UrlBigBreaks{\do@url@hyp}
+\def\UrlNoBreaks{\do\(\do\[\do\{\do\<\do\:}
+\makeatother
 \usepackage[hidelinks]{hyperref}
-\usepackage{url}
+\usepackage{needspace}
+\newcommand{\runid}[1]{\ddoptpath{#1}}
+% \repopath typesets a repository path; both break after "/" and "_".
+\newcommand{\repopath}[1]{\runid{#1}}
+\ExplSyntaxOn
+\NewDocumentCommand{\ddoptpath}{m}{
+  \group_begin: \normalfont\ttfamily
+  \tl_set:Nn \l_tmpa_tl {#1}
+  \tl_replace_all:Nnn \l_tmpa_tl {/} {/\allowbreak}
+  \tl_replace_all:Nnn \l_tmpa_tl {\_} {\_\allowbreak}
+  \tl_use:N \l_tmpa_tl
+  \group_end:
+}
+\ExplSyntaxOff
 \newcommand{\notrun}{\textbf{NOT RUN}}
-\newcommand{\runid}[1]{{\ttfamily #1}}
 \newcommand{\pending}[1]{\textbf{PENDING}\,(#1)}
 \input{generated/status.tex}
 \input{generated/numbers.tex}
+\IEEEspecialpapernotice{Midterm Report, October 27, 2026}
+% 2+2 author layout (IEEEtran puts all \and-separated blocks on one row otherwise).
+\makeatletter
+\newcommand{\linebreakand}{\end{@IEEEauthorhalign}\hfill\mbox{}\par\mbox{}\hfill\begin{@IEEEauthorhalign}}
+\makeatother
 \title{Model-Based Dynamical Decoupling for Idle Superconducting Qubits\\
 \large A Reproducible Synthetic Benchmark with Hardware Timing Constraints}
 \author{
@@ -20,7 +45,7 @@
 \and
 \IEEEauthorblockN{Madeline Feldner}
 \IEEEauthorblockA{Department of Computer Science\\Department of Statistics\\Columbia University\\mef2238@columbia.edu}
-\and
+\linebreakand
 \IEEEauthorblockN{Zarar Haider}
 \IEEEauthorblockA{Department of Computer Science\\Columbia University\\zh2555@columbia.edu}
 \and
@@ -29,7 +54,6 @@
 }
 \begin{document}
 \maketitle
-\begin{center}\footnotesize Midterm Report, October 27, 2026\end{center}
 \begin{abstract}
 \input{sections/abstract.tex}
 \end{abstract}

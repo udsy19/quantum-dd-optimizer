@@ -1,10 +1,11 @@
 \section{Discussion, limitations and roadmap}
 \label{sec:discussion}
 
-\paragraph{Interpretation.} Under the pre-registered model the answer to RQ3 is negative. XY4/XY8
+\paragraph{Interpretation} Under the pre-registered model the answer to RQ3 is negative. XY4/XY8
 already suppress the decouplable colored noise, and the remaining infidelity is set by $T_1$
 and white dephasing, which ideal refocusing pulses do not suppress in this model. Where headroom exists (the
-colored-only ablation), our CMA-ES setup still did not beat XY8 on held-out noise. Its training
+colored-only ablation), our CMA-ES setup gained under 0.5\% over XY8 at $n=8$ on held-out noise
+and lost substantially at $n=16$. Its training
 improvements came from fitting the finite set of frozen trajectories, and the timing+phase
 search starting from CPMG did not reach XY8's robustness to amplitude errors within 2000
 evaluations. These are statements about this parameterization, budget and synthetic model, not
@@ -13,7 +14,8 @@ percent and was identified after the fact. Its timing+phase form does not surviv
 readout-timing uncertainty; its phase-only form does, but only within this model. It would need
 a new pre-registered test before any claim.
 
-\paragraph{Limitations.}
+\needspace{5\baselineskip}
+\paragraph{Limitations}
 \begin{itemize}
   \item All evidence is synthetic. Device parameters are assumptions, not measurements, and
     optimizing against a model one also evaluates on is circular; the fitted-model pipeline
@@ -27,32 +29,33 @@ a new pre-registered test before any claim.
     seeds the seed-level variability is coarsely resolved. The colored-only, no-$T_1$,
     no-amplitude-error and convergence analyses were added after seeing the pre-registered
     results and are exploratory. One plumbing smoke run touched the test seeds before the main
-    run (documented in \texttt{docs/EXPERIMENT\_PLAN.md}).
+    run (documented in \repopath{docs/EXPERIMENT\_PLAN.md}).
   \item Robustness of the optimized sequences to calibration drift, Stark rise time and
     timing-grid quantization (plan item P5.2) was not evaluated. The exploratory ablations reused
     the held-out test seeds, and the spectroscopy and benchmark bootstraps share one seed.
   \item Earlier runs recorded the git state at manifest write time rather than run
-    start; several exploratory runs were marked dirty without preserving their
-    uncommitted diffs. The provenance implementation has since been changed to
-    record the start-of-run git state and diff. That change improves \emph{future}
-    runs but cannot retroactively recover earlier uncommitted code, so historical
-    reconstruction remains limited (\texttt{docs/REVIEW\_FINDINGS.md}).
+    start, and $\PinnedRunsDirty$ of the $\PinnedRunsTotal$ pinned runs record a dirty
+    working tree without the uncommitted diff: the \PinnedRunsDirtyList. These include
+    pre-registered runs and the source of the spectroscopy headline numbers. Their SHA-256
+    checksums prove that the stored files are unchanged, not which code produced them.
+    Runs now record the start-of-run git state and diff, which cannot recover the earlier
+    uncommitted code (\repopath{docs/REVIEW\_FINDINGS.md}).
   \item The original citation audit environment blocked primary sources; a later
     audit checked public arXiv reference identities. Publication metadata and
-    final bibliographic presentation are documented in \texttt{docs/CITATION\_AUDIT.md}.
+    final bibliographic presentation are documented in \repopath{docs/CITATION\_AUDIT.md}.
   \item No quantum-hardware execution was performed. The QUA adapter is an
     SDK-free schedule translator marked \emph{not hardware tested}; the QM SDK serialization
     test was skipped because the SDK is not installed in the project environment.
 \end{itemize}
 
-\paragraph{Independent review.} An AI red-team pass (\texttt{docs/REVIEW\_FINDINGS.md})
+\paragraph{Independent review} An AI red-team pass (\repopath{docs/REVIEW\_FINDINGS.md})
 independently re-derived the conventions, reproduced several reported numbers bit-for-bit and
 found no critical defect. Its high-severity finding (the Scenario~B timing+phase gain is not
 robust) is incorporated above. Human review of the evidence ledger is pending.
 
-\paragraph{Roadmap.} (i) Measure, with authorization, $T_1$, Ramsey, Hahn and CPMG decays and
+\paragraph{Roadmap} (i) Measure, with authorization, $T_1$, Ramsey, Hahn and CPMG decays and
 spectator phase during neighbour readout on the target device
-(\texttt{docs/HARDWARE\_PROTOCOL.md}), to see whether the decouplable colored component is
+(\repopath{docs/HARDWARE\_PROTOCOL.md}), to see whether the decouplable colored component is
 large enough for optimization to matter at all. (ii) Model measurement-induced dephasing as
 non-stationary noise and repeat Scenario~B. (iii) Regularize the optimizer (more training
 trajectories, robust objectives, starting from XY8) and pre-register a new held-out benchmark.
