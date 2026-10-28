@@ -628,11 +628,54 @@ after the fact, and would need a new pre-registered test.
     publisher metadata checks are listed in \repopath{docs/CITATION\_AUDIT.md}.
 \end{itemize}
 
-\paragraph{Roadmap} (i) With authorization, measure $T_1$, Ramsey, Hahn and CPMG decays and spectator
-phase during neighbour readout on the target device, to establish whether the decouplable colored
-component is large enough for optimization to matter. (ii) Model measurement-induced dephasing as
-non-stationary noise and repeat Scenario~B. (iii) Pre-register a new benchmark with an analytic
-filter-function or larger-sample objective, an XY8 starting point and timing-only arms with XY phases.
+\section{Industry and commercial validation}
+\label{sec:commercial}
+\paragraph{Status} No industry or customer validation has been carried out yet. No organization has
+evaluated, endorsed or committed to use this work; everything below is a plan.
+
+\paragraph{Proposed offering} Our results suggest that the useful product is not an optimizer alone
+but a decision tool: from a device's measured $T_1$, Ramsey, Hahn and CPMG data, estimate how far
+XY4/XY8 sit from the relaxation-plus-white-noise floor (the headroom of Table~\ref{tab:main}), run
+optimization only where that headroom is material, and emit timing-checked schedules through the QUA
+adapter. Telling an operator that standard DD is already near the floor saves calibration time.
+
+\paragraph{Potential users} These are hypotheses to be tested, not contacts: (i) pulse-level control
+vendors such as Quantum Machines, whose users program idle windows directly; (ii) superconducting
+testbeds and university labs running dynamic circuits with mid-circuit measurement, such as the
+IQCC; (iii) quantum processor providers that schedule DD inside their compilers; and (iv) teams
+building error-correction experiments, where spectator qubits idle during repeated syndrome readout.
+
+\paragraph{Validation approach} (1) \emph{Technical}: test on authorized hardware whether a measured
+device has enough decouplable colored noise for optimization to matter (Sec.~\ref{sec:future}); the
+synthetic results alone cannot establish this. (2) \emph{Expert feedback}: present the method, the
+headroom diagnostic and the negative result to Quantum Machines engineers and at the course demo day,
+and record which assumptions they reject. (3) \emph{User discovery}: structured interviews with
+control and calibration engineers on idle time per circuit, current DD practice, calibration budget
+and the integration format they would accept. (4) \emph{Decision rule}: continue toward a product only
+if hardware shows material headroom over XY-family DD and interviewed users report a need that
+existing DD passes do not meet; otherwise report the negative outcome and keep the headroom
+diagnostic as an open-source tool.
+
+\section{Future work: next four weeks}
+\label{sec:future}
+Hardware steps require written authorization and are not yet approved; week numbers are counted from
+submission of this report.
+\begin{enumerate}
+  \item \textbf{Week 1, hardware access.} Ask Quantum Machines (and the IQCC) for access to a
+    superconducting device: backend and qubit assignment, approved pulse and readout elements, the
+    facility's QUA toolchain version and execution windows. Share the QUA adapter for review.
+  \item \textbf{Week 2, characterization.} If access is granted, calibrate pulses and measure $T_1$,
+    Ramsey, Hahn and CPMG decays and the spectator phase during neighbour readout. Compute the XY4/XY8
+    headroom from these data before any optimization.
+  \item \textbf{Week 3, model and pre-registration.} Fit the noise model on hardware spectroscopy with
+    held-out schedules. Pre-register a new benchmark with an analytic filter-function objective, an XY8
+    starting point and timing-only arms with XY phases; model measurement-induced dephasing as
+    non-stationary noise for Scenario~B.
+  \item \textbf{Week 4, hardware comparison and feedback.} Run randomized, interleaved no-DD,
+    virtual-$Z$, XY4/XY8 and optimized arms with recorded run identifiers and overhead, and hold the
+    user interviews of Sec.~\ref{sec:commercial}. If access is not granted, run Weeks 2--4 in
+    simulation only and label them as such.
+\end{enumerate}
 
 \section*{Author contributions}
 Christian De Zabala F., Madeline Feldner, Zarar Haider, and Udaya Vijay Anand contributed equally to
