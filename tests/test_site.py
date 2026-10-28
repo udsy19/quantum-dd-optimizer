@@ -1,6 +1,6 @@
 """Website build (scripts/build_site.py): paper rendered from report/, provenance, links, integrity.
 
-The paper body is converted from report/*.tex with pandoc. When pandoc is not installed locally the
+The paper body is converted from the canonical manuscript report/merged.tex with pandoc. When pandoc is not installed locally the
 build-dependent tests are skipped with a clear reason; in CI (``CI`` set) a missing pandoc fails.
 """
 from __future__ import annotations
@@ -117,11 +117,18 @@ def test_output_tree(site):
     assert info["checked_macros"] == info["macros"] > 100
 
 
+MANUSCRIPT = ROOT / "report" / "merged.tex"
+
+
+def _manuscript() -> str:
+    return B.strip_tex_comments(MANUSCRIPT.read_text(encoding="utf-8"))
+
+
 @needs_pandoc
 def test_paper_sections_follow_report_order(index):
-    renderer = B.ReportRenderer(ROOT / "report", {}, {}, "main", [], {})
-    for part_id, name in (("paper", "main"), ("appendix", "appendix")):
-        tex = renderer.read(name)
+    parts = B.ReportRenderer(ROOT / "report", {}, {}, "main", [], {}).parts()
+    for part_id, name in (("paper", "main"), ("appendix", "supplement")):
+        tex = parts[name]
         titles = [B.tex_to_text(t) for t in re.findall(r"\\section\*?\{([^}]*)\}", tex)]
         assert titles, name
         html_part = _part(index, part_id)
@@ -136,15 +143,16 @@ def test_paper_sections_follow_report_order(index):
 
 @needs_pandoc
 def test_front_matter_from_report(index):
-    main_tex = (ROOT / "report" / "main.tex").read_text()
+    tex = _manuscript()
     authors = index[index.index('<p class="authors">'):]
     authors = authors[:authors.index("</p>")]
-    for name in re.findall(r"\\IEEEauthorblockN\{([^}]*)\}", main_tex):
+    for name in re.findall(r"\\IEEEauthorblockN\{([^}]*)\}", tex):
         assert B.esc(B.tex_to_text(name)) in authors, name
-    title = B.tex_to_text(re.split(r"\\\\", re.search(r"\\title\{(.*?)\}\n\\author", main_tex, re.S).group(1))[0])
+    title_src, _ = B.brace_group(tex, tex.index("\\title") + len("\\title"))
+    title = B.tex_to_text(re.split(r"\\\\", title_src)[0])
     assert f"<h1 id=\"paper-title\">{B.esc(title)}</h1>" in index
-    abstract = (ROOT / "report" / "sections" / "abstract.tex").read_text()
-    first_sentence = B.tex_to_text(re.sub(r"%.*", "", abstract).strip().split(". ")[0])
+    abstract = B.env_body(tex, "abstract")
+    first_sentence = B.tex_to_text(abstract.strip().split(". ")[0])
     abstract_html = index[index.index('<div class="abstract">'):index.index('<p class="keywords">')]
     assert first_sentence.replace("'", "’") in re.sub(r"\s+", " ", _visible_text(abstract_html)), first_sentence
     assert "Index terms" in index and "dynamical decoupling" in index
@@ -154,13 +162,20 @@ def test_front_matter_from_report(index):
 def test_rendered_tables_figures_math_and_references(index):
     paper, appendix = _part(index, "paper"), _part(index, "appendix")
     assert appendix.count('class="table-figure paper-table"') >= 5
-    assert "<thead>" in appendix and "TABLE I." in appendix
+    # supplement numbering matches the PDF (\\ddoptsupplement): TABLE S1, Fig. S1; main paper: TABLE I, Fig. 1
+    assert "<thead>" in appendix and "TABLE S1." in appendix and "TABLE I." not in appendix
+    assert "Fig. S1." in appendix and "Fig. 1." in paper and "TABLE I." in paper
     for part in (paper, appendix):
         assert 'class="paper-figure"' in part and 'src="figures/' in part
-        assert part.count('class="math inline"') > 20 and 'class="math display"' in part
-        assert 'class="references csl-bib-body"' in part
-        assert re.search(r'class="citation"[^>]*><a href="#[a-z]+-ref-', part)
-    assert "identity-verified (arXiv)" in appendix
+        assert part.count('class="math inline"') > 20
+    assert 'class="math display"' in paper
+    assert re.search(r'class="citation"[^>]*><a href="#paper-ref-', paper)
+    # one reference list (the main paper's), as in the PDF
+    assert 'class="references csl-bib-body"' in paper and 'class="references csl-bib-body"' not in appendix
+    assert "identity-verified (arXiv)" in paper
+    assert not re.search(r'href="#app-ref-', index)
+    # cross-references between the parts (both directions in the manuscript) link to the other part
+    assert re.search(r'href="#paper-sec:[^"]+"', appendix) and re.search(r'href="#app-(?:fig|tab|supp):', paper)
     # cross-references resolve to anchors that exist
     ids = _parse(index).ids
     for href in re.findall(r'href="#((?:paper|app)-[^"]+)"', index):
@@ -296,21 +311,26 @@ def test_paper_json_schema(paper_json):
                 "labels", "source"):
         assert key in paper_json, key
     assert not any(k.startswith("_") for k in paper_json)
-    main_tex = (ROOT / "report" / "main.tex").read_text()
-    names = [B.tex_to_text(n) for n in re.findall(r"\\IEEEauthorblockN\{([^}]*)\}", main_tex)]
+    names = [B.tex_to_text(n) for n in re.findall(r"\\IEEEauthorblockN\{([^}]*)\}", _manuscript())]
     assert [a["name"] for a in paper_json["authors"]] == names
     assert all(a["affiliations"] and not any("@" in x for x in a["affiliations"]) for a in paper_json["authors"])
     for sec in paper_json["sections"] + paper_json["appendix_sections"]:
         assert set(sec) == {"id", "number", "title", "level", "html"} and sec["level"] in (1, 2) and sec["id"]
     assert 'class="csl-entry"' in paper_json["references_html"]
-    assert 'class="csl-entry"' in paper_json["appendix_references_html"]
+    assert paper_json["appendix_references_html"] == ""  # supplement cites the main reference list
+    assert paper_json["source"]["manuscript"] == "report/merged.tex" and "main" not in paper_json["source"]
+    assert "appendix_intro_html" in paper_json
+    labels = paper_json["labels"]
+    assert labels["paper"]["tab:main"] == "I" and labels["paper"]["fig:spec"] == "1"
+    assert all(v.startswith("S") for k, v in labels["appendix"].items() if k.startswith(("fig:", "tab:", "eq:")))
+    assert not set(labels["paper"]) & set(labels["appendix"])
 
 
 @needs_pandoc
 def test_paper_json_sections_in_report_order(paper_json):
-    renderer = B.ReportRenderer(ROOT / "report", {}, {}, "main", [], {})
-    for key, name in (("sections", "main"), ("appendix_sections", "appendix")):
-        tex = renderer.read(name)
+    parts = B.ReportRenderer(ROOT / "report", {}, {}, "main", [], {}).parts()
+    for key, name in (("sections", "main"), ("appendix_sections", "supplement")):
+        tex = parts[name]
         want = [(1 if kind == "section" else 2, B.tex_to_text(t))
                 for kind, t in re.findall(r"\\(section|subsection)\*?\{([^}]*)\}", tex)]
         got = [(s["level"], s["title"]) for s in paper_json[key]]
@@ -334,3 +354,93 @@ def test_paper_json_content_is_clean(paper_json, macros):
     assert tables >= 1 and len(figures) >= 1
     assert {f["part"] for f in figures} == {"paper", "appendix"}
     assert all(f["src"].startswith("figures/") and f["width"] > 0 for f in figures)
+
+
+# ---- the split of report/merged.tex, on a small synthetic manuscript ---------------------------------
+_TINY = r"""% CANONICAL MANUSCRIPT: test fixture
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx}
+\graphicspath{{figures/}{../figures/}}
+\newcommand{\Num}{1.5}
+\makeatletter
+\newcommand{\ddoptsupplement}[1]{%
+  \clearpage
+  \twocolumn[{\centering{\LARGE #1\par}\vspace{1em}}]%
+  \label{supp:start}\setcounter{figure}{0}\setcounter{table}{0}\setcounter{equation}{0}%
+  \renewcommand{\thefigure}{S\arabic{figure}}\renewcommand{\thetable}{S\arabic{table}}%
+  \renewcommand{\theequation}{S\arabic{equation}}%
+  \appendices}
+\makeatother
+\title{Main Title\\ \large Subtitle}
+\author{\IEEEauthorblockN{A. Author}\IEEEauthorblockA{Uni\\a@b.c}}
+\begin{document}
+\maketitle
+\begin{abstract}
+Abstract with $\Num$.
+\end{abstract}
+\section{Intro}
+\label{sec:intro}
+Main text cites \cite{KEY1}, refers to Table~\ref{tab:s} and Eq.~\eqref{eq:s}; see Eq.~\eqref{eq:m}.
+\begin{equation}\label{eq:m} x = 1 \end{equation}
+\begin{table}\caption{Main}\label{tab:m}\begin{tabular}{cc}\toprule a & b\\\midrule 1 & 2\\\bottomrule\end{tabular}\end{table}
+% >>> BEGIN GENERATED report/generated/x.tex (do not edit)
+Generated value \Num.
+% <<< END GENERATED report/generated/x.tex
+\bibliographystyle{IEEEtranN}
+\IfFileExists{refs.bib}{\bibliography{refs}}{\bibliography{report/refs}}
+\ddoptsupplement{Supplementary Material: Tests}
+\noindent Intro of the supplement, see Sec.~\ref{sec:intro} and Table~\ref{tab:m}.
+\section{More}
+\label{supp:more}
+Supplement cites \cite{KEY2} and \cite{KEY1}.
+\begin{equation}\label{eq:s} y = 2 \end{equation}
+\begin{table}\caption{Supp}\label{tab:s}\begin{tabular}{cc}\toprule a & b\\\midrule 1 & 2\\\bottomrule\end{tabular}\end{table}
+\end{document}
+"""
+
+
+@pytest.fixture()
+def tiny_report(tmp_path):
+    keys = [e["key"] for e in B.parse_bib((ROOT / "report" / "refs.bib").read_text())][:2]
+    d = tmp_path / "report"
+    d.mkdir()
+    (d / "merged.tex").write_text(_TINY.replace("KEY1", keys[0]).replace("KEY2", keys[1]))
+    shutil.copy(ROOT / "report" / "refs.bib", d / "refs.bib")
+    return d, keys
+
+
+@needs_pandoc
+def test_manuscript_split_into_virtual_documents(tiny_report):
+    d, _ = tiny_report
+    parts = B.ReportRenderer(d, {}, {}, "main", [], {}).parts()
+    main, supp = parts["main"], parts["supplement"]
+    assert main.rstrip().endswith("\\end{document}") and "Supplement cites" not in main
+    assert "\\ddoptsupplement{Supplementary" not in main + supp
+    assert "\\title{Supplementary Material: Tests}" in supp and "Main Title" not in supp
+    assert "\\begin{document}\n\\maketitle\n\\appendices\n" in supp and "Intro of the supplement" in supp
+    assert supp.count("\\end{document}") == 1 and "Main text cites" not in supp
+    (d / "merged.tex").write_text(_TINY.replace("\\section{Intro}", "\\input{extra}\n\\section{Intro}"))
+    with pytest.raises(B.BuildError, match="self-contained"):
+        B.ReportRenderer(d, {}, {}, "main", [], {}).parts()
+
+
+@needs_pandoc
+def test_supplement_numbering_crossrefs_and_shared_references(tiny_report):
+    d, keys = tiny_report
+    bib = B.parse_bib((d / "refs.bib").read_text())
+    r = B.render_paper(d, {}, {}, "main", bib, {}, ROOT / "figures")
+    assert r["title"] == "Main Title" and r["appendix_title"] == "Supplementary Material: Tests"
+    assert r["labels"]["paper"] == {"sec:intro": "I", "eq:m": "1", "tab:m": "I"}
+    assert r["labels"]["appendix"] == {"supp:more": "A", "eq:s": "S1", "tab:s": "S1"}
+    main, supp = r["_paper_html"], r["_appendix_html"]
+    assert "\\tag{1}" in main and "\\tag{S1}" in supp and "TABLE I." in main and "TABLE S1." in supp
+    assert '<a href="#app-tab:s">S1</a>' in main and '(<a href="#app-eq:s">S1</a>)' in main
+    assert '<a href="#paper-sec:intro">I</a>' in r["appendix_intro_html"]
+    assert '<a href="#paper-tab:m">I</a>' in r["appendix_intro_html"]
+    # one reference list: the supplement-only key is numbered after the main paper's citations
+    assert r["appendix_references_html"] == "" and "csl-bib-body" not in supp
+    assert f'id="paper-ref-{keys[0]}"' in r["references_html"] and f'id="paper-ref-{keys[1]}"' in r["references_html"]
+    assert f'<a href="#paper-ref-{keys[1]}" role="doc-biblioref">[2]</a>' in supp
+    assert f'<a href="#paper-ref-{keys[0]}" role="doc-biblioref">[1]</a>' in supp
+    assert "ZQ" not in main + supp + r["abstract_html"] and "IfFileExists" not in main + supp
+    assert "Generated value 1.5" in main and "BEGIN GENERATED" not in main

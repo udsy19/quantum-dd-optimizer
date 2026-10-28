@@ -26,3 +26,8 @@ report/*.blg
 report/*.synctex.gz
 .claude/worktrees/
 .apt-archives/
+# Report build outputs: delivered as CI artifacts and on the Pages site, never committed.
+# report/merged.tex itself is the tracked, canonical manuscript.
+report/*.pdf
+report/overleaf-project.zip
+report/figures/

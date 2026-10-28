@@ -4,7 +4,7 @@
 # Source: "GitHub Actions". Until that is enabled the deploy job fails; nothing else is affected.
 #
 # Runs on every push to main (any path, including report/**) and on manual dispatch, so editing the
-# paper in report/ republishes the site. The paper body is rendered from report/*.tex with pandoc
+# paper in report/ republishes the site. The paper body is rendered from report/merged.tex with pandoc
 # (required: the build fails if pandoc or the rendering fails, so a stale page is never shipped).
 # The site is generated from checksum-verified runs pinned in report/runs.json; the build fails if
 # report/generated/numbers.tex disagrees with those payloads. The PDFs are built first; if the TeX
@@ -67,7 +67,7 @@ jobs:
         with:
           path: .apt-archives/*.deb
           key: apt-tex-${{ runner.os }}-${{ hashFiles('scripts/ci_install_tex.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
-      - name: Build paper PDFs (main, appendix, combined)
+      - name: Build paper PDFs from report/merged.tex (main, appendix, combined)
         id: pdf
         continue-on-error: true
         if: steps.tex.outcome == 'success'

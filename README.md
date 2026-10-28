@@ -19,7 +19,7 @@ Columbia University
 [**Download complete PDF (paper + appendix)**](https://github.com/udsy19/quantum-dd-optimizer/releases/download/v0.1.1/quantum-dd-optimizer-paper-with-appendix.pdf) ·
 [**5-page paper PDF**](https://github.com/udsy19/quantum-dd-optimizer/releases/download/v0.1.1/quantum-dd-optimizer-paper.pdf) ·
 [All release assets](https://github.com/udsy19/quantum-dd-optimizer/releases/latest) ·
-[Paper source](report/) ·
+[Paper source](report/merged.tex) ·
 [Experiment plan](docs/EXPERIMENT_PLAN.md) ·
 [Red-team review](docs/REVIEW_FINDINGS.md)
 
@@ -77,15 +77,16 @@ Every number above is generated from checksum-verified runs pinned in
 - [Citing](#citing)
 - [Contributing, releases, security](#contributing-releases-security)
 - [License](#license)
+- [Editing the paper (GitHub and Overleaf)](#editing-the-paper-github-and-overleaf)
 
 ## Paper and website
 
 | | |
 |---|---|
 | **Online paper** | https://udsy19.github.io/quantum-dd-optimizer/ |
-| **Source** | [`report/`](report/): IEEE conference format (`main.tex`, ≤ 6 pages) plus a lettered appendix (`appendix.tex`) |
-| **PDFs** | Attached to every [GitHub Release](https://github.com/udsy19/quantum-dd-optimizer/releases) and uploaded as CI artifacts: `main.pdf`, `appendix.pdf`, `combined_report.pdf` |
-| **Build** | `bash scripts/build_report.sh` (needs `latexmk`, `texlive-publishers`, `poppler-utils`) |
+| **Source** | [`report/merged.tex`](report/merged.tex): the single canonical manuscript (IEEE paper, ≤ 6 pages, plus an S-numbered supplement) |
+| **PDFs** | Not tracked in git. CI artifacts (**Actions → run → Artifacts → report-pdf**), the PDF links on the website, and [Release](https://github.com/udsy19/quantum-dd-optimizer/releases) assets: `combined_report.pdf` (submission PDF, paper + supplement), `main.pdf`, `appendix.pdf` |
+| **Build** | `PYTHON=python bash scripts/build_report.sh` (needs `latexmk`, `texlive-publishers`, `poppler-utils`) |
 
 The website is generated from the same sources: the paper text is rendered from `report/` at
 build time, numbers come from the pinned runs, and the figures are interactive. Every push to
@@ -145,7 +146,9 @@ python scripts/run_tests_recorded.py                               # stores the 
 
 python -m ddopt.provenance verify results/<run_id>                 # verify checksums
 python scripts/make_report_artifacts.py                            # figures, tables, number macros, ledger
-bash scripts/build_report.sh                                       # paper PDFs
+python scripts/manuscript.py sync-generated --write                # copy generated blocks into report/merged.tex
+python scripts/make_evidence_map.py                                # refresh the claim ledger
+bash scripts/build_report.sh                                       # paper PDFs (runs manuscript.py check)
 python scripts/build_site.py                                       # website → site/dist/
 ```
 
@@ -169,7 +172,7 @@ flowchart LR
   lib --> X
   X --> R[(results/&lt;run_id&gt;<br/>payload + manifest + SHA256)]
   R --> A[make_report_artifacts.py] --> G[report/generated<br/>tables, macros, figures]
-  G --> P[report/ → PDFs]
+  G --> M[report/merged.tex<br/>generated blocks] --> P[PDFs]
   G --> W[build_site.py → website]
   P --> W
 ```
@@ -192,7 +195,7 @@ flowchart LR
 src/ddopt/   library                      tests/    unit, integration, reproducibility, site tests
 configs/     synthetic scenario configs   scripts/  experiment, report and site entry points
 results/     immutable recorded runs      figures/  generated figures
-report/      IEEE paper + appendix        site/     website source (built to site/dist in CI)
+report/      merged.tex (paper + supp.)   site/     website source (built to site/dist in CI)
 qua/         gated QUA adapter            docs/     plan, conventions, physics, review, audits
 ```
 
@@ -282,24 +285,20 @@ Use GitHub's **"Cite this repository"** button, which is generated from [`CITATI
 
 [MIT](LICENSE) © 2026 Udaya Vijay Anand. Team material beyond this repository requires the authors' consent before publication.
 
-## Edit the paper in one Overleaf file
+## Editing the paper (GitHub and Overleaf)
 
-Use **`report/merged.tex`** as the one editable LaTeX document. All paper sections,
-number macros, and the bibliography are inlined. The appendix follows the main paper
-in the same source. Figures remain PDF assets, so for a fresh Overleaf project download
-the **`overleaf-project.zip`** file from the latest successful CI run under
-**Actions → ci → Artifacts → report-pdf** and upload it using Overleaf's
-**New Project → Upload Project**. Set `merged.tex` as the main document and choose
-pdfLaTeX. No separate `sections/` or `generated/` tree is needed.
+**`report/merged.tex` is the single canonical manuscript** (main paper and supplement in one file).
+Edit it on GitHub or in Overleaf. CI only compiles it and uploads artifacts; it never commits
+anything back.
 
-Every successful CI report job now generates `merged.tex`, `merged.pdf`, and
-`overleaf-project.zip` alongside `combined_report.pdf`. On a push to `main`, the job
-also synchronizes the generated `report/merged.tex` into the repository. The split
-`report/main.tex` and `report/sections/` remain the canonical generation sources;
-editing a downloaded Overleaf project does **not** automatically change GitHub. To
-retain an Overleaf edit in later regenerated versions, apply it to the canonical
-report source as well.
+- The team's Overleaf project is linked to this repository via Overleaf's GitHub Synchronization.
+  Sync is **manual both ways** (Overleaf **Menu → Integrations → GitHub**: pull before you edit,
+  push when done). Set **Settings → Main document** to `report/merged.tex`.
+- Without premium sync: upload `overleaf-project.zip` from the CI artifact (**New Project → Upload
+  Project**) and bring changes back to GitHub in a PR.
+- Never hand-edit numbers or the `% >>> BEGIN GENERATED` blocks; regenerate with the scripts and run
+  `python scripts/manuscript.py check`.
 
-## For paper contributors and AI coding agents
-
-Read **[LaTeX and Overleaf editing guide](docs/LATEX_OVERLEAF_AGENT_GUIDE.md)** before changing the manuscript. It explains the authoritative source files, generated tables and figures, IEEE page limits, report build validation, and the exact limitations of Overleaf/GitHub synchronization. Importantly, `report/merged.tex` is currently **generated output**, not a safely editable two-way source of truth.
+Paper contributors and AI agents must read the
+**[LaTeX and Overleaf editing guide](docs/LATEX_OVERLEAF_AGENT_GUIDE.md)** first. It covers the
+exact sync steps, conflict handling, generated values, figures and build checks.

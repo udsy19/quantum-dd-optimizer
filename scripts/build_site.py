@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build the static website ("online paper") into ``site/dist/``.
 
-The paper body is rendered from ``report/`` at build time: ``report/main.tex`` (the paper) and
-``report/appendix.tex`` (supplementary appendix) are read with their ``\\input`` files, preprocessed in
+The paper body is rendered from ``report/`` at build time: the single canonical manuscript
+``report/merged.tex`` is read once and split at ``\\ddoptsupplement{<title>}`` into the main paper and the
+supplementary material (S-numbered figures, tables and equations; one shared reference list), preprocessed in
 memory (generated number macros expanded, IEEE front matter extracted for the page header, tables and
 figures simplified, cross-references numbered as in the PDF) and converted to HTML with pandoc
 (``--citeproc`` with the bundled IEEE CSL style, ``--katex`` math). Nothing is written below ``report/``.
@@ -300,6 +301,7 @@ class Data:
                 if pid == "A":
                     self.expect(f"BenchA{tag}Sel", e["selected"].upper())
                     self.expect(f"BenchA{tag}SelEps", mra.fmt(e["baselines"][e["selected"]]))
+                    self.expect(f"BenchA{tag}HeadroomPct", f"{100 * (1 - floor / e['baselines'][e['selected']]):.1f}")
             if pid == "A":
                 self.expect("FloorA", mra.fmt(floor))
             panels.append({"id": pid, "title": title, "run_id": self.rid(role), "floor": floor,
@@ -571,6 +573,10 @@ class Data:
         self.expect("ConvTrainFinal", fmt(last["train"]))
         self.expect("ConvValFinal", fmt(mean(last["val_per_seed"])))
         self.expect("ConvBestBaselineVal", fmt(mean(bl["val_per_seed"])))
+        self.expect("ConvBestBaselineTrain", fmt(bl["train"]))
+        tx = max((r for r in p["rows"] if r["mode"] == "timing" and r["base_phases"] == "xy"), key=lambda r: r["budget"])
+        self.expect("ConvTimingXYTrainFinal", fmt(tx["train"]))
+        self.expect("ConvTimingXYValFinal", fmt(mean(tx["val_per_seed"])))
         return {"run_id": self.rid("convergence"), "status": p.get("status", ""), "n": p["n"],
                 "validation_seeds": p.get("validation_seeds"), "series": series,
                 "baseline": {"family": best, "label": best.upper(), "train": bl["train"],
@@ -605,6 +611,8 @@ class Data:
 PROV_TOKEN = "ZQPROV{}ZQEND"
 PROV_RE = re.compile(r"ZQPROV([A-Za-z]+)ZQEND")
 APPENDIX_MARK = "ZQAPPENDIXSTART"
+XREF_TOKEN = "ZQXREF-"
+SUPP_CITES_MARK = "ZQSUPPCITES"
 CSL = SRC / "csl" / "ieee.csl"
 FIG_TO_CHART = {"fig:spec": "spectroscopy", "fig:bench": "benchmark", "fig:conv": "convergence",
                 "fig:rob": "robustness"}
@@ -742,7 +750,9 @@ def bib_short_authors(entry: dict) -> str:
 
 
 class ReportRenderer:
-    """Render report/main.tex and report/appendix.tex to HTML fragments with pandoc."""
+    """Render report/merged.tex (main paper + supplement) to HTML fragments with pandoc."""
+
+    MANUSCRIPT = "merged.tex"
 
     def __init__(self, report_dir: Path, macros: dict[str, str], prov: dict, ref_sha: str, bib: list[dict],
                  audit_rows: dict[str, str]):
@@ -758,12 +768,41 @@ class ReportRenderer:
                              "pandoc`); refusing to build a site without the paper body")
 
     # ---- source loading ---------------------------------------------------------------------
-    def read(self, rel: str) -> str:
-        p = self.dir / (rel if rel.endswith(".tex") else rel + ".tex")
+    def read(self) -> str:
+        """The canonical manuscript with comments stripped (it is self-contained: no \\input)."""
+        p = self.dir / self.MANUSCRIPT
         if not p.is_file():
-            raise BuildError(f"\\input{{{rel}}}: {p} not found")
+            raise BuildError(f"canonical manuscript {p} not found")
         text = strip_tex_comments(p.read_text(encoding="utf-8"))
-        return re.sub(r"\\input\{([^}]+)\}", lambda m: self.read(m.group(1)), text)
+        inc = re.search(r"\\(input|include|subfile|import)(?![A-Za-z])", text)
+        if inc:
+            raise BuildError(f"report/{self.MANUSCRIPT} must be self-contained; found \\{inc.group(1)}")
+        return text
+
+    def parts(self) -> dict[str, str]:
+        """Split the manuscript into two virtual LaTeX documents at ``\\ddoptsupplement{TITLE}``.
+
+        ``main``: everything before the marker + ``\\end{document}``. ``supplement``: the preamble with the
+        title replaced by TITLE + ``\\begin{document}\\maketitle\\appendices`` + the text after the marker."""
+        full = self.read()
+        if full.count("\\begin{document}") != 1 or "\\end{document}" not in full:
+            raise BuildError(f"report/{self.MANUSCRIPT}: expected one \\begin{{document}} ... \\end{{document}}")
+        start = full.index("\\begin{document}")
+        marks = [m for m in re.finditer(r"\\ddoptsupplement(?![A-Za-z])\s*\{", full) if m.start() > start]
+        if len(marks) != 1:
+            raise BuildError(f"report/{self.MANUSCRIPT}: expected exactly one \\ddoptsupplement{{...}} after "
+                             f"\\begin{{document}}, found {len(marks)}")
+        title, after = brace_group(full, marks[0].end() - 1)
+        main = full[:marks[0].start()] + "\n\\end{document}\n"
+        preamble = full[:start]
+        t = preamble.find("\\title")
+        if t < 0:
+            raise BuildError(f"report/{self.MANUSCRIPT} has no \\title")
+        _, t_end = brace_group(preamble, t + len("\\title"))
+        preamble = preamble[:t] + "\\title{" + title + "}" + preamble[t_end:]
+        rest = full[after:full.rindex("\\end{document}")]
+        supplement = preamble + "\\begin{document}\n\\maketitle\n\\appendices\n" + rest + "\n\\end{document}\n"
+        return {"main": main, "supplement": supplement}
 
     # ---- metadata (hero) -------------------------------------------------------------------------
     def metadata(self, full: str) -> dict:
@@ -779,22 +818,26 @@ class ReportRenderer:
             lines = [tex_to_text(x) for x in re.split(r"\\\\", aff)]
             authors.append({"name": tex_to_text(name), "affiliation": [x for x in lines if x and "@" not in x]})
         if not authors:
-            raise BuildError("no \\IEEEauthorblockN author entries found in report/main.tex")
+            raise BuildError("no \\IEEEauthorblockN author entries found in report/merged.tex")
         after = full[full.index("\\maketitle"):]
         date_env = (re.match(r"\\maketitle\s*\\begin\{center\}(.*?)\\end\{center\}", after, re.S)
                     or re.search(r"\\IEEEspecialpapernotice\{(.*?)\}", full, re.S))
         keywords = env_body(full, "IEEEkeywords")
         abstract = env_body(full, "abstract")
         if abstract is None:
-            raise BuildError("report/main.tex has no abstract environment")
+            raise BuildError("report/merged.tex has no abstract environment")
         return {"title": tex_to_text(parts[0]), "subtitle": tex_to_text(" ".join(parts[1:])),
                 "authors": authors, "date": tex_to_text(date_env.group(1)) if date_env else "",
                 "keywords": tex_to_text(keywords or ""), "abstract_tex": abstract}
 
     # ---- numbering of sections, figures, tables and equations (LaTeX order) ------------------------
-    def number(self, body: str) -> tuple[dict[str, str], str]:
-        """Return ({label: printed number}, body with numbered display math tagged and starred)."""
+    def number(self, body: str, supplement: bool = False) -> tuple[dict[str, str], str]:
+        """Return ({label: printed number}, body with numbered display math tagged and starred).
+
+        In the supplement figures, tables and equations are S-numbered with arabic numerals (S1, S2, ...)
+        as \\ddoptsupplement does in the PDF; main-paper tables use roman numerals."""
         labels: dict[str, str] = {}
+        sp = "S" if supplement else ""
         sec = sub = fig = tab = eq = 0
         appendix = False
         current = ""
@@ -819,10 +862,10 @@ class ReportRenderer:
             elif m.group(3):
                 if m.group(3) == "figure":
                     fig += 1
-                    current = str(fig)
+                    current = f"{sp}{fig}"
                 else:
                     tab += 1
-                    current = roman(tab)
+                    current = f"S{tab}" if supplement else roman(tab)
             elif m.group(4):
                 labels[m.group(4)] = current
             elif m.group(5):
@@ -841,11 +884,11 @@ class ReportRenderer:
                     eq += 1
                     lab = re.search(r"\\label\{([^}]*)\}", content)
                     if lab:
-                        labels[lab.group(1)] = str(eq)
+                        labels[lab.group(1)] = f"{sp}{eq}"
                     inner = re.sub(r"\\label\{[^}]*\}", "", content)
                     if env == "multline":
                         inner = "\\begin{gathered}" + inner + "\\end{gathered}"
-                    out.append(f"\n\\[{inner}\\tag{{{eq}}}\\]\n")
+                    out.append(f"\n\\[{inner}\\tag{{{sp}{eq}}}\\]\n")
                 else:
                     for ln in lines:
                         tagged = not re.search(r"\\(nonumber|notag)\b", ln)
@@ -853,9 +896,9 @@ class ReportRenderer:
                             eq += 1
                         lab = re.search(r"\\label\{([^}]*)\}", ln)
                         if lab:
-                            labels[lab.group(1)] = str(eq)
+                            labels[lab.group(1)] = f"{sp}{eq}"
                         ln = re.sub(r"\\label\{[^}]*\}|\\nonumber|\\notag", "", ln).replace("&", "")
-                        out.append(f"\n\\[{ln.strip()}" + (f"\\tag{{{eq}}}" if tagged else "") + "\\]\n")
+                        out.append(f"\n\\[{ln.strip()}" + (f"\\tag{{{sp}{eq}}}" if tagged else "") + "\\]\n")
         out.append(body[pos:])
         return labels, "".join(out)
 
@@ -887,7 +930,10 @@ class ReportRenderer:
             return ", ".join(f"{bib_short_authors(self.bib[k])}~\\citep{{{k}}}" for k in keys)
         return re.sub(r"\\citet\{([^}]*)\}", rep, text)
 
-    def preprocess(self, body: str, defs: dict[str, tuple[int, str]], figures_dir: Path) -> tuple[str, dict]:
+    def preprocess(self, body: str, defs: dict[str, tuple[int, str]], figures_dir: Path,
+                   supplement: bool = False) -> tuple[str, dict, list[int]]:
+        """Simplify LaTeX for pandoc and number it. Returns (body, labels, booktabs header-row counts);
+        ``\\ref`` and friends are resolved afterwards by :meth:`resolve_refs` (labels of both parts)."""
         body = body.replace("\\appendices", "\n\n" + APPENDIX_MARK + "\n\n")
         body = self.provenance_tokens(body)
         body = expand_macros(body, defs)
@@ -897,10 +943,10 @@ class ReportRenderer:
                     raise BuildError(f"citation key {key.strip()!r} not in report/refs.bib")
         body = self.citet(body)
         # booktabs header rows (between \toprule and \midrule); pandoc keeps at most one as <thead>
-        self.header_rows = []
+        header_rows = []
         for tb in re.findall(r"\\begin\{tabular\}(.*?)\\end\{tabular\}", body, re.S):
             head = re.search(r"\\toprule(.*?)\\midrule", tb, re.S)
-            self.header_rows.append(len(re.findall(r"\\\\", head.group(1))) if head else 0)
+            header_rows.append(len(re.findall(r"\\\\", head.group(1))) if head else 0)
         body = re.sub(r"\\begin\{(figure|table)\*\}", r"\\begin{\1}", body)
         body = re.sub(r"\\end\{(figure|table)\*\}", r"\\end{\1}", body)
         body = strip_command(body, "resizebox", 2, True)
@@ -918,16 +964,24 @@ class ReportRenderer:
                 raise BuildError(f"\\includegraphics{{{m.group(1)}}}: no PNG figures/{name}.png for the website")
             return f"\\includegraphics{{figures/{name}.png}}"
         body = re.sub(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]*)\}", graphic, body)
-        labels, body = self.number(body)
+        labels, body = self.number(body, supplement)
+        return body, labels, header_rows
 
+    @staticmethod
+    def resolve_refs(body: str, prefix: str, labels: dict[str, dict[str, str]]) -> str:
+        """Replace \\ref/\\autoref/\\eqref by printed numbers linked to the target; ``labels`` maps each
+        part's id prefix to its labels. Cross-part targets get a token link fixed after pandoc (pandoc would
+        put this part's --id-prefix on an internal link)."""
         def ref(m):
             key = m.group(1)
-            if key not in labels:
-                raise BuildError(f"\\ref{{{key}}}: undefined label (would print ?? in the PDF)")
-            return f"\\hyperref[{key}]{{{labels[key]}}}"
+            for pfx, labs in labels.items():
+                if key in labs:
+                    if pfx == prefix:
+                        return f"\\hyperref[{key}]{{{labs[key]}}}"
+                    return f"\\href{{{XREF_TOKEN}{pfx}{key}}}{{{labs[key]}}}"
+            raise BuildError(f"\\ref{{{key}}}: undefined label (would print ?? in the PDF)")
         body = re.sub(r"\\(?:ref|autoref)\{([^}]*)\}", ref, body)
-        body = re.sub(r"\\eqref\{([^}]*)\}", lambda m: "(" + ref(m) + ")", body)
-        return body, labels
+        return re.sub(r"\\eqref\{([^}]*)\}", lambda m: "(" + ref(m) + ")", body)
 
     # ---- pandoc ----------------------------------------------------------------------------------------
     def pandoc(self, latex: str, id_prefix: str) -> str:
@@ -947,7 +1001,10 @@ class ReportRenderer:
         return r.stdout
 
     # ---- HTML post-processing -----------------------------------------------------------------------
-    def postprocess(self, html_s: str, prefix: str, figures_dir: Path) -> tuple[str, list[tuple[int, str, str]]]:
+    def postprocess(self, html_s: str, prefix: str, figures_dir: Path, header_rows: list[int] = (),
+                    supplement: bool = False) -> tuple[str, list[tuple[int, str, str]]]:
+        sp = "S" if supplement else ""
+        html_s = html_s.replace(f'href="{XREF_TOKEN}', 'href="#')
         # numbered headings (IEEE: I, II ... / A, B ...; appendix sections lettered)
         toc: list[tuple[int, str, str]] = []
         sec = sub = 0
@@ -994,14 +1051,14 @@ class ReportRenderer:
             label = fid[len(prefix):] if fid else ""
             chart = FIG_TO_CHART.get(label)
             link = (f' <a class="fig-interactive" href="#fig-{chart}">Interactive version</a>' if chart else "")
-            return (f'<figure class="paper-figure" id="{fid}"><img src="{img.group(1)}" alt="Fig. {fig_n}. {alt}" '
+            return (f'<figure class="paper-figure" id="{fid}"><img src="{img.group(1)}" alt="Fig. {sp}{fig_n}. {alt}" '
                     f'width="{w}" height="{h}" loading="lazy" decoding="async">'
-                    f'<figcaption><span class="fig-label">Fig. {fig_n}.</span> {cap_html}{link}</figcaption></figure>')
+                    f'<figcaption><span class="fig-label">Fig. {sp}{fig_n}.</span> {cap_html}{link}</figcaption></figure>')
         html_s = re.sub(r'<figure(?: id="([^"]*)")?>(.*?)</figure>', figure, html_s, flags=re.S)
 
         # tables: caption outside a horizontally scrolling wrapper, "TABLE I" labels
         tab_n = 0
-        header_rows = list(getattr(self, "header_rows", []))
+        header_rows = list(header_rows)
 
         def table(m):
             nonlocal tab_n
@@ -1017,9 +1074,10 @@ class ReportRenderer:
                     body = body.replace(r, "", 1)
                 body = "<thead>\n" + head + "</thead>\n" + body
             idattr = f' id="{tid}"' if tid else ""
+            num = f"S{tab_n}" if supplement else roman(tab_n)
             return (f'<figure class="table-figure paper-table"{idattr}><figcaption><span class="fig-label">'
-                    f'TABLE {roman(tab_n)}.</span> {cap.group(1) if cap else ""}</figcaption>'
-                    f'<div class="table-wrap" role="region" aria-label="Table {roman(tab_n)}" tabindex="0">'
+                    f'TABLE {num}.</span> {cap.group(1) if cap else ""}</figcaption>'
+                    f'<div class="table-wrap" role="region" aria-label="Table {num}" tabindex="0">'
                     f'<table>{body}</table></div></figure>')
         html_s = re.sub(r'<div id="([^"]*)">\s*<table>(.*?)</table>\s*</div>|()<table>(.*?)</table>', table, html_s,
                         flags=re.S)
@@ -1049,13 +1107,17 @@ class ReportRenderer:
         return html_s, toc
 
     # ---- public entry points ----------------------------------------------------------------------
-    def render_part(self, name: str, prefix: str, figures_dir: Path, main: bool) -> dict:
-        full = self.read(name)
-        defs = {**parse_macro_defs(full), "runid": (1, "\\texttt{#1}")}
+    def prepare_part(self, full: str, prefix: str, figures_dir: Path, main: bool) -> dict:
+        """Preprocess one virtual document (see :meth:`parts`) up to, not including, reference resolution."""
+        defs = parse_macro_defs(full)
+        defs.pop("ddoptsupplement", None)  # layout macro of the PDF; the split happens in parts()
+        defs["runid"] = (1, "\\texttt{#1}")
         start = full.index("\\begin{document}")
         meta = self.metadata(full) if main else {"title": " — ".join(tex_to_text(p) for p in re.split(
             r"\\\\", brace_group(full, full.index("\\title") + len("\\title"))[0]) if p.strip())}
-        doc = full[start + len("\\begin{document}"):full.index("\\end{document}")]
+        doc = full[start + len("\\begin{document}"):full.rindex("\\end{document}")]
+        doc = re.sub(r"\\IfFileExists\s*\{[^}]*\}\s*\{\s*\\bibliography\{[^}]*\}\s*\}\s*\{\s*\\bibliography\{[^}]*\}\s*\}",
+                     "", doc)
         doc = re.sub(r"\\bibliographystyle\{[^}]*\}|\\bibliography\{[^}]*\}", "", doc)
         if main:
             kw_end = doc.index("\\end{IEEEkeywords}") + len("\\end{IEEEkeywords}") if "IEEEkeywords" in doc else \
@@ -1064,42 +1126,101 @@ class ReportRenderer:
         else:
             body = re.sub(r"\\maketitle", "", doc)
         body = remove_macro_defs(body)
-        latex, labels = self.preprocess(body, defs, figures_dir)
-        html_s, toc = self.postprocess(self.pandoc(latex, prefix), prefix, figures_dir)
-        part = {"html": html_s, "toc": toc, "labels": labels, "title": meta["title"]}
+        latex, labels, header_rows = self.preprocess(body, defs, figures_dir, supplement=not main)
+        part = {"prefix": prefix, "main": main, "latex": latex, "labels": labels, "header_rows": header_rows,
+                "defs": defs, "title": meta["title"]}
         if main:
-            abstract_latex, _ = self.preprocess(remove_macro_defs(meta.pop("abstract_tex")), defs, figures_dir)
-            abstract_html = self.pandoc(abstract_latex, prefix + "abstract-")
-            abstract_html = re.sub(r'<h2 class="unnumbered"[^>]*>References</h2>|<div id="[^"]*refs".*', "",
-                                   abstract_html, flags=re.S)
-            meta["abstract_html"] = PROV_RE.sub(lambda t: num_span(t.group(1), self.macros, self.prov, self.ref_sha),
-                                                abstract_html)
             part["meta"] = meta
         return part
 
-    def figure_captions(self, part: dict) -> dict[str, str]:
-        """Rendered caption HTML of the report figures that have an interactive counterpart."""
+    @staticmethod
+    def cite_keys(latex: str) -> list[str]:
+        """Citation keys in order of first citation (the order of IEEEtranN's unsorted reference list)."""
+        out: list[str] = []
+        for group in re.findall(r"\\(?:cite|citep|citealp|citeauthor)\{([^}]*)\}", latex):
+            for k in group.split(","):
+                if k.strip() and k.strip() not in out:
+                    out.append(k.strip())
+        return out
+
+    @staticmethod
+    def shared_citations(html_s: str, numbers: dict[str, str], ref_prefix: str = "paper-") -> str:
+        """Point citations at the main paper's reference list (one list for paper and supplement, as in the
+        PDF) and drop the list pandoc generated for this fragment."""
+        def cite(m):
+            keys = m.group(1).split()
+            missing = [k for k in keys if k not in numbers]
+            if missing:
+                raise BuildError(f"citations {missing} are not in the main paper's reference list")
+            links = ", ".join(f'<a href="#{ref_prefix}ref-{k}" role="doc-biblioref">[{numbers[k]}]</a>'
+                              for k in sorted(keys, key=lambda k: int(numbers[k])))
+            return f'<span class="citation" data-cites="{m.group(1)}">{links}</span>'
+        html_s = re.sub(r'<span class="citation" data-cites="([^"]*)">.*?</span>', cite, html_s, flags=re.S)
+        return re.sub(r'<div id="[^"]*refs" class="references csl-bib-body".*', "", html_s, flags=re.S)
+
+    def render_parts(self, figures_dir: Path) -> tuple[dict, dict]:
+        """Render the main paper and the supplement; labels of both parts are numbered before any
+        cross-reference is resolved, so references between the parts work as in the PDF."""
+        texts = self.parts()
+        main = self.prepare_part(texts["main"], "paper-", figures_dir, True)
+        supp = self.prepare_part(texts["supplement"], "app-", figures_dir, False)
+        dup = sorted(set(main["labels"]) & set(supp["labels"]))
+        if dup:
+            raise BuildError(f"labels defined in both the main paper and the supplement: {dup}")
+        labels = {"paper-": main["labels"], "app-": supp["labels"]}
+
+        # main paper: its own citations first, then supplement-only ones (IEEEtranN numbers by first citation)
+        main_keys = self.cite_keys(main["latex"])
+        extra = [k for k in self.cite_keys(supp["latex"]) if k not in main_keys]
+        main_latex = self.resolve_refs(main["latex"], "paper-", labels)
+        if extra:
+            main_latex += f"\n\n{SUPP_CITES_MARK} " + "".join(f"\\cite{{{k}}}" for k in extra) + "\n\n"
+        html_main = self.pandoc(main_latex, "paper-")
+        html_main = re.sub(r"<p>" + SUPP_CITES_MARK + r".*?</p>\n?", "", html_main, flags=re.S)
+        numbers = dict(re.findall(r'<div id="paper-ref-([^"]+)" class="csl-entry"[^>]*>\s*'
+                                  r'<div class="csl-left-margin">\[(\d+)\]', html_main))
+        html_main, toc_main = self.postprocess(html_main, "paper-", figures_dir, main["header_rows"])
+
+        html_supp = self.pandoc(self.resolve_refs(supp["latex"], "app-", labels), "app-")
+        html_supp = self.shared_citations(html_supp, numbers)
+        html_supp, toc_supp = self.postprocess(html_supp, "app-", figures_dir, supp["header_rows"], supplement=True)
+
+        meta = main["meta"]
+        abstract_latex, _, _ = self.preprocess(remove_macro_defs(meta.pop("abstract_tex")), main["defs"], figures_dir)
+        abstract_html = self.pandoc(self.resolve_refs(abstract_latex, "abstract", labels), "paper-abstract-")
+        abstract_html = self.shared_citations(abstract_html, numbers).replace(f'href="{XREF_TOKEN}', 'href="#')
+        meta["abstract_html"] = PROV_RE.sub(lambda t: num_span(t.group(1), self.macros, self.prov, self.ref_sha),
+                                            abstract_html)
+        return ({"html": html_main, "toc": toc_main, "labels": main["labels"], "title": meta["title"], "meta": meta},
+                {"html": html_supp, "toc": toc_supp, "labels": supp["labels"], "title": supp["title"]})
+
+    def figure_captions(self, *parts: tuple[str, dict]) -> dict[str, tuple[str, str, str, str]]:
+        """Rendered caption HTML of the report figures that have an interactive counterpart:
+        {chart: (label html, caption html, figure id, part name)}."""
         caps = {}
-        for label, chart in FIG_TO_CHART.items():
-            m = re.search(r'<figure class="paper-figure" id="[^"]*' + re.escape(label) + r'">.*?<figcaption>'
-                          r'(<span class="fig-label">[^<]*</span>)(.*?)(?: <a class="fig-interactive"[^>]*>[^<]*</a>)?'
-                          r'</figcaption>', part["html"], re.S)
-            if m:
-                caps[chart] = (m.group(1), m.group(2))
+        for name, part in parts:
+            for label, chart in FIG_TO_CHART.items():
+                m = re.search(r'<figure class="paper-figure" id="([^"]*-' + re.escape(label) + r')">.*?<figcaption>'
+                              r'(<span class="fig-label">[^<]*</span>)(.*?)(?: <a class="fig-interactive"[^>]*>[^<]*</a>)?'
+                              r'</figcaption>', part["html"], re.S)
+                if m:
+                    caps[chart] = (m.group(2), m.group(3), m.group(1), name)
         return caps
 
 
-def split_sections(part_html: str, prefix: str) -> tuple[list[dict], str]:
+def split_sections(part_html: str, prefix: str, allow_intro: bool = False) -> tuple[list[dict], str, str]:
     """Split a rendered part at its <h2>/<h3> headings.
 
-    Returns (sections, references_html). Each section is {id, number, title, level, html} where
-    ``html`` is the content after the heading up to the next heading (the heading itself excluded)."""
+    Returns (sections, references_html, intro_html). Each section is {id, number, title, level, html} where
+    ``html`` is the content after the heading up to the next heading (the heading itself excluded);
+    ``intro_html`` is text before the first heading (allowed only with ``allow_intro``)."""
     ref_start = part_html.find(f'<h2 class="unnumbered refs-heading" id="{prefix}references">')
     body, refs = (part_html[:ref_start], part_html[ref_start:]) if ref_start >= 0 else (part_html, "")
     refs = re.sub(r'^<h2[^>]*>.*?</h2>\s*', "", refs, flags=re.S).strip()
     heads = list(re.finditer(r"<h([23])([^>]*)>(.*?)</h\1>", body, re.S))
     sections = []
-    if heads and body[:heads[0].start()].strip():
+    intro = body[:heads[0].start()].strip() if heads else ""
+    if intro and not allow_intro:
         raise BuildError(f"{prefix}: content before the first section heading")
     for k, m in enumerate(heads):
         end = heads[k + 1].start() if k + 1 < len(heads) else len(body)
@@ -1110,40 +1231,44 @@ def split_sections(part_html: str, prefix: str) -> tuple[list[dict], str]:
         sections.append({"id": hid.group(1) if hid else "", "number": num.group(1) if num else "",
                          "title": title, "level": int(m.group(1)) - 1,
                          "html": body[m.end():end].strip()})
-    return sections, refs
+    return sections, refs, intro
 
 
 def render_paper(report_dir: Path, macros: dict[str, str], prov: dict, ref_sha: str, bib: list[dict],
                  audit_rows: dict[str, str], figures_dir: Path) -> dict:
-    """Design-independent paper data rendered from report/ (written to data/paper.json).
+    """Design-independent paper data rendered from report/merged.tex (written to data/paper.json).
 
     Schema::
 
         {title, subtitle, authors: [{name, affiliations: [str]}], date_line, keywords,
          abstract_html,
-         sections: [{id, number, title, level, html}],            # report/main.tex, level 1 = \\section
-         references_html,                                          # citeproc bibliography of the paper
-         appendix_title, appendix_sections: [...], appendix_references_html,
-         figures: [{part, id, label, number, src, width, height, caption_html}],
+         sections: [{id, number, title, level, html}],            # main paper, level 1 = \\section
+         references_html,                                          # citeproc bibliography (paper + supplement)
+         appendix_title, appendix_intro_html,                      # supplement (after \\ddoptsupplement)
+         appendix_sections: [...],
+         appendix_references_html,                                 # always "": one shared reference list
+         figures: [{part, id, label, number, src, width, height, caption_html}],   # number: "1" or "S1"
          labels: {paper: {latex label: printed number}, appendix: {...}},
-         source: {main, appendix, pandoc}}
+         source: {manuscript, pandoc}}
 
     HTML fragments contain pandoc ``<span class="math inline|display">`` TeX (render with KaTeX),
     ``<span class="num" data-macro=... data-provenance=...>`` numbers, ``figure.paper-figure`` images
-    (``figures/<name>.png``) and ``figure.paper-table`` tables; ids are prefixed ``paper-`` / ``app-``."""
+    (``figures/<name>.png``) and ``figure.paper-table`` tables; ids are prefixed ``paper-`` / ``app-``;
+    supplement citations link to the main paper's ``paper-ref-*`` entries."""
     renderer = ReportRenderer(report_dir, macros, prov, ref_sha, bib, audit_rows)
-    paper = renderer.render_part("main", "paper-", figures_dir, True)
-    appendix = renderer.render_part("appendix", "app-", figures_dir, False)
+    paper, appendix = renderer.render_parts(figures_dir)
     meta = paper["meta"]
-    sections, refs = split_sections(paper["html"], "paper-")
-    app_sections, app_refs = split_sections(appendix["html"], "app-")
+    sections, refs, _ = split_sections(paper["html"], "paper-")
+    app_sections, app_refs, app_intro = split_sections(appendix["html"], "app-", allow_intro=True)
+    if app_refs:
+        raise BuildError("the supplement must not have its own reference list")
     figures = []
     for part, html_s in (("paper", paper["html"]), ("appendix", appendix["html"])):
         for m in re.finditer(r'<figure class="paper-figure" id="([^"]*)"><img src="([^"]+)"[^>]*width="(\d+)" '
-                             r'height="(\d+)"[^>]*><figcaption><span class="fig-label">Fig\. (\d+)\.</span> (.*?)'
+                             r'height="(\d+)"[^>]*><figcaption><span class="fig-label">Fig\. (S?\d+)\.</span> (.*?)'
                              r'(?: <a class="fig-interactive"[^>]*>[^<]*</a>)?</figcaption></figure>', html_s, re.S):
             figures.append({"part": part, "id": m.group(1), "label": m.group(1).split("-", 1)[1],
-                            "number": int(m.group(5)), "src": m.group(2), "width": int(m.group(3)),
+                            "number": m.group(5), "src": m.group(2), "width": int(m.group(3)),
                             "height": int(m.group(4)), "caption_html": m.group(6).strip()})
     version = subprocess.run([renderer.pandoc_bin, "--version"], capture_output=True, text=True).stdout.split("\n")[0]
     return {
@@ -1152,12 +1277,14 @@ def render_paper(report_dir: Path, macros: dict[str, str], prov: dict, ref_sha: 
         "date_line": meta.get("date", ""), "keywords": meta.get("keywords", ""),
         "abstract_html": meta["abstract_html"].strip(),
         "sections": sections, "references_html": refs,
-        "appendix_title": appendix["title"], "appendix_sections": app_sections, "appendix_references_html": app_refs,
+        "appendix_title": appendix["title"], "appendix_intro_html": app_intro, "appendix_sections": app_sections,
+        "appendix_references_html": app_refs,
         "figures": figures, "labels": {"paper": paper["labels"], "appendix": appendix["labels"]},
-        "source": {"main": "report/main.tex", "appendix": "report/appendix.tex", "pandoc": version},
+        "source": {"manuscript": "report/" + ReportRenderer.MANUSCRIPT, "pandoc": version},
         # full rendered parts (with headings) for templates that show the paper as one flow
         "_paper_html": paper["html"], "_appendix_html": appendix["html"],
-        "_paper_toc": paper["toc"], "_appendix_toc": appendix["toc"], "_fig_caps": renderer.figure_captions(appendix),
+        "_paper_toc": paper["toc"], "_appendix_toc": appendix["toc"],
+        "_fig_caps": renderer.figure_captions(("paper", paper), ("appendix", appendix)),
     }
 
 
@@ -1391,7 +1518,7 @@ def build(out: Path, pdf_dir: Path | None = None, site_url: str = SITE_URL) -> d
     fig_caps = rendered["_fig_caps"]
     missing = sorted(set(FIG_TO_CHART.values()) - set(fig_caps))
     if missing:
-        raise BuildError(f"appendix figures for the interactive charts not found: {missing}")
+        raise BuildError(f"report figures for the interactive charts not found: {missing}")
 
     # ---- output tree -----------------------------------------------------------------------------
     if out.exists():
@@ -1449,12 +1576,12 @@ def build(out: Path, pdf_dir: Path | None = None, site_url: str = SITE_URL) -> d
                        for a in meta["authors"])
 
     def chart_caption(chart: str, note: str = "") -> str:
-        label, cap = fig_caps[chart]
+        label, cap, fig_id, part = fig_caps[chart]
         num = re.sub(r"<[^>]+>", "", label).strip().rstrip(".")
-        target = next(lbl for lbl, c in FIG_TO_CHART.items() if c == chart)
-        return (f'<span class="fig-label">Interactive {esc(num)} (supplementary appendix).</span> {cap}'
+        where = "supplementary appendix" if part == "appendix" else "paper"
+        return (f'<span class="fig-label">Interactive {esc(num)} ({where}).</span> {cap}'
                 + (f' <em class="site-note">{esc(note)}</em>' if note else "")
-                + f' <a href="#app-{esc(target)}">Static figure</a>.')
+                + f' <a href="#{esc(fig_id)}">Static figure</a>.')
 
     short = build_sha[:7] if build_sha else "unknown"
     base_path = urlparse(site_url).path or "/"
