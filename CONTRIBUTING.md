@@ -18,9 +18,9 @@ Python ≥ 3.11. Exact versions of the recorded runs: `requirements-lock.txt`.
 
 ## Ground rules
 
-1. **Never invent results.** No hand-typed numbers in `report/` or the website: every number must
+1. **Never invent results.** No hand-typed numbers in `report/merged.tex` or the website: every number must
    come from `results/<run_id>/` via `scripts/make_report_artifacts.py` / `scripts/build_site.py`
-   and appear in `report/evidence_map.csv`.
+   (embedded in the manuscript's generated blocks) and appear in `report/evidence_map.csv`.
 2. **Results are immutable.** New experiments create new run directories (`ddopt.provenance.write_run`
    refuses to overwrite). To change what the paper shows, pin a different run in `report/runs.json`.
 3. **Pre-registration.** Changes to scenarios, seeds, baselines, the selection rule or metrics after
@@ -38,7 +38,8 @@ Python ≥ 3.11. Exact versions of the recorded runs: `requirements-lock.txt`.
 - [ ] `python -m pytest -q` passes locally (paste the summary line).
 - [ ] New numerical code has tests against an analytic limit or an independent implementation.
 - [ ] Any new result is a recorded run; `python -m ddopt.provenance verify results/<run_id>` passes.
-- [ ] If report/site numbers changed: `scripts/make_report_artifacts.py` and `scripts/make_evidence_map.py --check` run clean.
+- [ ] If report/site numbers changed: `scripts/make_report_artifacts.py`, `scripts/manuscript.py sync-generated --write` and `scripts/make_evidence_map.py --check` run clean.
+- [ ] If the manuscript changed: edits are in `report/merged.tex` (the only canonical source, never inside generated blocks); `python scripts/manuscript.py check` and `bash scripts/build_report.sh` pass. See [`docs/LATEX_OVERLEAF_AGENT_GUIDE.md`](docs/LATEX_OVERLEAF_AGENT_GUIDE.md).
 - [ ] `docs/PROGRESS.md` updated with commands and evidence.
 - [ ] No secrets, tokens, private device configuration or unconsented team material.
 

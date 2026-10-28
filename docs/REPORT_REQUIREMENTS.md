@@ -37,12 +37,15 @@ No numerical figure, author contribution, test pass count, dependency version, h
 ## Submission checks
 `latexmk -pdf -halt-on-error` or equivalent; no unresolved refs, broken figure paths, unsupported citation, or placeholder pretending to be an actual result. Render all PDF pages for layout QA. Validate 5–6 pages including/excluding references per course rule; state which count is used. Ensure affiliations and contribution roster reconcile and team confirms authorship.
 
-## Current IEEE submission release requirements (2026-10-27)
+## Current IEEE submission release requirements (2026-10-28)
 
-- Main paper target: 5 pages, hard maximum 6 pages including references; authors and Columbia emails appear in IEEEtran conference author blocks.
-- Supplement: separate, lettered IEEE appendix sections, appended after the main paper in `report/combined_report.pdf`.
-- `scripts/build_report.sh` checks the main-paper page cap, compiles the appendix, and merges the PDFs.
+- Single canonical source: `report/merged.tex` (main paper + supplement, no `\input`). Edit it on GitHub or in Overleaf (manual GitHub Synchronization); CI only builds and never commits. See `docs/LATEX_OVERLEAF_AGENT_GUIDE.md`.
+- Main paper target: 5 pages, hard maximum 6 pages including references (`report/main.pdf`, pages before the supplement); authors and Columbia emails appear in IEEEtran conference author blocks.
+- Supplement: follows the bibliography in the same file via `\ddoptsupplement{...}`, S-numbered figures/tables/equations, lettered sections, same reference list.
+- Final submission PDF: `report/combined_report.pdf`, a byte-identical copy of `report/merged.pdf` (main + supplement). PDFs are CI artifacts (report-pdf) and Pages-site links, not tracked in git.
+- `scripts/build_report.sh` runs `python scripts/manuscript.py check`, compiles `merged.tex` (also from the repository root, as Overleaf does), fails on LaTeX errors, undefined references/citations, missing figures or a main paper over 6 pages, splits `main.pdf`/`appendix.pdf`, and builds and test-compiles `overleaf-project.zip`.
+- Numbers and tables come only from `report/generated/*.tex` (from runs pinned in `report/runs.json`), embedded verbatim in marked generated blocks; never hand-edited.
 - Paper reports synthetic results only, not measured IQCC hardware gains.
 - The generated 249-pass/1-skip result is a historical full-test snapshot; CI smoke tests must be checked independently for current commits.
 - The arXiv identity-level literature follow-up does not establish that every publisher field was checked; consult `docs/CITATION_AUDIT.md`.
-- Individual author contributions still require the authors' approval. Never invent them.
+- The four authors are listed as contributing equally, subject to author confirmation. Individual author contributions still require the authors' approval. Never invent them.

@@ -247,3 +247,31 @@ corresponding journal titles. Do not replace a journal-version title with its
 arXiv preprint title unless explicitly citing that version. Citation claims can be
 classified identity-verified, but the experimental findings in this repository
 still require independent code and data reproduction.
+
+
+## Bibliography normalization pass (2026-10-28, report-finalization branch)
+
+This pass edited `report/refs.bib` for IEEE presentation. Primary hosts (`api.crossref.org`,
+`doi.org`, `arxiv.org`, `journals.aps.org`, `nature.com`, `overleaf.com`) were again unreachable
+from the agent sandbox (DNS blocked), so **no field below was newly confirmed against a primary
+source in this pass**. Every change and its source:
+
+| Key | Change | Source of the value | Status |
+|---|---|---|---|
+| Viola1999, Uhrig2007, Cywinski2008, Bylander2011, Alvarez2011, Ezzell2023, Tong2025, Tong2026, Hansen2016 | Surname-only / "and others" author fields replaced by full author lists with given names and diacritics (IEEE requires initials) | Author lists recorded above (initial audit candidate lists and the follow-up arXiv identity checks) | identity-level, from recorded arXiv checks |
+| Biercuk2009 | Full author list (M. J. Biercuk, H. Uys, A. P. VanDevender, N. Shiga, W. M. Itano, J. J. Bollinger); pages 996--1000 | Surnames and pages: RePEc record cited above. **Given names of VanDevender, Shiga, Itano and Bollinger were added from the agent's background knowledge, not from an opened source** | UNCONFIRMED: check against the Nature record |
+| Souza2011 | Given names added (Alexandre M. Souza, Gonzalo A. Álvarez, Dieter Suter) | Álvarez/Suter from the audit above; **"Alexandre M." from the agent's background knowledge** | UNCONFIRMED: check against the PRL record |
+| Bylander2011 | pages 565--570 | follow-up section above (Nature Physics 7 565--570) | as recorded |
+| Tong2025 | **Removed article number 030319** (never corroborated by any source); added DOI 10.1103/h7pq-s159, printed via `note` because IEEEtranN does not print `doi` | DOI: publisher URL recorded in the follow-up section | volume/article number UNCONFIRMED; DOI as recorded |
+| Tong2026, Hansen2016 | `howpublished = arXiv preprint arXiv:<id>` | arXiv identifiers already recorded | as recorded |
+| BiercukDohertyUys2011 | added `eprint` 1012.4262 (already in its URL) | existing entry | volume/issue/article/DOI UNCONFIRMED (no lead found) |
+| Ezzell2023, GreenUysBiercuk2012, Hansen2016 | Titles normalized to sentence case (`{CMA}` protected) | presentation only | n/a |
+| Rahman2024, BiercukDohertyUys2011, GreenUysBiercuk2012 | unchanged DOIs kept in `doi` (not printed) | earlier entries; search leads only | UNCONFIRMED |
+
+Not added: DOIs for Viola1999, Uhrig2007, Cywinski2008, Biercuk2009, Bylander2011, Alvarez2011,
+Souza2011 and Ezzell2023 (candidate DOIs are listed above but were never opened). Cywinski2008's
+journal reference (PRB 77, 174509) still has no corroborating record.
+
+**Before submission, a human with Crossref access should confirm:** the UNCONFIRMED rows above
+(especially Tong2025 volume/article number, the Biercuk2009 and Souza2011 given names, and the
+BiercukDohertyUys2011 J. Phys. B locator), e.g. `https://api.crossref.org/works/<DOI>`.
