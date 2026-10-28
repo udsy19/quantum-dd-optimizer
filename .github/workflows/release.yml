@@ -74,6 +74,8 @@ jobs:
           cp report/main.pdf dist/quantum-dd-optimizer-paper.pdf
           cp report/appendix.pdf dist/quantum-dd-optimizer-appendix.pdf
           cp report/combined_report.pdf dist/quantum-dd-optimizer-paper-with-appendix.pdf
+          cp report/merged.tex dist/quantum-dd-optimizer-paper.tex
+          cp report/overleaf-project.zip dist/quantum-dd-optimizer-overleaf-project.zip
       - name: Extract changelog section
         run: |
           python - <<'PY'

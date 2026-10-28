@@ -1,10 +1,16 @@
 # CI for quantum-dd-optimizer.
-# Runs smoke tests, evidence validation, and the IEEE main-paper plus appendix build.
+# Runs smoke tests, evidence validation, and the IEEE report build from the canonical
+# manuscript report/merged.tex. CI only reads the repository: it never writes, commits or
+# pushes merged.tex (or anything else); the PDFs and Overleaf zip are delivered as artifacts.
 name: ci
 on: [push, pull_request]
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -54,7 +60,7 @@ jobs:
       - name: Check for report source
         id: src
         run: |
-          if [ -f report/main.tex ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+          if [ -f report/merged.tex ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
       - name: Restore TeX package cache
         if: steps.src.outputs.present == 'true'
         id: texcache
@@ -81,32 +87,27 @@ jobs:
       - name: Build report PDF
         if: steps.src.outputs.present == 'true'
         run: bash scripts/build_report.sh
-      - name: Sync editable Overleaf source back to main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          git fetch origin main
-          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo 'Newer main commits exist. Skipping stale merged.tex sync.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -f report/merged.tex report/merged.pdf
-          if ! git diff --cached --quiet; then
-            git commit -m 'chore: synchronize Overleaf merged source [skip ci]'
-            git push origin HEAD:main
-          fi
       - name: Upload report PDF
-        if: always() && steps.src.outputs.present == 'true'
+        if: success() && steps.src.outputs.present == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: report-pdf
+          if-no-files-found: error
           path: |
             report/merged.tex
             report/merged.pdf
-            report/overleaf-project.zip
             report/combined_report.pdf
             report/main.pdf
-            report/main.log
             report/appendix.pdf
-            report/appendix.log
+            report/overleaf-project.zip
+            report/merged.log
+      - name: Upload report build log (failure)
+        if: failure() && steps.src.outputs.present == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: report-build-log
+          if-no-files-found: warn
+          path: |
+            report/merged.tex
+            report/merged.log
+            report/merged.blg
