@@ -46,7 +46,7 @@ jobs:
         run: python -m build
       - name: Restore TeX package cache
         id: texcache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: .apt-archives/*.deb
           key: apt-tex-${{ runner.os }}-${{ hashFiles('scripts/ci_install_tex.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -62,7 +62,7 @@ jobs:
       - name: Save TeX package cache
         # also after a timeout: the packages fetched so far are kept for the next run
         if: always() && hashFiles('.apt-archives/*.deb') != '' && hashFiles('.apt-archives/*.deb') != steps.texbefore.outputs.hash
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: .apt-archives/*.deb
           key: apt-tex-${{ runner.os }}-${{ hashFiles('scripts/ci_install_tex.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
